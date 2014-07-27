@@ -1,6 +1,7 @@
 
 deploy:
 	git checkout master
+	jekyll build
 	git add -A
 	git commit -m "deploy blog"
 	git push
