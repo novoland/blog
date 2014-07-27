@@ -3,10 +3,11 @@ deploy:
 	git checkout master
 	git add -A
 	git commit -m "deploy blog"
-	cp -r _site/ /tmp/
+	rm -rf ~/_site
+	cp -R _site ~
 	git checkout gh-pages
-	rm -r ./*
-	cp -r /tmp/_site/* ./
+	rm -rf ./*
+	cp -R ~/_site ./
 	git add -A
 	git commit -m "deploy blog"
 	git push origin gh-pages
