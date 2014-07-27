@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!--[if lte IE 9]><meta http-equiv="refresh" content="0;url=/ie.html"><![endif]-->
+
+    <title>网卡中断负载均衡</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+  </head>
+  <body>
+    <aside id="sidebar">
+      <nav id="tags">
+        <a href="/index.html" id="avatar"></a>
+
+        <ul id="tags__ul">
+          <li id="js-label1" class="tags__li tags-btn active">所有文章 <span class="post_count"></span></li>
+          <li id="js-label2" class="tags__li tags-btn">并发<span class="post_count"></span></li>
+          <li id="js-label3" class="tags__li tags-btn">算法<span class="post_count"></span></li>
+          <li id="js-label4" class="tags__li tags-btn">数据库<span class="post_count"></span></li>
+          <li id="js-label5" class="tags__li tags-btn">cache<span class="post_count"></span></li>
+          <li id="js-label6" class="tags__li tags-btn">c和os<span class="post_count"></span></li>
+          <li id="js-label7" class="tags__li tags-btn">网络<span class="post_count"></span></li>
+        </ul>
+
+        <div id="tags__bottom">
+          <a href="mailto:novohust@163.com" id="icon-email" class="tags-btn fontello"></a>
+          <a href="/rss.xml" id="icon-feed" class="tags-btn fontello"></a>
+        </div>
+      </nav> <!-- end #tags -->
+
+      <div id="posts-list">
+        <form action="" id="search-form">
+          <a href="/index.html" id="mobile-avatar"></a>
+          <!-- NOTE: input field is disabled by default -->
+          <input id="search-input" type="text" placeholder="Search..." disabled >
+        </form>
+
+        <nav id="pl__container">
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%AB%98%E6%80%A7%E8%83%BD%E7%BD%91%E7%BB%9C%E9%80%9A%E8%AE%AF%E7%AC%94%E8%AE%B0.html"><span class="pl__circle"></span><span class="pl__title">高性能网络通讯笔记</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86.html"><span class="pl__circle"></span><span class="pl__title">非递归的二叉树遍历</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%93%BE%E8%B7%AF%E5%B1%82%20%E7%BD%91%E7%BB%9C%E5%B1%82%20UDP%20IO%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">链路层 网络层 UDP IO模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%B4%9D%E5%8F%B6%E6%96%AF.html"><span class="pl__circle"></span><span class="pl__title">贝叶斯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98.html"><span class="pl__circle"></span><span class="pl__title">背包问题</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"><span class="pl__circle"></span><span class="pl__title">网卡中断负载均衡</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E7%BA%BF%E6%AE%B5%E6%A0%91.html"><span class="pl__circle"></span><span class="pl__title">线段树</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E6%A1%B6%E6%8E%92%E5%BA%8F%E5%9C%A8%E6%8E%92%E8%A1%8C%E6%A6%9C%E9%97%AE%E9%A2%98%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"><span class="pl__circle"></span><span class="pl__title">桶排序在排行榜问题中的应用</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%B9%B6%E6%9F%A5%E9%9B%86.html"><span class="pl__circle"></span><span class="pl__title">并查集</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%B9%B6%E5%8F%91%E9%9B%86%E5%90%88.html"><span class="pl__circle"></span><span class="pl__title">并发集合</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0.html"><span class="pl__circle"></span><span class="pl__title">定时器（Timer）的实现</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%A0%86.html"><span class="pl__circle"></span><span class="pl__title">堆</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%9B%9E%E6%BA%AF.html"><span class="pl__circle"></span><span class="pl__title">回溯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B4%A2%E5%BC%95%E6%A0%91(%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84).html"><span class="pl__circle"></span><span class="pl__title">二进制索引树(树状数组)</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/TCP.html"><span class="pl__circle"></span><span class="pl__title">TCP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/RST%E5%8F%8Ajava%20socket%E5%85%B3%E9%97%AD%E5%90%8E%E8%AF%BB%E5%86%99%E7%9A%84%E5%90%84%E7%A7%8D%E5%BC%82%E5%B8%B8.html"><span class="pl__circle"></span><span class="pl__title">RST及java socket关闭后读写的各种异常</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html"><span class="pl__circle"></span><span class="pl__title">Netty3 源码分析</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%204%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8C%BA%E5%88%AB.html"><span class="pl__circle"></span><span class="pl__title">Netty3 4线程模型的区别</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="数据库 pl__all" href="/%E6%95%B0%E6%8D%AE%E5%BA%93/2014/07/26/MySQL%E6%80%BB%E7%BB%93.html"><span class="pl__circle"></span><span class="pl__title">MySQL总结</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/Mode%20Switch%20%E5%92%8C%20Context%20Switch.html"><span class="pl__circle"></span><span class="pl__title">Mode Switch 和 Context Switch</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Lock-Free%20%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Lock-Free 算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/LCA%20%E5%92%8C%20RMQ.html"><span class="pl__circle"></span><span class="pl__title">LCA 和 RMQ</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/KMP.html"><span class="pl__circle"></span><span class="pl__title">KMP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">Java内存模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%20%E5%B9%B6%E5%8F%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html"><span class="pl__circle"></span><span class="pl__title">Java 并发基本知识</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html"><span class="pl__circle"></span><span class="pl__title">Http协议中的cache机制</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/Hash%20&%20Rabin-Karp%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Hash & Rabin-Karp字符串查找算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">Executor 之 线程池及定时器</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/C%E6%80%BB%E7%BB%93%20+%20%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98.html"><span class="pl__circle"></span><span class="pl__title">C总结 + 虚拟内存</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html"><span class="pl__circle"></span><span class="pl__title">Cache 相关理论</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/CPU%20Cache%20%E4%B8%8E%20%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.html"><span class="pl__circle"></span><span class="pl__title">CPU Cache 与 存储器层次结构</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">AQS 和 高级同步器</span><span class="pl__date">Jul 2014</span></a>
+        
+        </nav>
+      </div> <!-- end #posts-list -->
+    </aside> <!-- end #sidebar -->
+
+    <div id="post">
+      <div id="pjax">
+        <article id="post__content">
+  <h1 id="post__title" data-identifier="20140726">网卡中断负载均衡</h1>
+  <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">1. CPU 的 Exception</h1>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">interrupt 中断</code>，硬件发起，异步的（即独立于CPU），下面3种都是同步的（必须由CPU执行某条指令触发）；这是本文关注的重点。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">fault</code>，可能可以恢复，处理后返回引起错误的指令，如Page Fault。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">abort</code>，无法恢复，不返回。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">trap / system call</code>，程序主动发起，调用操作系统服务的方式，返回下一条指令。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Exception 的handler都是运行在内核空间的，CPU必须立即响应 exception，处理过程可以简单地认为按如下方式进行：保存现场 -- 执行处理函数 -- 恢复现场继续执行。</p>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">2. 硬中断和软中断</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">响应中断时通常会关闭中断，因此处理函数必须快速返回，保证不会丢失其他设备的中断信号。因此通常将中断响应函数划分为两个部分，上半部分就是所谓的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">硬中断</code>，它只做少量最重要的事以保证快速返回，并在返回前发起对下半部分的调度。下半部分负责其他耗时的工作，它和硬中断的区别在于它在执行时是开中断的，并且是异步的，不能保证在硬中断之后立刻被执行。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Linux对“下半部分”的实现有3种方式：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">softirq</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">tasklet</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bottom half</code>，统称为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">deferrable functions</code>。其中，tasklet是基于softirq实现的，而bottom half又是基于tasklet实现的。实际上在很多场景下，都使用 softirq（软中断）这个术语来描述所有的deferrable functions（中断处理的下半部分）。这三者的区别主要在并发性上：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Softirq</code> Softirqs of the same type can run concurrently on several CPUs</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Tasklet</code> Tasklets of different types can run concurrently on several CPUs, but tasklets of the same type cannot</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Bottom Half</code>Bottom halves cannot run concurrently on several CPUs.</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Linux2.4中仅预定义了4个softirq:</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">HI_SOFTIRQ   用于实现bottom half</li>
+<li style="line-height: 1.6;">TASKLET_SOFTIRQ   用于实现tasklet</li>
+<li style="line-height: 1.6;">NET_TX_SOFTIRQ    发送网络数据</li>
+<li style="line-height: 1.6;">NET_RX_SOFTIRQ    接收网络数据</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">softirq</code>的相关函数:</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">open_softirq(NET_RX_SOFTIRQ,net_rx_action,null)</code>：定义softirq和处理函数；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">__cpu_raise_softirq(cpu,NET_RX_SOFTIRQ)</code>：在指定cpu设置标志位，激活特定类型的softirq，该函数被硬中断调用；默认遵循“谁触发谁执行”的原则，哪个cpu处理硬中断则继续处理发起的softirq；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">do_softirq()</code>：cpu在某些特定的时间点检查自己的softirq标志位，当发现有pending的softirq时则调用该函数处理pending softirq。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到，deferrable functions(大部分语境下的“软中断”)是操作系统模拟硬件中断方式实现异步任务的一种机制，它和硬件中断执行的机制具有本质的区别。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><a href="http://anselmo.homeunix.net/OReilly/books/linuxkernel2/036.htm" style="background: transparent;" target="_blank">Softirqs, Tasklets, and Bottom Halves</a> -- 对这3类deferrable functions做了详细的介绍</li>
+<li style="line-height: 1.6;"><a href="http://wenku.baidu.com/view/45acdceb4afe04a1b071deed.html" style="background: transparent;" target="_blank">Linux操作系统 - 中断、异常及系统调用</a> --  国防科技大学操作系统ppt，详细解释了中断/异常的概念及其处理流程，非常推荐</li>
+</ol>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">3. 查看系统的中断情况</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">查看硬中断：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cat /proc/interrupts</code></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">从左到右依次是irq的序号， 在各自cpu上发生中断的次数，可编程中断控制器，设备名称。其中ath9k是我的无线网卡，eth0是有线网卡（未使用）。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406379059016.png" name="24b154ee-4a53-4d3a-9b7f-0207af9cf87a" src="/assets/img/1daa9f9a0a2844703bcf0331a5d17146.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">机器的cpu为：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406379070813.png" name="4df2e821-1154-4969-bc67-5370f9ea943d" src="/assets/img/6808303831e63801f26dd1ab7ec31fca.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">的确有4个逻辑核心。 </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">软中断可以从 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">/proc/softirqs</code> 了解到:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">anderson<span style="color: #f8f8f2;">@anderson</span>-<span style="color: #F92672;">nb:</span>~<span style="color: #f8f8f2;">$ </span>cat /proc/softirqs
+                    <span style="color: #66d9ef;">CPU0</span>       <span style="color: #66d9ef;">CPU1</span>       <span style="color: #66d9ef;">CPU2</span>       <span style="color: #66d9ef;">CPU3</span>       
+          <span style="color: #66d9ef;">HI</span><span style="color: #F92672;">:</span>          <span style="color: #ae81ff;">0</span>          <span style="color: #ae81ff;">0</span>          <span style="color: #ae81ff;">0</span>          <span style="color: #ae81ff;">0</span>
+       <span style="color: #66d9ef;">TIMER</span><span style="color: #F92672;">:</span>     <span style="color: #ae81ff;">890234</span>     <span style="color: #ae81ff;">858500</span>     <span style="color: #ae81ff;">620927</span>     <span style="color: #ae81ff;">519799</span>
+      <span style="color: #66d9ef;">NET_TX</span><span style="color: #F92672;">:</span>       <span style="color: #ae81ff;">3702</span>       <span style="color: #ae81ff;">3602</span>       <span style="color: #ae81ff;">2132</span>       <span style="color: #ae81ff;">1030</span>
+      <span style="color: #66d9ef;">NET_RX</span><span style="color: #F92672;">:</span>    <span style="color: #ae81ff;">2257833</span>    <span style="color: #ae81ff;">1430762</span>    <span style="color: #ae81ff;">2507556</span>    <span style="color: #ae81ff;">1331708</span>
+       <span style="color: #66d9ef;">BLOCK</span><span style="color: #F92672;">:</span>     <span style="color: #ae81ff;">119552</span>         <span style="color: #ae81ff;">82</span>       <span style="color: #ae81ff;">5661</span>         <span style="color: #ae81ff;">88</span>
+<span style="color: #66d9ef;">BLOCK_IOPOLL</span><span style="color: #F92672;">:</span>          <span style="color: #ae81ff;">0</span>          <span style="color: #ae81ff;">0</span>          <span style="color: #ae81ff;">0</span>          <span style="color: #ae81ff;">0</span>
+     <span style="color: #66d9ef;">TASKLET</span><span style="color: #F92672;">:</span>      <span style="color: #ae81ff;">42915</span>     <span style="color: #ae81ff;">332662</span>    <span style="color: #ae81ff;">1223525</span>     <span style="color: #ae81ff;">369765</span>
+       <span style="color: #66d9ef;">SCHED</span><span style="color: #F92672;">:</span>    <span style="color: #ae81ff;">1081723</span>     <span style="color: #ae81ff;">796010</span>     <span style="color: #ae81ff;">342065</span>     <span style="color: #ae81ff;">241437</span>
+     <span style="color: #66d9ef;">HRTIMER</span><span style="color: #F92672;">:</span>       <span style="color: #ae81ff;">4055</span>       <span style="color: #ae81ff;">4011</span>       <span style="color: #ae81ff;">2386</span>       <span style="color: #ae81ff;">2199</span>
+         <span style="color: #66d9ef;">RCU</span><span style="color: #F92672;">:</span>     <span style="color: #ae81ff;">789493</span>     <span style="color: #ae81ff;">766554</span>     <span style="color: #ae81ff;">705107</span>     <span style="color: #ae81ff;">624903</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">也可以用 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mpstat</code> 工具对系统做实时监控，查看各个cpu上softirq的百分比：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">anderson<span style="color: #f8f8f2;">@anderson</span>-nb:~$ mpstat -P ALL <span style="color: #ae81ff;">1</span> <span style="color: #ae81ff;">1</span>
+Linux <span style="color: #ae81ff;">3.5</span>.<span style="color: #ae81ff;">0</span>-<span style="color: #ae81ff;">37</span>-generic (anderson-nb)    <span style="color: #ae81ff;">2013</span>年08月<span style="color: #ae81ff;">04</span>日     _i686<span style="color: #ae81ff;">_</span>  (<span style="color: #ae81ff;">4</span> CPU)
+
+<span style="color: #ae81ff;">17</span>时<span style="color: #ae81ff;">34</span>分<span style="color: #ae81ff;">35</span>秒  CPU    <span style="color: #f8f8f2;">%usr</span>   <span style="color: #f8f8f2;">%nice</span>    <span style="color: #f8f8f2;">%sys</span> <span style="color: #f8f8f2;">%iowait</span>    <span style="color: #f8f8f2;">%irq</span>   <span style="color: #f8f8f2;">%soft</span>  <span style="color: #f8f8f2;">%steal</span>  <span style="color: #f8f8f2;">%guest</span>   <span style="color: #f8f8f2;">%idle</span>
+<span style="color: #ae81ff;">17</span>时<span style="color: #ae81ff;">34</span>分<span style="color: #ae81ff;">36</span>秒  all    <span style="color: #ae81ff;">7.05</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">1.01</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">91.94</span>
+<span style="color: #ae81ff;">17</span>时<span style="color: #ae81ff;">34</span>分<span style="color: #ae81ff;">36</span>秒    <span style="color: #ae81ff;">0</span>   <span style="color: #ae81ff;">22.22</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">1.01</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">76.77</span>
+<span style="color: #ae81ff;">17</span>时<span style="color: #ae81ff;">34</span>分<span style="color: #ae81ff;">36</span>秒    <span style="color: #ae81ff;">1</span>    <span style="color: #ae81ff;">3.00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">1.00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">96.00</span>
+<span style="color: #ae81ff;">17</span>时<span style="color: #ae81ff;">34</span>分<span style="color: #ae81ff;">36</span>秒    <span style="color: #ae81ff;">2</span>    <span style="color: #ae81ff;">3.00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">1.00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">96.00</span>
+<span style="color: #ae81ff;">17</span>时<span style="color: #ae81ff;">34</span>分<span style="color: #ae81ff;">36</span>秒    <span style="color: #ae81ff;">3</span>    <span style="color: #ae81ff;">1.00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">1.00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>    <span style="color: #ae81ff;">0</span>.<span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">98.00</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考:</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><a href="http://blog.yufeng.info/archives/1062" style="background: transparent;" target="_blank">itop更方便的了解Linux下中断情况</a></li>
+</ul>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">4. CPU亲缘性</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在 SMP 体系结构中，我们可以通过调用系统调用和一组相关的宏来设置 CPU 亲和性（CPU affinity），将一个或多个进程绑定到一个或多个处理器上运行。同样的，也可以为硬中断设置亲和性，将一个或多个中断源绑定到特定的 CPU 上运行。方法是修改<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">/proc/irq/$IRQ序号/smp_affinity</code>，如下所示：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">[root<span>@archimedes</span> /proc]<span style="color: #75715e;"># cat /proc/irq/75/smp_affinity </span>
+<span style="color: #ae81ff;">00000001</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">表示序号为75的设备（这个场景中是有线网卡eth0）只用到了第一个cpu,可以修改这个参数，使它使用多个cpu。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参数的具体含义：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">Binary</span>       Hex 
+CPU <span style="color: #ae81ff;">0</span>    <span style="color: #ae81ff;">0001</span>         <span style="color: #ae81ff;">1</span> 
+CPU <span style="color: #ae81ff;">1</span>    <span style="color: #ae81ff;">0010</span>         <span style="color: #ae81ff;">2</span>
+CPU <span style="color: #ae81ff;">2</span>    <span style="color: #ae81ff;">0100</span>         <span style="color: #ae81ff;">4</span>
+CPU <span style="color: #ae81ff;">3</span>    <span style="color: #ae81ff;">1000</span>         <span style="color: #ae81ff;">8</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参数是一个10进制的值，cpu n == 2 的 n 次方。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果用cpu0和cpu2：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">Binary       Hex 
+CPU 0    0001         1 
+CPU 2    0100         4
+<span style="color: #F92672;">-----------------------</span>
+both     0101         5
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">全用则等于 f：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">Binary       Hex 
+CPU 0    0001         1 
+CPU 1    0010         2
+CPU 2    0100         4
+CPU 3    1000         8
+<span style="color: #F92672;">-----------------------</span>
+both     1111         f
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用如下方式修改亲缘性：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #e6db74;">echo</span> f &gt; /proc/irq/<span style="color: #ae81ff;">75</span>/smp_affinity
+</code></pre>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">5. 网卡中断负载均衡</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">有时网卡的所有(硬)中断都会被同一个CPU响应，并且之后触发的软中断也是由该cpu执行的，这会导致无法充分利用多核cpu，此时我们可以用一些手段将中断均匀地平摊到每个核心，利用相对富余的cpu来提升网络吞吐量。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">办法有两种：</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5.1 硬中断负载均衡：</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如前文所述修改 smp_affinity 文件。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以下是在我本机（Ubuntu12.04）做的一个实验。首先<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cat /proc/interrupts</code>查看中断情况，初始状态如下（只显示无线网卡）：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406379092967.png" name="a29dc37e-8554-4fae-91e2-eb9d8f444091" src="/assets/img/18db7ecb2eb9ce6aa74e0ac9e0abf03d.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">接下来修改该设备的中断cpu亲和性，让cpu0负责处理所有的中断：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">echo <span style="color: #ae81ff;">1</span> &gt; <span style="color: #ae81ff;">/proc/irq</span><span style="color: #ae81ff;">/17/smp</span>_affinity
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">开几个网页，看看视频，查看中断，可以看到cpu1/2/3上的中断数没有任何改变：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406379105051.png" name="c78f1581-bc0e-48cb-94ad-24abd50a151d" src="/assets/img/4ea4c3bb37e7406fb33afcdacfddf472.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">然后再修改affinity，将中断处理转移到其他3个核心上：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">echo e &gt; <span style="color: #ae81ff;">/proc/irq</span><span style="color: #ae81ff;">/17/smp</span>_affinity
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">继续监控，结果如下：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406379116647.png" name="cf9b81e7-665c-4758-9b0a-899ee4a04e67" src="/assets/img/f560d951015359a924242aa2a0b0eaaa.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">cpu0上的中断数量不再变化，1/2/3上处理的中断数一直在增加，符合预期。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5.2 使用RPS实现软中断负载均衡</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">RPS是google贡献的一个patch，基本原理是：根据数据包的源地址，目的地址以及目的和源端口，计算出一个hash值，然后根据这个hash值来选择软中断运行的cpu， 从上层来看，也就是说将每个连接和cpu绑定，并通过这个hash值，来均衡软中断在多个cpu上。详细可以参见<a href="http://simohayha.iteye.com/blog/720850" style="background: transparent;" target="_blank">Receive packet steering patch详解，Linux内核 RPS和RFS功能详细测试分析</a>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此外还可以使用irqbalance实现硬中断负载均衡，但是据说效果不好，参见<a href="http://blog.yufeng.info/archives/2422" style="background: transparent;" target="_blank">深度剖析告诉你irqbalance有用吗</a>？</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这一块水太深，不会。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><a href="http://blog.yufeng.info/archives/2037" style="background: transparent;" target="_blank">MYSQL数据库网卡软中断不平衡问题及解决方案</a></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><a href="http://moblog.wiredwings.com/archives/20100827/Howto-Enable-Receive-Packet-Steering-RPS-on-Linux-2.6.35.html" style="background: transparent;" target="_blank">Howto: Enable Receive Packet Steering (RPS) on Linux 2.6.35</a><br/>这篇文章提到了应用了RPS后，依然是CPU0在处理所有的硬中断，要看/proc/softirqs才能看到软中断的均衡。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><a href="http://hi.baidu.com/farmerluo/item/4a0ba7e9298292c3bbf37dbb" style="background: transparent;" target="_blank">关于linux系统上软中断只用到一个cpu的问题</a></p>
+</li>
+<li style="line-height: 1.6;"><a href="http://www.ha97.com/4617.html" style="background: transparent;" target="_blank">Web性能压力测试工具之ApacheBench（ab）详解</a></li>
+<li style="line-height: 1.6;"><a href="http://blog.sina.com.cn/s/blog_8f650b3301012z26.html" style="background: transparent;" target="_blank">Linux网卡中断使单个CPU过载</a></li>
+</ol>
+</div>
+</article> <!-- end #post__content -->
+
+<div id="post__share">
+  <a id="icon-twitter" class="fontello" href="https://twitter.com/intent/tweet?url=http://novoland.github.io/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html&text=网卡中断负载均衡" target="_blank"></a>
+  <a id="icon-cc" class="fontello" href="http://creativecommons.org/licenses/by-nc-sa/3.0" target="_blank"></a>
+  <a id="icon-weibo" class="fontello" href="http://v.t.sina.com.cn/share/share.php?url=http://novoland.github.io/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html&title=网卡中断负载均衡" target="_blank"></a>
+</div> <!-- end #post__share -->
+
+<div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink" target="_blank">Loading Disqus comments...</a>
+</div> <!-- end #disqus_thread -->
+
+<p id="copyright">Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>&nbsp;&nbsp;|&nbsp;&nbsp;Theme <a href="https://github.com/P233/3-Jekyll" target="_blank">3-Jekyll</a></p>
+      </div> <!-- end #pjax -->
+
+      <div id="post__toc-trigger">
+        <div id="post__toc">
+          <span id="post__toc-title">Table of Contents</span>
+          <ul id="post__toc-ul"></ul>
+        </div>
+      </div>
+    </div> <!-- end #post -->
+
+    <button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+
+    <script src="/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="/assets/js/jquery.pjax.js"></script>
+    <script src="/assets/js/nprogress.js"></script>
+    <script src="/assets/js/script.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </body>
+</html>

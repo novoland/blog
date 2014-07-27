@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!--[if lte IE 9]><meta http-equiv="refresh" content="0;url=/ie.html"><![endif]-->
+
+    <title>Cache 相关理论</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+  </head>
+  <body>
+    <aside id="sidebar">
+      <nav id="tags">
+        <a href="/index.html" id="avatar"></a>
+
+        <ul id="tags__ul">
+          <li id="js-label1" class="tags__li tags-btn active">所有文章 <span class="post_count"></span></li>
+          <li id="js-label2" class="tags__li tags-btn">并发<span class="post_count"></span></li>
+          <li id="js-label3" class="tags__li tags-btn">算法<span class="post_count"></span></li>
+          <li id="js-label4" class="tags__li tags-btn">数据库<span class="post_count"></span></li>
+          <li id="js-label5" class="tags__li tags-btn">cache<span class="post_count"></span></li>
+          <li id="js-label6" class="tags__li tags-btn">c和os<span class="post_count"></span></li>
+          <li id="js-label7" class="tags__li tags-btn">网络<span class="post_count"></span></li>
+        </ul>
+
+        <div id="tags__bottom">
+          <a href="mailto:novohust@163.com" id="icon-email" class="tags-btn fontello"></a>
+          <a href="/rss.xml" id="icon-feed" class="tags-btn fontello"></a>
+        </div>
+      </nav> <!-- end #tags -->
+
+      <div id="posts-list">
+        <form action="" id="search-form">
+          <a href="/index.html" id="mobile-avatar"></a>
+          <!-- NOTE: input field is disabled by default -->
+          <input id="search-input" type="text" placeholder="Search..." disabled >
+        </form>
+
+        <nav id="pl__container">
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%AB%98%E6%80%A7%E8%83%BD%E7%BD%91%E7%BB%9C%E9%80%9A%E8%AE%AF%E7%AC%94%E8%AE%B0.html"><span class="pl__circle"></span><span class="pl__title">高性能网络通讯笔记</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86.html"><span class="pl__circle"></span><span class="pl__title">非递归的二叉树遍历</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%93%BE%E8%B7%AF%E5%B1%82%20%E7%BD%91%E7%BB%9C%E5%B1%82%20UDP%20IO%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">链路层 网络层 UDP IO模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%B4%9D%E5%8F%B6%E6%96%AF.html"><span class="pl__circle"></span><span class="pl__title">贝叶斯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98.html"><span class="pl__circle"></span><span class="pl__title">背包问题</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"><span class="pl__circle"></span><span class="pl__title">网卡中断负载均衡</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E7%BA%BF%E6%AE%B5%E6%A0%91.html"><span class="pl__circle"></span><span class="pl__title">线段树</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E6%A1%B6%E6%8E%92%E5%BA%8F%E5%9C%A8%E6%8E%92%E8%A1%8C%E6%A6%9C%E9%97%AE%E9%A2%98%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"><span class="pl__circle"></span><span class="pl__title">桶排序在排行榜问题中的应用</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%B9%B6%E6%9F%A5%E9%9B%86.html"><span class="pl__circle"></span><span class="pl__title">并查集</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%B9%B6%E5%8F%91%E9%9B%86%E5%90%88.html"><span class="pl__circle"></span><span class="pl__title">并发集合</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0.html"><span class="pl__circle"></span><span class="pl__title">定时器（Timer）的实现</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%A0%86.html"><span class="pl__circle"></span><span class="pl__title">堆</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%9B%9E%E6%BA%AF.html"><span class="pl__circle"></span><span class="pl__title">回溯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B4%A2%E5%BC%95%E6%A0%91(%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84).html"><span class="pl__circle"></span><span class="pl__title">二进制索引树(树状数组)</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/TCP.html"><span class="pl__circle"></span><span class="pl__title">TCP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/RST%E5%8F%8Ajava%20socket%E5%85%B3%E9%97%AD%E5%90%8E%E8%AF%BB%E5%86%99%E7%9A%84%E5%90%84%E7%A7%8D%E5%BC%82%E5%B8%B8.html"><span class="pl__circle"></span><span class="pl__title">RST及java socket关闭后读写的各种异常</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html"><span class="pl__circle"></span><span class="pl__title">Netty3 源码分析</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%204%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8C%BA%E5%88%AB.html"><span class="pl__circle"></span><span class="pl__title">Netty3 4线程模型的区别</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="数据库 pl__all" href="/%E6%95%B0%E6%8D%AE%E5%BA%93/2014/07/26/MySQL%E6%80%BB%E7%BB%93.html"><span class="pl__circle"></span><span class="pl__title">MySQL总结</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/Mode%20Switch%20%E5%92%8C%20Context%20Switch.html"><span class="pl__circle"></span><span class="pl__title">Mode Switch 和 Context Switch</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Lock-Free%20%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Lock-Free 算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/LCA%20%E5%92%8C%20RMQ.html"><span class="pl__circle"></span><span class="pl__title">LCA 和 RMQ</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/KMP.html"><span class="pl__circle"></span><span class="pl__title">KMP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">Java内存模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%20%E5%B9%B6%E5%8F%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html"><span class="pl__circle"></span><span class="pl__title">Java 并发基本知识</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html"><span class="pl__circle"></span><span class="pl__title">Http协议中的cache机制</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/Hash%20&%20Rabin-Karp%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Hash & Rabin-Karp字符串查找算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">Executor 之 线程池及定时器</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/C%E6%80%BB%E7%BB%93%20+%20%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98.html"><span class="pl__circle"></span><span class="pl__title">C总结 + 虚拟内存</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html"><span class="pl__circle"></span><span class="pl__title">Cache 相关理论</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/CPU%20Cache%20%E4%B8%8E%20%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.html"><span class="pl__circle"></span><span class="pl__title">CPU Cache 与 存储器层次结构</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">AQS 和 高级同步器</span><span class="pl__date">Jul 2014</span></a>
+        
+        </nav>
+      </div> <!-- end #posts-list -->
+    </aside> <!-- end #sidebar -->
+
+    <div id="post">
+      <div id="pjax">
+        <article id="post__content">
+  <h1 id="post__title" data-identifier="20140726">Cache 相关理论</h1>
+  <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">1. 什么是cache</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">从数据源查询结果开销大，在其之上部署一层访问快的存储空间，保存常用的查询结果，避免每次查询直接落到数据源，增加时间开销/数据源负荷。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">cache VS buffer</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">同样的都是位于最终数据源之上的，cache侧重读，buffer侧重写。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">但很多时候，cache同时也担任着缓冲写的功能，这时经常看到cache和buffer这两个术语的混用。</p>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">2. eviction（淘汰策略）</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当cache满了而新的entry需要load进来时，必然需要<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">evict</code>老的entry腾出位置，常见的淘汰策略有：</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2.1 FIFO</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">略</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2.2 LFU</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Least Frequency Used</code>，淘汰 <em>使用频率最低</em> 的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">为每个entry维护一个计数器，每命中一次+1，淘汰时找最小的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">劣势在于：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">需要额外的空间维护frequency；</li>
+<li style="line-height: 1.6;">不够 <em>adaptive</em>。Cache是有时效性的，当前一段时间的热点数据可能和较前的热点数据完全不同，LFU会优先evict当前热点数据（freqency未增加到足以“抗衡”老entry）。</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2.3 LRU</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Least Recently Used</code>，淘汰 <em>最近命中时间最早</em> 的entry，即 <em>最久没有被使用过</em> 的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">直接的实现需要为每个entry维护最后一次命中的时刻，但有一个tricky的做法：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">每次命中将entry移到队列头部，淘汰时找队尾即可，该元素即最久没有使用过的元素</p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法既考虑到了时效性，又容易实现，是用的最多的evict策略。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.3.1 JDK自带的LRU实现</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">JDK中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">LinkedHashMap</code>默认维护的是元素的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">插入顺序 insertion-order</code>，但它也提供了一个可选特性，即维护元素的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">(最近一次)访问顺序 access-order</code>。该方法在每次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">get()</code>命中后将该元素移动到head，这正是LRU算法需要的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此外，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">removeEldestEntry()</code>方法在每次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">put()</code>后判断是否需要evict队尾。基于这两个特性可以实现一个简单的定长LRU cache：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span><span style="color: #66d9ef;">class</span> <span style="color: #f8f8f2;">LRUCache</span> <span style="color: #F92672;">extends</span> <span style="color: #a6e22e; font-style: italic;">LinkedHashMap</span></span>{
+    <span style="color: #F92672;">private</span> <span style="color: #F92672;">static</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">int</span> MAX_ENTRIES = <span style="color: #ae81ff;">3</span>;
+    <span style="color: #F92672;">public</span> <span style="color: #a6e22e;">LRUCache2</span>(){
+        <span style="color: #F92672;">super</span>(MAX_ENTRIES+<span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">.75</span>F,<span style="color: #F92672;">true</span>);    <span style="color: #75715e;">// 最后一个参数为true，表示维护的是access order 而非 insertion order</span>
+    }
+
+    <span style="color: #75715e;">// This method is invoked by put and putAll after inserting a new entry into</span>
+    <span style="color: #75715e;">// the map. It allows the map to have up to 3 entries and then</span>
+    <span style="color: #75715e;">// delete the oldest entry each time a new entry is added. </span>
+    <span style="color: #F92672;">protected</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">removeEldestEntry</span>(Map.Entry eldest){
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">this</span>.size() &gt; MAX_ENTRIES;
+    }
+}
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2.4 Automic*</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">自己不主动evict，利用JVM的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">SoftReference</code>，在内存不够时通过GC回收。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">也可结合LRU，设置两级Cache，第一级使用LRU算法，淘汰后进入第二级；第二级使用Automic算法。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">java中不同类型的Reference:</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">Soft/Weak/Phatom 引用类型  </strong></p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">Soft<br/>内存不够用，或get()很少调用时被GC掉。实现Cache的一个好选择，将LRU算法交给JVM了。</li>
+<li style="line-height: 1.6;">Weak<br/>每次GC时都会回收。</li>
+<li style="line-height: 1.6;">Phantom<br/>get()永远返回null，比Weak更弱，一般继承PhantomReference存储额外的数据，并配合ReferenceQueue使用，在对象回收后做额外的清理动作。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">Finalize</strong> </p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">GC只保证释放对象占用的内存，外部资源需要自己管理；</li>
+<li style="line-height: 1.6;">只能运行一次。可以rescue自己，但再次回收时不会执行第二次。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">ReferenceQueue  </strong></p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">3种弱引用在构造时可以指定一个ReferenceQueue，当referent（可以）被回收时，该Reference被加入队列。</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">soft/weak在加入队列时，finalize方法未被执行，对象只是可以GC，但并未回收；而phantom，当出现在队列时，其referent已经完全被回收了，finalize方法也执行过了。</strong></li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">参考</strong></p>
+<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;"><a href="http://zhang-xzhi-xjtu.iteye.com/blog/413159" style="background: transparent;" target="_blank">深入理解ReferenceQueue GC finalize Reference</a> </li>
+<li style="line-height: 1.6;"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-langref/" style="background: transparent;" target="_blank">深入探讨 java.lang.ref 包</a></li>
+</ul>
+</blockquote><h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">3. expire</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">过期，让entry自动失效的一种机制。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3.1 time to live (ttl)</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">上次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">read</code>经过的时间。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3.2 time to idle (tti)</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">上次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">create 或 update</code>经过的时间。侧重点在数据的<em>正确性</em>，经常用这种方式保证cache与数据源的一致性（一段不一致窗口后）。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一般不用定时器实现expire，而在read/update时判断，lazy。</p>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">4. distributed</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">distributed分散压力，实现scale-out。单独来看，常见的（数据类产品的）分布式拓扑有两种：<strong style="font-weight: bold;"> replication (复制) </strong>  和  <strong style="font-weight: bold;"> shard (分片) </strong> </p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">CAP<br/>在数据共享的系统的三项属性当中，<strong style="font-weight: bold;">数据一致性</strong>、<strong style="font-weight: bold;">系统可用性</strong> 和 <strong style="font-weight: bold;">对网络分区的耐受性</strong>，在任何给定时间内都只能达成其中的两项”。由于“在较大分布规模的系统中，网络分区是给定的”，因此一致性和可用性必有一项需要放宽</p>
+</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4.1 replication</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一份数据存在在不同的节点上，依靠复制保证数据的一致性。一致性换可用性。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">更高的可用性。（分区耐受性）</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">劣：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">弱/最终一致性，复制导致必然有一个不一致的时间窗口。实现强一致性会降低性能，复杂度上升。当数据在多个地方被写时，还要考虑并发写。  </li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">场景：<br/>常用来分摊读的压力，或者高可用</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">web容器复制session；</li>
+<li style="line-height: 1.6;">cpu L1 cache；</li>
+<li style="line-height: 1.6;">mysql 读写分离；</li>
+<li style="line-height: 1.6;">mysql dual-master 高可用；</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">EHCache支持replication风格的分布式缓存，它的工作原理和cpu L1 cache类似，每个web app节点在自己的进程内有一个本地缓存，这些本地cache通过RMI/JMS/JGroups进行同步/异步的复制，实现数据一致性。也可通过Update via Invalidate，用invalidate其他cache代替复制。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4.2 shard</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">将数据路由到不同的节点上，每个节点负责部分数据的读写，一份数据只在一个节点上。可用性换一致性。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通常会对每个shard用replication分担读压力/保证HA。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Memcached本身是一个非常简单的内存KV系统，没有复制/事务等功能，它的shard是通过客户端实现的，客户端实现路由/节点权重等，每个节点不会意识到集群中其他节点的存在。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">consistent hash</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">提到缓存的shard就绕不开一致性hash算法。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">传统取模hash当节点变化后，数据和节点间的映射关系将剧烈改变，引起大量的缓存失效，一致性hash的目的就是 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">节点数量变化后，减少数据在节点间的迁移</code>。一致性hash的工作方式如下：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">对节点hash，映射到0-2^32次方的圆上；</li>
+<li style="line-height: 1.6;">对数据（key）hash，映射到相同的圆上；</li>
+<li style="line-height: 1.6;">key分配的节点为 <em>从key出发，顺时针找到的第一个节点</em></li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="data:image,local://1398069611569" name="dcbd517c-9644-4b5a-a8e7-3a1e79271251" src="/assets/img/4f6123a843aee94db0387ed46cc3db3b" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">增加一台服务器（node5）后，影响的只有小部分数据，最大限度地抑制了键的重新分布：<br/><img alt="Alt text" class="en-media" longdesc="data:image,local://1398069811543" name="4c6d451c-a2dd-4787-b797-7e941ebeb779" src="/assets/img/bd302fbfb1265b4125d409cf194722f6" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此外，很多consistent hash的实现采用了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">虚拟节点</code>的优化方式尽可能地让数据分布均匀（<em>负载均衡</em>）。如果用直接hash节点，节点数量少时会在环形空间上分布不均，造成某些节点上的数据过多。<em>虚拟节点</em> 的本质是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">扩大节点的规模</code>，规模越大，分布越均匀，负载越平衡；它将一个真实节点映射到N个虚拟节点，数据的查找要经历两个映射：key &lt;--&gt; 虚拟节点 &lt;--&gt; 真实节点。</p>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">5. 写Cache</h1>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5.1 Cache 命中时的策略</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">write-back</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只写cache，不写数据源。当cache被淘汰时再同步，或在某个时刻统一flush dirty cache。优点在于可以减小对数据源的压力（合并update/缓冲写高峰）；缺点在于二者之间的delay及其造成的数据不一致/事务被推迟/动作的顺序不能保证/cache挂了造成数据丢失等等。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">适合逻辑简单的/不需要事务/不要求精确的统计任务，如计数器，对缓解DB压力有奇效。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">write-through</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">每次写cache时同时写数据源。优点是能够保证数据源数据的实时性，缺点是频繁的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">随机IO</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此外，在web环境下，这种方式要求cache支持事务，在数据源事务进行的过程中cache随之commit/rollback，否则会出现脏数据。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">手动写cache保证（较强）一致性的方式一来要求cache支持事务，二来增加了系统/代码复杂度，因此不太会在web应用中普适性地应用。另一方面，cache中存储的大部分是query的结果，很多时候允许存在一定程度的不一致，因此更多的会使用到下面的办法。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">write-through</code>策略下对IO的一种优化</strong></p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">write-through</code>时，将改动顺序flush到日志文件中，这一步是顺序IO；</li>
+<li style="line-height: 1.6;">当日志文件满时，再将日志文件中记录的改动同步到后端数据源，这一步可以做很多优化，比如合并<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">write</code>操作（减少IO），或者将<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">write</code>分组（将随机IO转为顺序IO）。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">总体来说，IO的总量增多了，但这种 <strong style="font-weight: bold;">用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">异步IO</code>代替<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">同步IO</code>，从而将<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">随机IO</code>转变为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">顺序IO</code></strong> 的策略反而是提高了IO性能。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">******* (机械硬盘因为依赖磁头的移动，因此<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">随机IO</code>性能要差于<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">顺序IO</code>)</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">InnoDB就是用这种方式，利用事务日志文件对数据/索引缓存的IO进行优化。可以参考：</p>
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;">《High Performance MySQL, 3rd Edition》Chapter 8 / InnoDB IO Configuration</li>
+<li style="line-height: 1.6;">《MySQL性能调优与架构设计--全册》11.2.3 数据存储优化</li>
+</ol>
+</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5.2 Cache miss 时的策略</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">write-allocate</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">写后端数据源, 并将其加载到缓存.</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">not-write-allocate</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">写后端数据源, 但不加载到缓存.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一般来说 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">write-back</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">write-allocate</code> 策略是搭配在一起的, 因为它们都试图利用程序的 <strong style="font-weight: bold;">时间局部性</strong>.</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5.3 其他策略</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">invalidate cache</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">更新数据源后手动invalidate相关cache，下次查询造成cache miss，从DB中load最新数据。这种方法的不一致窗口也较短。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">利用 cache 的 expire 机制</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">更新数据源后不管cache，利用cache的expire(ttl)自动在某个时刻失效，适合对实时性要求不高的场景。</p>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">6. 参考</h1>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><a href="http://www.jtraining.com/blogs/intro-to-caching-caching-algorithms-and-caching-frameworks-part-5.html" style="background: transparent;" target="_blank">Intro to Caching,Caching algorithms and caching frameworks</a></li>
+<li style="line-height: 1.6;"><a href="http://ehcache.org/documentation/apis/write-through-caching" style="background: transparent;" target="_blank">Write-through and Write-behind Caching with the CacheWriter</a></li>
+<li style="line-height: 1.6;"><a href="http://blog.csdn.net/smilingleo/article/details/3541424" style="background: transparent;" target="_blank">Ehcache还是Memcached的抉择（一）</a></li>
+<li style="line-height: 1.6;"><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-ehcache%2F" style="background: transparent;" target="_blank">深入探讨在集群环境中使用 EhCache 缓存系统</a></li>
+<li style="line-height: 1.6;"><a href="http://blog.csdn.net/cenwenchu79/article/details/2011228" style="background: transparent;" target="_blank">高效缓存Memcached 集成使用说明</a></li>
+</ul>
+</div>
+</article> <!-- end #post__content -->
+
+<div id="post__share">
+  <a id="icon-twitter" class="fontello" href="https://twitter.com/intent/tweet?url=http://novoland.github.io/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html&text=Cache 相关理论" target="_blank"></a>
+  <a id="icon-cc" class="fontello" href="http://creativecommons.org/licenses/by-nc-sa/3.0" target="_blank"></a>
+  <a id="icon-weibo" class="fontello" href="http://v.t.sina.com.cn/share/share.php?url=http://novoland.github.io/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html&title=Cache 相关理论" target="_blank"></a>
+</div> <!-- end #post__share -->
+
+<div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink" target="_blank">Loading Disqus comments...</a>
+</div> <!-- end #disqus_thread -->
+
+<p id="copyright">Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>&nbsp;&nbsp;|&nbsp;&nbsp;Theme <a href="https://github.com/P233/3-Jekyll" target="_blank">3-Jekyll</a></p>
+      </div> <!-- end #pjax -->
+
+      <div id="post__toc-trigger">
+        <div id="post__toc">
+          <span id="post__toc-title">Table of Contents</span>
+          <ul id="post__toc-ul"></ul>
+        </div>
+      </div>
+    </div> <!-- end #post -->
+
+    <button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+
+    <script src="/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="/assets/js/jquery.pjax.js"></script>
+    <script src="/assets/js/nprogress.js"></script>
+    <script src="/assets/js/script.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </body>
+</html>

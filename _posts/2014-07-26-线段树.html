@@ -1,0 +1,188 @@
+---
+layout: post
+title: "线段树"
+category: "算法"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">结构</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1405924933637.png" name="83469ba4-d53f-4406-829b-e0144e7e424c" src="/assets/img/452338c4f7751cd55052264d8a231221.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">特点：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">完全二叉树</li>
+<li style="line-height: 1.6;">每个节点代表一个区间，孩子节点分别代表两个子区间</li>
+<li style="line-height: 1.6;">节点保存着 <strong style="font-weight: bold;">该区间内问题的解</strong>，以及求解需要的其他数据</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用一个数组保存，和 heap 结构类似。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">分治，要求能够从若干子区间的解推导出父区间的解，且对父区间的更新可以传导给子区间</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">适用于区间查询 / 区间维护等问题</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">操作</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">线段树支持以下操作：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">构造</li>
+<li style="line-height: 1.6;">更新<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;">单点更新</li>
+<li style="line-height: 1.6;">区间更新</li>
+</ul>
+</li>
+<li style="line-height: 1.6;">区间查询</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以区间和问题为例：</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">构造</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">O(N)</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">tree = <span style="color: #F92672;">None</span>
+<span style="color: #75715e;">#### Utils</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">eval</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #e6db74;">"""
+    由孩子节点计算某节点的 sum
+    """</span>
+    tree[i][<span style="color: #e6db74;">'sum'</span>] = tree[lc(i)][<span style="color: #e6db74;">'sum'</span>] + tree[rc(i)][<span style="color: #e6db74;">'sum'</span>]    
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">lc</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #e6db74;">"""
+    左孩子
+    """</span>
+    <span style="color: #F92672;">return</span> <span style="color: #ae81ff;">2</span>*(i+<span style="color: #ae81ff;">1</span>) - <span style="color: #ae81ff;">1</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">rc</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #e6db74;">"""
+    右孩子
+    """</span>
+    <span style="color: #F92672;">return</span> <span style="color: #ae81ff;">2</span>*(i+<span style="color: #ae81ff;">1</span>)
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">mid</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #e6db74;">"""
+    计算节点所代表区间的中间位置
+    """</span>
+    <span style="color: #F92672;">return</span> tree[i][<span style="color: #e6db74;">'start'</span>] + (tree[i][<span style="color: #e6db74;">'end'</span>]-tree[i][<span style="color: #e6db74;">'start'</span>])/<span style="color: #ae81ff;">2</span>
+<span style="color: #75715e;">####</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">init</span><span style="color: #f8f8f2;">(array)</span>:</span>
+    <span style="color: #F92672;">global</span> tree
+
+    <span style="color: #75715e;"># 计算线段树节点个数，完全二叉树的节点数 = 2^(height+1) - 1</span>
+    length = len(array) <span style="color: #75715e;"># range length</span>
+    height = math.ceil(math.log(length,<span style="color: #ae81ff;">2</span>)) 
+    maxSize = int(math.pow(<span style="color: #ae81ff;">2</span>,height + <span style="color: #ae81ff;">1</span>) - <span style="color: #ae81ff;">1</span>) 
+
+    _init(array,<span style="color: #ae81ff;">0</span>,<span style="color: #ae81ff;">0</span>,length - <span style="color: #ae81ff;">1</span>) <span style="color: #75715e;"># 默认区间为数组下标区间</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">_init</span><span style="color: #f8f8f2;">(array,i,s,e)</span>:</span>
+    <span style="color: #e6db74;">"""
+    构造一棵线段树，节点格式：{start:1,end:2,sum:8}
+    array -- 原始数组
+    i -- 根节点
+    s -- 根节点代表的区间开始处
+    e -- 根节点代表的区间结束处
+    """</span>
+    tree[i] = {<span style="color: #e6db74;">'start'</span>:s,<span style="color: #e6db74;">'end'</span>:e,<span style="color: #e6db74;">'sum'</span>:<span style="color: #F92672;">None</span>}
+    <span style="color: #75715e;">## 如果是原子区间，即叶子节点</span>
+    <span style="color: #F92672;">if</span> s == e:
+        tree[i][<span style="color: #e6db74;">'sum'</span>] = array[s]
+        <span style="color: #F92672;">return</span>
+
+    _init(array, lc(i), s, mid(i))
+    _init(array, rc(i), mid(i) + <span style="color: #ae81ff;">1</span>, e)
+    eval(i)
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">单点更新</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">O(log2N)</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">update</span><span style="color: #f8f8f2;">(i,value)</span>:</span>    
+    _update(<span style="color: #ae81ff;">0</span>,i,value)
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">_update</span><span style="color: #f8f8f2;">(root,i,value)</span>:</span>
+    <span style="color: #75715e;"># 找到了这个点，更新其sum并返回</span>
+    <span style="color: #F92672;">if</span> tree[root][<span style="color: #e6db74;">'start'</span>] == i <span style="color: #F92672;">and</span> tree[root][<span style="color: #e6db74;">'end'</span>] == i:
+        tree[root][<span style="color: #e6db74;">'sum'</span>] = value
+        <span style="color: #F92672;">return</span>
+    <span style="color: #F92672;">if</span> i&lt;= mid(root):
+        _update(lc(root),i,value)
+    <span style="color: #F92672;">else</span>:
+        _update(rc(root),i,value)
+    eval(root)
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">区间更新</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">O(log2N)</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">基本思路是将要修改的区间顺着根一层一层往下查找，直到找到一批子区间刚好组成目标区间，再将更新动作应用在这些区间内。比如文章开始的线段树中，如果要更新[1,7]，则可以在树中找到节点[1,5], [6,7]刚好凑成[1,7]，更新这两个区间，重新计算二者祖先节点值即可。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">问题是[1,5]并不是叶子节点，如果将以它为根的整个子树全部更新，那么一次更新的动作涉及到的节点就很多了。因此引入延迟更新的思路：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">当更新[1,5]时，只更新该节点，并给它加上一个更新动作的标记，子节点不更新。</p>
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">查询或修改时，如果碰到了节点[1,5]，并决定进入其子节点考察，为了不访问到错误的值，需要看[1,5]的更新标记，如果有，则将更新动作应用到子节点，并清除自身的标记。子节点的更新则继续 lazy 的思路。</p>
+</blockquote><pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">rangeUpdate</span><span style="color: #f8f8f2;">(start,end,value)</span>:</span>
+    _rangeUpdate(<span style="color: #ae81ff;">0</span>,start,end,value)
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">_rangeUpdate</span><span style="color: #f8f8f2;">(root,start,end,value)</span>:</span>
+    <span style="color: #e6db74;">"""
+    线段树的区间update，必须满足父区间的update可以传递到左右子区间.
+    -- 即update(a,b)的效果 等价于 update(a,i) &amp; update(i+1,b).
+
+    lazy update后，其子树的data是过时的, 因此 rangeUpdate 和 query 时，在进入孩子节点考察前，必须先将父节点的 update 动作推送给它的左右孩子。
+    """</span>
+    <span style="color: #75715e;"># 到了某个最大组成子区间，lazy更新并返回</span>
+    <span style="color: #F92672;">if</span> tree[root][<span style="color: #e6db74;">'start'</span>] == start <span style="color: #F92672;">and</span> tree[root][<span style="color: #e6db74;">'end'</span>] == end:
+        tree[root][<span style="color: #e6db74;">'sum'</span>] = (end - start + <span style="color: #ae81ff;">1</span>) * value
+        tree[root][<span style="color: #e6db74;">'update'</span>] = value    <span style="color: #75715e;"># 标记</span>
+        <span style="color: #F92672;">return</span>
+
+    <span style="color: #75715e;"># 推送更新动作到子区间</span>
+    _pushDownUpdate(root)
+
+    <span style="color: #75715e;"># 更新子区间</span>
+    <span style="color: #F92672;">if</span> end &lt;= mid(root):
+        _rangeUpdate(lc(root),start,end,value)
+    <span style="color: #F92672;">elif</span> start &gt; mid(root):
+        _rangeUpdate(rc(root),start,end,value)
+    <span style="color: #F92672;">else</span>:
+        _rangeUpdate(lc(root),start,mid(root),value)
+        _rangeUpdate(rc(root),mid(root) + <span style="color: #ae81ff;">1</span>,end,value)
+
+    <span style="color: #75715e;"># 子区间更新完毕，重新计算当前节点的值</span>
+    eval(root)    
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">_pushDownUpdate</span><span style="color: #f8f8f2;">(parent)</span>:</span>
+    <span style="color: #e6db74;">"""
+    将update动作传递给孩子
+    """</span>
+    p = tree[parent] <span style="color: #75715e;"># parent</span>
+    <span style="color: #F92672;">if</span> <span style="color: #e6db74;">'update'</span> <span style="color: #F92672;">in</span> p:
+        u = p[<span style="color: #e6db74;">'update'</span>]
+        l = tree[lc(parent)] <span style="color: #75715e;"># left child</span>
+        r = tree[rc(parent)] <span style="color: #75715e;"># right child</span>
+        <span style="color: #75715e;"># 给左右子区间记录update动作</span>
+        l[<span style="color: #e6db74;">'update'</span>] = r[<span style="color: #e6db74;">'update'</span>] = u
+        <span style="color: #75715e;"># 更新左右子区间</span>
+        l[<span style="color: #e6db74;">'sum'</span>] = (l[<span style="color: #e6db74;">'end'</span>] - l[<span style="color: #e6db74;">'start'</span>] + <span style="color: #ae81ff;">1</span>) * u
+        r[<span style="color: #e6db74;">'sum'</span>] = (r[<span style="color: #e6db74;">'end'</span>] - r[<span style="color: #e6db74;">'start'</span>] + <span style="color: #ae81ff;">1</span>) * u
+        <span style="color: #75715e;"># 清除父区间的update动作</span>
+        <span style="color: #F92672;">del</span> p[<span style="color: #e6db74;">'update'</span>]
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">区间查询</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">O(log2N)</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">找最大组成子区间，merge结果</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">query</span><span style="color: #f8f8f2;">(start,end)</span>:</span>
+    <span style="color: #F92672;">return</span> _query(<span style="color: #ae81ff;">0</span>,start,end)
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">_query</span><span style="color: #f8f8f2;">(root,start,end)</span>:</span>
+    <span style="color: #e6db74;">"""
+    对root的子区间进行查询, [start,end]必须是root所代表的子区间
+    """</span>
+    <span style="color: #75715e;"># 查询的区间就是root的区间时，直接返回root保存的data</span>
+    <span style="color: #F92672;">if</span> tree[root][<span style="color: #e6db74;">'start'</span>] == start <span style="color: #F92672;">and</span> tree[root][<span style="color: #e6db74;">'end'</span>] == end:
+        <span style="color: #F92672;">return</span> tree[root][<span style="color: #e6db74;">'sum'</span>]
+
+    _pushDownUpdate(root)
+
+    <span style="color: #75715e;"># [start,end]:</span>
+    <span style="color: #75715e;"># 1. 如果在左子区间内，进入左子树</span>
+    <span style="color: #F92672;">if</span> end &lt;= mid(root):
+        <span style="color: #F92672;">return</span> _query(lc(root),start,end)
+
+    <span style="color: #75715e;"># 2. 如果在右子区间内，进入右子树</span>
+    <span style="color: #F92672;">if</span> start &gt; mid(root):
+        <span style="color: #F92672;">return</span> _query(rc(root),start,end)
+
+    <span style="color: #75715e;"># 3. 跨越了左右子区间，则将[start,end]拆分为[start,mid] &amp; [mid+1,end]，</span>
+    <span style="color: #75715e;">#    分别进入左右子树查询，并merge这两个区间上的查询结果</span>
+    <span style="color: #F92672;">return</span> _query(lc(root),start,mid(root)) + _query(rc(root),mid(root) + <span style="color: #ae81ff;">1</span>,end)
+</code></pre>
+</div>

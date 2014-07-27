@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!--[if lte IE 9]><meta http-equiv="refresh" content="0;url=/ie.html"><![endif]-->
+
+    <title>AQS 和 高级同步器</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+  </head>
+  <body>
+    <aside id="sidebar">
+      <nav id="tags">
+        <a href="/index.html" id="avatar"></a>
+
+        <ul id="tags__ul">
+          <li id="js-label1" class="tags__li tags-btn active">所有文章 <span class="post_count"></span></li>
+          <li id="js-label2" class="tags__li tags-btn">并发<span class="post_count"></span></li>
+          <li id="js-label3" class="tags__li tags-btn">算法<span class="post_count"></span></li>
+          <li id="js-label4" class="tags__li tags-btn">数据库<span class="post_count"></span></li>
+          <li id="js-label5" class="tags__li tags-btn">cache<span class="post_count"></span></li>
+          <li id="js-label6" class="tags__li tags-btn">c和os<span class="post_count"></span></li>
+          <li id="js-label7" class="tags__li tags-btn">网络<span class="post_count"></span></li>
+        </ul>
+
+        <div id="tags__bottom">
+          <a href="mailto:novohust@163.com" id="icon-email" class="tags-btn fontello"></a>
+          <a href="/rss.xml" id="icon-feed" class="tags-btn fontello"></a>
+        </div>
+      </nav> <!-- end #tags -->
+
+      <div id="posts-list">
+        <form action="" id="search-form">
+          <a href="/index.html" id="mobile-avatar"></a>
+          <!-- NOTE: input field is disabled by default -->
+          <input id="search-input" type="text" placeholder="Search..." disabled >
+        </form>
+
+        <nav id="pl__container">
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%AB%98%E6%80%A7%E8%83%BD%E7%BD%91%E7%BB%9C%E9%80%9A%E8%AE%AF%E7%AC%94%E8%AE%B0.html"><span class="pl__circle"></span><span class="pl__title">高性能网络通讯笔记</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86.html"><span class="pl__circle"></span><span class="pl__title">非递归的二叉树遍历</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%93%BE%E8%B7%AF%E5%B1%82%20%E7%BD%91%E7%BB%9C%E5%B1%82%20UDP%20IO%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">链路层 网络层 UDP IO模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%B4%9D%E5%8F%B6%E6%96%AF.html"><span class="pl__circle"></span><span class="pl__title">贝叶斯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98.html"><span class="pl__circle"></span><span class="pl__title">背包问题</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"><span class="pl__circle"></span><span class="pl__title">网卡中断负载均衡</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E7%BA%BF%E6%AE%B5%E6%A0%91.html"><span class="pl__circle"></span><span class="pl__title">线段树</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E6%A1%B6%E6%8E%92%E5%BA%8F%E5%9C%A8%E6%8E%92%E8%A1%8C%E6%A6%9C%E9%97%AE%E9%A2%98%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"><span class="pl__circle"></span><span class="pl__title">桶排序在排行榜问题中的应用</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%B9%B6%E6%9F%A5%E9%9B%86.html"><span class="pl__circle"></span><span class="pl__title">并查集</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%B9%B6%E5%8F%91%E9%9B%86%E5%90%88.html"><span class="pl__circle"></span><span class="pl__title">并发集合</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0.html"><span class="pl__circle"></span><span class="pl__title">定时器（Timer）的实现</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%A0%86.html"><span class="pl__circle"></span><span class="pl__title">堆</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%9B%9E%E6%BA%AF.html"><span class="pl__circle"></span><span class="pl__title">回溯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B4%A2%E5%BC%95%E6%A0%91(%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84).html"><span class="pl__circle"></span><span class="pl__title">二进制索引树(树状数组)</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/TCP.html"><span class="pl__circle"></span><span class="pl__title">TCP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/RST%E5%8F%8Ajava%20socket%E5%85%B3%E9%97%AD%E5%90%8E%E8%AF%BB%E5%86%99%E7%9A%84%E5%90%84%E7%A7%8D%E5%BC%82%E5%B8%B8.html"><span class="pl__circle"></span><span class="pl__title">RST及java socket关闭后读写的各种异常</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html"><span class="pl__circle"></span><span class="pl__title">Netty3 源码分析</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%204%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8C%BA%E5%88%AB.html"><span class="pl__circle"></span><span class="pl__title">Netty3 4线程模型的区别</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="数据库 pl__all" href="/%E6%95%B0%E6%8D%AE%E5%BA%93/2014/07/26/MySQL%E6%80%BB%E7%BB%93.html"><span class="pl__circle"></span><span class="pl__title">MySQL总结</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/Mode%20Switch%20%E5%92%8C%20Context%20Switch.html"><span class="pl__circle"></span><span class="pl__title">Mode Switch 和 Context Switch</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Lock-Free%20%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Lock-Free 算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/LCA%20%E5%92%8C%20RMQ.html"><span class="pl__circle"></span><span class="pl__title">LCA 和 RMQ</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/KMP.html"><span class="pl__circle"></span><span class="pl__title">KMP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">Java内存模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%20%E5%B9%B6%E5%8F%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html"><span class="pl__circle"></span><span class="pl__title">Java 并发基本知识</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html"><span class="pl__circle"></span><span class="pl__title">Http协议中的cache机制</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/Hash%20&%20Rabin-Karp%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Hash & Rabin-Karp字符串查找算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">Executor 之 线程池及定时器</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/C%E6%80%BB%E7%BB%93%20+%20%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98.html"><span class="pl__circle"></span><span class="pl__title">C总结 + 虚拟内存</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html"><span class="pl__circle"></span><span class="pl__title">Cache 相关理论</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/CPU%20Cache%20%E4%B8%8E%20%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.html"><span class="pl__circle"></span><span class="pl__title">CPU Cache 与 存储器层次结构</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">AQS 和 高级同步器</span><span class="pl__date">Jul 2014</span></a>
+        
+        </nav>
+      </div> <!-- end #posts-list -->
+    </aside> <!-- end #sidebar -->
+
+    <div id="post">
+      <div id="pjax">
+        <article id="post__content">
+  <h1 id="post__title" data-identifier="20140726">AQS 和 高级同步器</h1>
+  <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">JUC 包提供了一系列支持中等规模并发的同步器，它们都是基于<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">AbstractQueuedSynchronizer</code>这个通用同步器框架实现的。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">一. AQS 的实现</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">同步器是这样这样一种抽象数据结构：同步器内部维护一个状态, 同时它支持两类操作，一种是acquire，另一种是release。acquire操作在状态不满足条件时阻塞调用线程，直到同步状态允许其继续执行。而release操作则是通过某种方式改变同步状态，使得一或多个被acquire阻塞的线程继续执行。对这两种操作, 同步器应额外提供可超时的 + 可中断的版本. 此外, AQS 还同时支持工作在 exclusive 模式(如 lock) / shared 模式(如 信号量) / 混合模式 下.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">AQS 需要3个组件来完成以上任务:</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">状态的原子性管理</li>
+<li style="line-height: 1.6;">线程的阻塞和唤醒</li>
+<li style="line-height: 1.6;">队列</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1. 状态的原子性管理</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">AQS 用一个 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">volatile int</code> 表示同步状态, 并用 CAS 操作 (<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">unsafe.compareAndSwapInt</code>) 保证其 <strong style="font-weight: bold;">条件判断与更新动作</strong> 的原子性.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">同步状态具体的含义 / acquire release 的语义由子类决定, 因此 AQS 预留了如下方法给子类实现，这是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">模板方法</code>模式的典型应用。通常在这些方法中对同步状态进行改变，如果条件不允许则立即返回false或负数:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// exclusive</span>
+<span style="color: #F92672;">protected</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">tryAcquire</span>(<span style="color: #F92672;">int</span> arg);
+<span style="color: #F92672;">protected</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">tryRelease</span>(<span style="color: #F92672;">int</span> arg);
+<span style="color: #75715e;">// shared</span>
+<span style="color: #F92672;">protected</span> <span style="color: #F92672;">int</span> <span style="color: #a6e22e;">tryAcquireShared</span>(<span style="color: #F92672;">int</span> arg);
+<span style="color: #F92672;">protected</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">tryReleaseShared</span>(<span style="color: #F92672;">int</span> arg);
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">并提供了以下方法操作 state:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">protected</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">int</span> <span style="color: #a6e22e;">getState</span>();
+<span style="color: #F92672;">protected</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">compareAndSetState</span>(<span style="color: #F92672;">int</span> expect, <span style="color: #F92672;">int</span> update);
+<span style="color: #F92672;">protected</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">setState</span>(<span style="color: #F92672;">int</span> newState);
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">真正的 acquire / release 动作则是以下方法, 一般子类会选择包裹这些方法, 为其提供更明确的方法名(如 lock / unlock)</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// exclusive</span>
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">acquire</span>(<span style="color: #F92672;">int</span> arg);
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">release</span>(<span style="color: #F92672;">int</span> arg) ;
+<span style="color: #75715e;">// shared</span>
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">acquireShared</span>(<span style="color: #F92672;">int</span> arg) ;
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">releaseShared</span>(<span style="color: #F92672;">int</span> arg);
+
+<span style="color: #75715e;">// ... 超时版本/可中断版本的 acquire/release 方法</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2. 线程的阻塞和唤醒</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">JUC 提供了 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">LockSupport</code> 类支持线程的阻塞和唤醒:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 阻塞当前线程</span>
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">static</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">park</span>() {
+    <span style="color: #F92672;">unsafe</span>.park(<span style="color: #F92672;">false</span>, <span style="color: #ae81ff;">0</span>L);
+}
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">static</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">park</span>(Object blocker) {
+    Thread t = Thread.currentThread();
+    setBlocker(t, blocker);
+    <span style="color: #F92672;">unsafe</span>.park(<span style="color: #F92672;">false</span>, <span style="color: #ae81ff;">0</span>L);
+    setBlocker(t, <span style="color: #F92672;">null</span>);
+}
+
+<span style="color: #75715e;">// 唤醒某个线程</span>
+<span style="color: #F92672;">public</span> <span style="color: #F92672;">static</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">unpark</span>(Thread thread) {
+    <span style="color: #F92672;">if</span> (thread != <span style="color: #F92672;">null</span>)
+        <span style="color: #F92672;">unsafe</span>.unpark(thread);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Thread.suspend()和Thread.resume()存在的问题是一来可能造成死锁, 二来如果在 suspend() 调用之前 resume 了, 线程依然会被阻塞. LockSupport 的 unpark 会给予当前线程一个标记但不会累计, park 消费这个标记, 这样可以解决这个问题. </p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3. 队列</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">AQS 用一个 FIFO 队列管理被阻塞的线程, 它的 head (大部分情况下)保存着 <strong style="font-weight: bold;">最后</strong> 一个 acquire 成功的线程, acquire 失败的线程挂接在后面并处在一个循环中，等待被唤醒后继续尝试acquire。被阻塞的节点支持两种模式： exclusive 和 shared，不同节点的工作模式可以不一样</p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">exclusive 模式</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此时<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquire()</code>的工作流程如下所示:</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1404658246694.png" name="3fef620d-bbe1-4298-9b13-de90ebf03ad5" src="/assets/img/04cc186889095cbd9aaa19e9f5eb7c6d.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">首次 tryAcquire 即成功, 则立即退出, 注意, 这时线程是不会进入队列的; 失败则生成一个节点并入队.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">入队相关的方法如下:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">private</span> Node <span style="color: #a6e22e;">addWaiter</span>(Node mode) {
+    Node node = <span style="color: #F92672;">new</span> Node(Thread.currentThread(), mode);
+    <span style="color: #75715e;">// Try the fast path of enq; backup to full enq on failure</span>
+    Node pred = tail;
+    <span style="color: #F92672;">if</span> (pred != <span style="color: #F92672;">null</span>) {
+        node.prev = pred;
+        <span style="color: #F92672;">if</span> (compareAndSetTail(pred, node)) {
+            pred.next = node;
+            <span style="color: #F92672;">return</span> node;
+        }
+    }
+    enq(node);
+    <span style="color: #F92672;">return</span> node;
+}
+<span style="color: #F92672;">private</span> Node <span style="color: #a6e22e;">enq</span>(<span style="color: #F92672;">final</span> Node node) {
+    <span style="color: #F92672;">for</span> (;;) {
+        Node t = tail;
+        <span style="color: #75715e;">// 如果队列为空, 用一个 dummy node 初始化队列</span>
+        <span style="color: #F92672;">if</span> (t == <span style="color: #F92672;">null</span>) {
+            <span style="color: #F92672;">if</span> (compareAndSetHead(<span style="color: #F92672;">new</span> Node()))
+                tail = head;
+        } <span style="color: #F92672;">else</span> {
+            node.prev = t;
+            <span style="color: #F92672;">if</span> (compareAndSetTail(t, node)) {
+                t.next = node;
+                <span style="color: #F92672;">return</span> t;
+            }
+        }
+    }
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当队列为空, 但之前已经有线程 acquire 成功导致当前线程需要入队时, 用一个 dummy node 初始化队列, 并将当前线程的节点插入最末. 注意, 除了这种情况, 其他时刻 head 始终是最后一个 acquire 成功的线程.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">入队后线程进入 acquire 循环, 不停地阻塞 / 尝试获取锁:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">final</span> <span style="color: #F92672;">boolean</span> acquireQueued(<span style="color: #F92672;">final</span> Node node, <span style="color: #F92672;">int</span> arg) {
+    <span style="color: #F92672;">boolean</span> failed = <span style="color: #F92672;">true</span>;
+    <span style="color: #F92672;">try</span> {
+        <span style="color: #F92672;">boolean</span> interrupted = <span style="color: #F92672;">false</span>;    <span style="color: #75715e;">// 返回acquire阻塞时是否被中断过</span>
+        <span style="color: #F92672;">for</span> (;;) {
+            <span style="color: #F92672;">final</span> Node p = node.predecessor();
+            <span style="color: #75715e;">// 如果自己是第二个节点且 tryAcquire 成功</span>
+            <span style="color: #F92672;">if</span> (p == head &amp;&amp; tryAcquire(arg)) {
+                <span style="color: #75715e;">// head 出队, 自己成为 head</span>
+                setHead(node);
+                p.next = <span style="color: #F92672;">null</span>;
+                failed = <span style="color: #F92672;">false</span>;
+                <span style="color: #F92672;">return</span> interrupted;
+            }
+            <span style="color: #75715e;">// 否则 park</span>
+            <span style="color: #F92672;">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
+                parkAndCheckInterrupt())    <span style="color: #75715e;">// 检查park时是否被中断过</span>
+                interrupted = <span style="color: #F92672;">true</span>;
+        }
+    } <span style="color: #F92672;">finally</span> {
+        <span style="color: #F92672;">if</span> (failed)
+            cancelAcquire(node);
+    }
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因为第一个节点表示的是当前锁的持有者(exclusive 模式), 按照 FIFO 的规则, head 的后继是锁被释放后第一个获取锁的线程. 因此在 acquire 循环中, 每当线程被唤醒(无论是因为锁被释放了还是线程中断), 都要检查一下自己是不是第二个节点, 如果不是则继续 park.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果自己是第二个节点, 且 tryAccquire 成功了, 这意味着 head 已经释放了锁, 并且自己成功获取了锁, 于是当前节点将head 踢出队列, 自己成为新的 head, 整个 acquire 过程结束.</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">队列中的节点有一个字段 waitStatus 记录该节点当前所处的状态:</p>
+<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;">CANCELLED = 1： 节点因为超时或interrupt而被取消, 一旦达到此状态节点将被踢出。</li>
+<li style="line-height: 1.6;">SIGNAL = -1： 后继节点是（或者将要成为）BLOCKED状态（例如通过LockSupport.park()操作），因此当前节点在 release / 取消后需要唤醒（LockSupport.unpack()）它的后继。</li>
+<li style="line-height: 1.6;">CONDITION = -2：表明节点正处在 condition 队列中;</li>
+<li style="line-height: 1.6;">PROPAGATE = -3: 只有在shared模式下的head才会处在这个状态，表示同步状态可能允许其他节点acquire成功，唤醒动作需要propagate到后续节点；</li>
+<li style="line-height: 1.6;">NORMAL = 0 : 新生节点都处在这个状态 </li>
+</ul>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">shouldParkAfterFailedAcquire()</code>方法简单来说, 就是把当前节点之前已被 cancel 的节点都删除, 找到前驱并设置其标志位为 SIGNAL,  让其 release 时把自己唤醒.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">release()</code> 的工作过程:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">release</span>(<span style="color: #F92672;">int</span> arg) {
+    <span style="color: #F92672;">if</span> (tryRelease(arg)) {
+        Node h = head;
+        <span style="color: #F92672;">if</span> (h != <span style="color: #F92672;">null</span> &amp;&amp; h.waitStatus != <span style="color: #ae81ff;">0</span>)
+            unparkSuccessor(h);
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">true</span>;
+    }
+    <span style="color: #F92672;">return</span> <span style="color: #F92672;">false</span>;
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">release 的逻辑非常简单, 它仅仅唤醒 head 的后继, 不会改变队列结构，剩下的事情交给后者的 acquire 循环了；如果<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryRelease</code>失败则什么也不做。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用一副简单的图对 exclusive 的工作模式做个总结:<br/><img alt="Alt text" class="en-media" longdesc="./1404973488005.png" name="7f5eefcd-3b7b-46ec-a56a-d0f8feb48af1" src="/assets/img/608a673471dd8b9460920532735778db.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">shared 模式</h4>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquireShared</code></h5>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1404714087255.png" name="2a79a1f1-6b2d-426e-93ed-bf65a9057aa3" src="/assets/img/b25614a7fde60c753ccda35f7de8498b.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 整个流程和exclusive模式下的acquire几乎完全一样，不同的是，shared模式下，当某个线程acquire成功后，后续阻塞线程依然有可能acquire成功，因此在自己成为head后，需要将其后继节点（如果是工作在shared模式下）唤醒。后者醒来后如果acquire成功，则会继续唤醒后继，如此将有多个节点被唤醒（acquire成功并依次出队），直到遇到一个exclusive节点，或者资源用尽，同步状态不允许acqurie成功。</p>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">releaseShared</code></h5>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">boolean</span> <span style="color: #a6e22e;">releaseShared</span>(<span style="color: #F92672;">int</span> arg) {
+    <span style="color: #F92672;">if</span> (tryReleaseShared(arg)) {
+        doReleaseShared();
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">true</span>;
+    }
+    <span style="color: #F92672;">return</span> <span style="color: #F92672;">false</span>;
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">逻辑和exclusive模式下的release是一样的：在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryReleaseShared</code>成功后调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">doReleaseShared</code>方法，该方法和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquireShared</code>流程中 “唤醒后继“ 时调用的方法是同一个，它的作用可以简单地理解为将head的状态标记为PROPAGATE，并唤醒后继节点。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">若<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryReleaseShared</code>失败，则什么也不做。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到，两个模式下的release动作都是只唤醒head的后继节点，并没有做其他事情，也不会修改队列结构。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个shared模式的例子(假设每次 acquire 都是成功的)：<br/><img alt="Alt text" class="en-media" longdesc="./1404973410463.png" name="a1f620d1-6ace-4c8b-aad4-3b60f2522167" src="/assets/img/0e674e2db00635e5f46c4954b678f162.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">4. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">condition</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">AQS 定义了一个内部类<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">ConditionObject</code> 作为 condition 的实现, 必须与 exclusive 模式的同步器搭配使用，它可以提供典型的管程风格的await、signal和signalAll操作。 当用户请求 condition 时<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">new ConditionObject()</code>返回即可. 和 AQS 一样, 每个 condition 在内部也是用一个 FIFO 队列维护所有等待线程的. </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在Condition中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">wait</code>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">notify</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">notifyAll</code>方法分别对应了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">await</code>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">signal</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">signalAll</code>方法. 简单来说, 它们的实现逻辑如下，注意, 只有锁的持有者，即 AQS queue head节点对应的线程才能调用以下操作:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">//await</span>
+释放锁
+将当前线程放入 condition 的等待队列
+阻塞线程直到自己重新回到了锁的等待队列
+进入 acquire 循环, 尝试获取锁                                            
+
+<span style="color: #75715e;">// signal</span>
+把 condition 等待队列的第一个线程移除并放入锁的等待队列
+
+<span style="color: #75715e;">// signalAll</span>
+把 condition 等待队列的所有线程移除并放入锁的等待队列
+
+<span style="color: #75715e;">// 基本上就是把节点在 锁的等待队列 和 condition的等待队列 之间来回移动</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">await:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">final</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">await</span>() <span style="color: #F92672;">throws</span> InterruptedException {
+    <span style="color: #F92672;">if</span> (Thread.interrupted())
+        <span style="color: #F92672;">throw</span> <span style="color: #F92672;">new</span> InterruptedException();
+
+    <span style="color: #75715e;">// 1) 新增一个新的Node到 condition queue 中；</span>
+    Node node = addConditionWaiter();
+    <span style="color: #75715e;">// 2) release锁，这调用的是 AQS 的 release() 方法,结果是 AQS 的 head 节点（当前线程）被移除;</span>
+    <span style="color: #F92672;">int</span> savedState = fullyRelease(node);
+    <span style="color: #F92672;">int</span> interruptMode = <span style="color: #ae81ff;">0</span>;
+
+    <span style="color: #75715e;">// 其他线程的Signal会将该Node从Condition queue移回AQS queue，并唤醒该Node, 因此:</span>
+    <span style="color: #75715e;">// 3) 循环检测自己是否被移回 AQS queue, 没有则继续阻塞; </span>
+    <span style="color: #F92672;">while</span> (!isOnSyncQueue(node)) {
+        LockSupport.park(<span style="color: #F92672;">this</span>);
+        <span style="color: #F92672;">if</span> ((interruptMode = checkInterruptWhileWaiting(node)) != <span style="color: #ae81ff;">0</span>)
+            <span style="color: #F92672;">break</span>;
+    }
+
+    <span style="color: #75715e;">// 4) 此时该线程已接收到其他线程的 signal 信号, 醒来并重新进入了 AQS queue，需重新进入竞争锁的循环(acquireQueued)</span>
+    <span style="color: #F92672;">if</span> (acquireQueued(node, savedState) &amp;&amp; interruptMode != THROW_IE)
+        interruptMode = REINTERRUPT;
+    <span style="color: #F92672;">if</span> (node.nextWaiter != <span style="color: #F92672;">null</span>) <span style="color: #75715e;">// clean up if cancelled</span>
+        unlinkCancelledWaiters();
+    <span style="color: #F92672;">if</span> (interruptMode != <span style="color: #ae81ff;">0</span>)
+        reportInterruptAfterWait(interruptMode);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">signal:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> final <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">signal</span>() {
+    <span style="color: #F92672;">if</span> (!isHeldExclusively())
+        <span style="color: #F92672;">throw</span> <span style="color: #F92672;">new</span> IllegalMonitorStateException();
+    Node first = firstWaiter;
+    <span style="color: #F92672;">if</span> (first != <span style="color: #F92672;">null</span>)
+        doSignal(first);
+}
+<span style="color: #75715e;">// 把 condition queue 的第一个节点移到 aqs queue 的最末</span>
+<span style="color: #F92672;">private</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">doSignal</span>(Node first) {
+    <span style="color: #F92672;">do</span> {
+        <span style="color: #F92672;">if</span> ( (firstWaiter = first.nextWaiter) == <span style="color: #F92672;">null</span>)
+            lastWaiter = <span style="color: #F92672;">null</span>;
+        first.nextWaiter = <span style="color: #F92672;">null</span>;
+    } <span style="color: #F92672;">while</span> (!transferForSignal(first) &amp;&amp;
+             (first = firstWaiter) != <span style="color: #F92672;">null</span>);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">signal</code>就干了一件事：把 condition queue 的第一个节点移到 aqs queue 的最末。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">isHeldExclusively()</code> 方法用来判断当前线程是不是 exclusively acquire 同步器的线程，它留给子类实现；可以看到，condition 强制只能由 exclusive 模式下的线程进行 signal。另一方面，AQS 因为要支持混合模式，所以它的 acquire 和 release 是通用的，没有这个限定；子类需要这个约束时（比如二元锁）应当在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryRelease</code>的实现中加上这个判断，具体可参考<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">ReentrantLock</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">signalAll:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> final <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">signalAll</span>() {
+    <span style="color: #F92672;">if</span> (!isHeldExclusively())
+        <span style="color: #F92672;">throw</span> <span style="color: #F92672;">new</span> IllegalMonitorStateException();
+    Node first = firstWaiter;
+    <span style="color: #F92672;">if</span> (first != <span style="color: #F92672;">null</span>)
+        doSignalAll(first);
+}
+<span style="color: #75715e;">// 把 condition queue 的所有节点移到 aqs queue</span>
+<span style="color: #F92672;">private</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">doSignalAll</span>(Node first) {
+    lastWaiter = firstWaiter  = <span style="color: #F92672;">null</span>;
+    <span style="color: #F92672;">do</span> {
+        Node next = first.nextWaiter;
+        first.nextWaiter = <span style="color: #F92672;">null</span>;
+        transferForSignal(first);
+        first = next;
+    } <span style="color: #F92672;">while</span> (first != <span style="color: #F92672;">null</span>);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">综上所述，condition 的整个工作流程可以简单地理解为：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"> 将线程在 AQS 队列和 Condition 队列中来回移动 </strong></p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用图表示如下：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1.gif" name="f3b06570-cdf5-4745-a674-b79b3d2f8ac5" src="/assets/img/6d909f13e34a81ad3f0b1fec3c268ea4.gif" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5. 公平性</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果 acquire 总是按照线程入队的顺序进行，则称为公平的。AQS可能出现这样的情况，当 head release，后继准备acquire时，刚好有一个新的外来线程抢先acquire成功。这被称为 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">barging</code>现象，对队列中排队的其他节点显然是不公平的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果子类要保证公平性，可以在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryAcquire</code>的实现中调用 AQS 提供的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">hasQueuedPredecessors()</code> 方法判断当队列是否为空，非空则 acquire 失败。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">二. 高级同步器</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">AQS的典型使用方式：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">根据需要定义一个类(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>)继承AQS，覆盖<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryAcquired/tryShared/...</code>等方法提供自己的逻辑；再用一个更加具体的类包装该类，对外提供意义更加明确的方法，这些方法的实现都是代理给<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>的。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1. FutureTask</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">作用</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask</code>实现了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Future</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Runnable</code>接口，它包装<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Runnable</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Callable</code>并提供取消方法(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">cancel</code>)和可阻塞调用线程的获取执行结果的方法(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">get</code>)。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask</code>可以保证即使调用了多次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">run</code>，都只会执行一次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Runnable</code>或<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Callable</code>任务。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">典型的使用场景是线程池。向线程池提交一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Runnable</code>时，线程池内部会将其包装成一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask</code>并返回；客户线程可调用其<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">get()</code>等待任务完成或被取消。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">也可单独使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask</code>，这时手动调用其<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">run()</code>方法即可。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">实现</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask</code>内部定义了一个AQS的子类<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>，所有的操作都是由它完成的。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">get</code>在任务未完成或未取消时阻塞，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">run</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">cancel</code>在任务完成或取消后需要唤醒阻塞在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">get</code>的所有线程，很显然前者对应AQS的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquire</code>，后者对应<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">release</code>，且<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>应该工作在 shared 模式下。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>的 state 表示任务的执行情况：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">READY/RUNNING/RAN/CANCELED</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">Acquire</strong><br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask#get()</code>最终会调用AQS的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquireSharedInterruptibly</code>方法。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync#tryAcquireShared()</code>的逻辑是：如果任务已完成或被取消(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state == RAN || CENCELED</code>)返回1，即acquire成功，AQS会继续唤醒队列中下一个阻塞线程；否则返回-1，acquire失败。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">Release</strong><br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask#run()</code>首先将<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync#state</code>设为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">RUNNING</code>，接着调用内部<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Callable</code>的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">run</code>方法，执行完成后调用AQS的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">releaseShared(0)</code>；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask#cancel()</code>也会调用该方法进行 release 动作。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">releaseShared(0)</code>始终返回true表示动作成功，AQS（最终）会唤醒所有阻塞在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FutureTask#get()</code>上的线程。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2. Semaphore</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">作用</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">信号量。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">实现</strong><br/>内部类<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>继承AQS，工作在shared模式。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Semaphore#acquire()</code> / <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Semaphore#release()</code>分别对应它的 acquire / release 动作。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync#state</code>代表当前资源数量，覆盖<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryReleaseShared/tryAcquireShared</code>方法对资源数进行增减，这一步使用了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock-free</code>算法保证操作的原子性。前者在操作成功后返回当前剩余资源数，失败则返回-1；后者成功后返回true，失败则说明遇到了不合法的调用，抛出<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Error</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>根据<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquire</code>时是否公平派生出两个子类：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">NonfairSync</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FairSync</code>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Semaphore</code>在初始化时根据<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">fair</code>参数选择对应的子类。它们的唯一不同在于，后者在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryAcquireShared</code>中会先通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">hasQueuedPredecessors()</code>判断队列是否为空，如果不为空则直接返回-1，保证公平性。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3. CountDownLatch</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">作用</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">倒计时器：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1405326703519.png" name="350abdc7-1109-4220-b8ad-5f87563447f4" src="/assets/img/3a55d351d80217462795e70701c05968.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">实现</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">CountDownLatch</code>的实现比较简单。内部<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">shared工作模式；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state</code>表示 <strong style="font-weight: bold;">当前未完成的任务数</strong>；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">CountDownLatch#await()</code> --&gt; acquire，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync#tryAcquireShared()</code>在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state==0</code>时成功，返回1，否则失败；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">CountDownLatch#countDown()</code> --&gt; release，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync#tryReleaseShared()</code>用 CAS 将<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state</code>减1，如果<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state==0</code>，则release成功，阻塞在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">await</code>上的线程将被唤醒；否则失败。</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">4. CyclicBarrier</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">作用</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">让一组线程阻塞直到它们都到达了某处，再继续执行该组线程。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1405328710151.png" name="40604679-2619-4e7d-bc11-c29705bb7eab" src="/assets/img/b8a0809e0f514490732ac2bb7ac8eeee.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">即调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">await</code>的线程数到达了设定的数量后，这些线程才继续往下执行。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">CyclicBarrier</code>在构造时也可传入一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Runnable</code>作为 barrierAction。当barrier开放时会首先执行该任务。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">实现</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">CyclicBarrier</code>的实现和其他同步器不同，它是基于<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">ReentrantLock / Condition</code>实现的，内部持有一个锁<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock</code>和对应的 condition <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">trip</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">内部属性<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">count</code>表示 <strong style="font-weight: bold;">未到达barrier的线程数</strong>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">await()</strong><br/>大致实现如：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock</code>加锁，count减1，如果count为0则执行 barrierAction 并调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">trip#signalAll</code>；否则调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">trip#await</code>阻塞。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">其实还用到了一个内部类<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Generation</code>，没搞明白什么用。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5. ReentrantLock</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">作用</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可重入锁，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">synchronized</code>的增强版，支持多个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">condition</code>，支持设置超时时间。JDK 1.6 后二者性能相差不大了。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">实现</strong><br/>内部类<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">Sync</code>，工作在exclusive模式，根据<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">acquire</code>是否公平派生出两个子类：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">NonfairSync</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FairSync</code>；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state</code>表示重入的次数。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryAcquire</code></strong><br/>如果<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state == 0</code>，说明未加锁，CAS将其设置为1，并调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">setExclusiveOwnerThread</code>将当前线程设置为锁的持有线程，返回true。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">否则判断当前线程是否锁的持有线程，如果是则说明是锁的重入，将<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state</code>加1即可；否则 acquire 失败。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">公平版本的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">FairSync</code>会在真正的 acquire 动作之前先通过AQS提供的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">hasQueuedPredecessors</code>方法判断等待队列是否为空。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">tryRelease</code></strong><br/>先检查，如果不是锁持有线程调用该方法则抛出异常。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state</code>自减1，如果<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">state==0</code>，说明锁被释放，此时release成功，返回true；否则只是退出了一次重入，release失败。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">6. ReentrantReadWriteLock</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">作用</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可重入读写锁：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">读锁的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock</code>：当前没有线程持有写锁则成功，即并发读是不冲突的，但一旦有写动作则阻塞读。</li>
+<li style="line-height: 1.6;">写锁的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock</code>：当前没有线程持有读锁或写锁则成功，即写动作要等待所有其他读/写动作完成后才可进行</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">读写锁分离的好处是在读多写少的场景中大幅提升读的性能。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">锁的升/降级</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在同一线程中：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">持有读锁后，再调用写锁的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock</code>会失败，进而造成死锁。读锁不可升级。</li>
+<li style="line-height: 1.6;">持有写锁后，再调用读锁的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">lock</code>可以成功，之后再<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">unlock</code>写锁，则写锁将降级为读锁。</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">实现</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">基于AQS实现。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">比较复杂，写不动了。</p>
+</div>
+</article> <!-- end #post__content -->
+
+<div id="post__share">
+  <a id="icon-twitter" class="fontello" href="https://twitter.com/intent/tweet?url=http://novoland.github.io/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html&text=AQS 和 高级同步器" target="_blank"></a>
+  <a id="icon-cc" class="fontello" href="http://creativecommons.org/licenses/by-nc-sa/3.0" target="_blank"></a>
+  <a id="icon-weibo" class="fontello" href="http://v.t.sina.com.cn/share/share.php?url=http://novoland.github.io/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html&title=AQS 和 高级同步器" target="_blank"></a>
+</div> <!-- end #post__share -->
+
+<div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink" target="_blank">Loading Disqus comments...</a>
+</div> <!-- end #disqus_thread -->
+
+<p id="copyright">Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>&nbsp;&nbsp;|&nbsp;&nbsp;Theme <a href="https://github.com/P233/3-Jekyll" target="_blank">3-Jekyll</a></p>
+      </div> <!-- end #pjax -->
+
+      <div id="post__toc-trigger">
+        <div id="post__toc">
+          <span id="post__toc-title">Table of Contents</span>
+          <ul id="post__toc-ul"></ul>
+        </div>
+      </div>
+    </div> <!-- end #post -->
+
+    <button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+
+    <script src="/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="/assets/js/jquery.pjax.js"></script>
+    <script src="/assets/js/nprogress.js"></script>
+    <script src="/assets/js/script.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </body>
+</html>

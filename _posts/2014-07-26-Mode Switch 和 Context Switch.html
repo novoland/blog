@@ -1,0 +1,81 @@
+---
+layout: post
+title: "Mode Switch 和 Context Switch"
+category: "c和os"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. Mode Switch 和 Exception control flow</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">进程通常运行在用户态,只有通过触发exception才能进入内核态。此时用户的控制流被挂起，内核接管程序的运行; exception处理完毕后再回到用户态, 在原先的断点处继续执行(如果需要的话).</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1401331104793.png" name="839e8b3a-9c3a-45b8-8b79-6e34cb392ca1" src="/assets/img/f7160a481329a33202d6c5ff33c67e67.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">Exception的分类：</strong></p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">interrupt</code>，硬件发起，异步的（即独立于CPU），下面3种都是同步的（必须由CPU执行某条指令触发）。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">fault</code>，可能可以恢复，处理后返回引起错误的指令，如<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Fault</code>。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">abort</code>，无法恢复，不返回。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">trap / system call</code>，程序主动发起，调用操作系统服务的方式，返回下一条指令。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">CPU在处理Exception时，通常是 <strong style="font-weight: bold;">关中断</strong> 的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">System Call</code> 和 普通函数调用 的区别：</strong><br/>System Call通过寄存器传递异常号和参数，System Call的处理流程（其他Exception类似）:</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">修改CPU的特权模式，进入内核态</li>
+<li style="line-height: 1.6;">根据异常号查表（Interrupt Descriptor Table, IDT）找处理程序入口</li>
+<li style="line-height: 1.6;">保存现场（如EIP/ESP/通用寄存器等）</li>
+<li style="line-height: 1.6;">切换到内核栈</li>
+<li style="line-height: 1.6;">执行处理程序</li>
+<li style="line-height: 1.6;">恢复现场</li>
+<li style="line-height: 1.6;">修改CPU的特权模式，回到用户态</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">步骤更多(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">CPU mode切换 / 查表 / 现场的保存和恢复 / 切到内核栈</code>)，因此比普通的函数调用开销更大。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">System Call 的具体实现：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">This answer is specific to Linux OS and x86 architecture.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Every system call is identified by a system call number.When a user process invokes a system call it needs to pass the system call number and the arguments  to the kernel and get a return value. It does so by copying the system call number and the arguments into the cpu registers(eax, ebx, ecx, edx, esi, and edi) and executing a software interrupt instruction(int $0x80 or sysenter).</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">The cpu control unit views the software interrupt as any other interrupt. So, a little information on interrupt handling is required. After executing an instruction, the control unit checks for interrupt. The kernel maintains an array of function pointers to the interrupt handlers in an array called interrupt descriptor table(IDT). A cpu register(tr) contains the pointer to information containing the kernel mode stack. Two bits of the cs register specify the privilege mode (kernel mode or user mode).On interrupt, the control unit does the following:<br/>a)Switches the stack if mode switch is required(i.e, the cpu was in user mode). Place the previous stack pointer(esp) and in the new stack.<br/>b)Changes the privilege mode by changing the cs register if mode switch is required.<br/>c)Saves the instruction pointer in the kernel mode stack.<br/>d)Jumps to the interrupt handler by loading the eip register with the function pointer found in theIDT.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">One entry in the IDT holds a pointer to the function, system_call(). This function does the following:<br/>a)Copies the general purpose registers into the kernel mode stack.<br/>b)Checks the validity of the system call number.<br/>c)Calls the corresponding system call handler. The function pointers to the system call handlers are kept in an array called sys_call_table.<br/>d)Writes the return value of the system call handler in the kernel stack where the value of the eax register in user mode was saved.<br/>e)Executes the iret instruction.</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">The iret instruction does the following:<br/>a)Loads the cpu registers with the values saved in the kernel mode stack.<br/>b)Loads the eip(instruction pointer) and esp(stack pointer) with values saved in the kernel mode stack.<br/>c)Switches to user mode by changing the cs register.</p>
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Thus, the iret instruction resumes the user process. It gets the return value from the eax register.</p>
+</blockquote><hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">2. Context Switch</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><em>（以下讨论仅限内核线程，不包括在用户态实现的线程）</em></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">CPU切换线程的动作发生在内核态，包括：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">保存当前线程A context;</li>
+<li style="line-height: 1.6;">恢复另一线程B context;</li>
+<li style="line-height: 1.6;">执行B</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">是CPU extensive的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Context</code>指的是即当前CPU各寄存器的值。</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">不同进程间线程的切换比相同进程间进程的切换代价要高</strong>，这是因为：(<a href="http://www.quora.com/Operating-Systems/How-does-thread-switching-differ-from-process-switching" style="background: transparent;" target="_blank">参考1</a>, <a href="http://stackoverflow.com/questions/5440128/thread-context-switch-vs-process-context-switch" style="background: transparent;" target="_blank">参考2</a>)</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">不同process的切换需要换虚拟内存空间，同一process间thread的切换不需要;</li>
+<li style="line-height: 1.6;">某些架构下可能需要刷新缓存。如x86会刷新TLB（缓存PTE，page table entry，加速地址翻译），ARM则会刷新整个L1缓存。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">线程和进程的区别</strong></p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">线程更轻量，创建/撤销代价小。进程是资源管理的单位；线程是CPU执行的单位；</li>
+<li style="line-height: 1.6;">线程共享所在进程的资源，如地址空间/打开的文件。线程的概念试图实现的是,共享一组资源，以便为完成某一任务而共同工作，有时这一点是必须的；</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">为什么需要线程</strong><br/>提高性能： a) 利用IO阻塞的空闲时间；b) 多核条件下实现并行计算。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">什么时候进行context switch</strong></p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">System Call/处理硬件Interrupt的过程中很可能阻塞，这时通常会引发context switch；</li>
+<li style="line-height: 1.6;">时钟硬件interrupt通知cpu某线程时间片用完，进行切换。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Context switch一般也会进行mode switch；mode switch却不一定会context switch(切换线程)，比如简单的系统调用。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">Cache pollution</strong><br/>context switch和mode switch（Exception control flow）都会导致cache变cold，这也是二者的开销之一：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">exception handler短，则cache对handler而言是冷的；长，返回user mode时cache对用户进程是冷的；</li>
+<li style="line-height: 1.6;">线程切换后，原cache对新线程而言是冷的。</li>
+</ol>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">《深入理解计算机系统》</li>
+<li style="line-height: 1.6;">《现代操作系统》</li>
+<li style="line-height: 1.6;"><a href="http://stackoverflow.com/questions/20038636/what-exactly-happens-when-an-os-goes-into-kernel-mode" style="background: transparent;" target="_blank">What exactly happens when an OS goes into kernel mode?</a></li>
+<li style="line-height: 1.6;"><a href="http://stackoverflow.com/questions/5440128/thread-context-switch-vs-process-context-switch" style="background: transparent;" target="_blank">thread context switch vs process context switch</a></li>
+<li style="line-height: 1.6;"><a href="http://www.eecs.harvard.edu/~margo/cs161/notes/context-switching.pdf" style="background: transparent;" target="_blank">context-switching.pdf</a></li>
+<li style="line-height: 1.6;"><a href="http://choices.cs.uiuc.edu/ExpCS07.pdf" style="background: transparent;" target="_blank">Context Switch Overheads for Linux on ARM Platforms.pdf</a></li>
+</ol>
+</div>

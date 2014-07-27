@@ -1,0 +1,454 @@
+---
+layout: post
+title: "回溯"
+category: "算法"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">回溯法是一个万金油算法，它的本质是优化了的暴力搜索，其基本思想是 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">深度优先搜索</code> 以及 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">剪枝</code> ，适用于求解 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">任意解</code> ，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">所有解</code> 或 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">最优解（可能不是最好的方式）</code> 的场景，后两者都需要探索整个解空间。  </p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 基本思想</h2>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">每一步的 <strong style="font-weight: bold;">选择</strong> 和 <strong style="font-weight: bold;">问题状态的变迁</strong> 构成了一棵 <strong style="font-weight: bold;">解空间树</strong> ，可以看作每个节点都存储着这两种信息。  </li>
+<li style="line-height: 1.6;">用 <strong style="font-weight: bold;">深度优先</strong> 的方式遍历这棵树，当到达 <strong style="font-weight: bold;">目标状态</strong> 时停止，此时从根节点出发的路径即为问题的一个解。探索过程中，若当前节点的子树可能有解则继续往下探索；若无解则回溯。</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">剪枝</strong>：判断当前节点的子树中是否有解的函数称为 <strong style="font-weight: bold;">剪枝函数</strong>，很形象的，<em>‘剪掉子树’</em>。主要有 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">可行性剪枝 [状态是否合法]</code> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">最优解剪枝 [求最优解时]</code> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">状态判重剪枝 [状态可能重复时]</code>。</li>
+</ul>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 实现与模板</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在来考虑实现，一般的，我们需要：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">一个stack保存当前的遍历路径（每一步的选择），随着探索不停的push和pop元素；<br/>当完整解的高度固定时，可以用一个数组 + 栈顶索引index，来模拟stack。注意，初始栈为空，index初值为-1。</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一些变量保存问题的 <strong style="font-weight: bold;">状态</strong>，在探索和回溯过程中不停地<em>改变</em>和<em>恢复</em>：<br/>比如，假设当前探索到节点P，此时的状态是S(P)，往下探索时，假设它有两个孩子节点C1和C2。首先考虑C1：  </p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">  <span style="color: #75715e;">// 伪代码</span>
+  <span style="color: #e6db74;">stack</span>.push(C1)
+  状态 = S(C1)
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 当 a. C1被剪枝了；b.C1的子树都被探索完时，我们该考虑C2了。在对C2进行上述两步之前，需要 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">恢复状态到父节点</code> 并 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">出栈C1</code>，第一步很容易遗漏:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">  <span style="color: #75715e;">// 伪代码</span>
+  状态 = S(P)     <span style="color: #75715e;">//！记得恢复状态</span>
+  <span style="color: #e6db74;">stack</span>.pop()
+
+  <span style="color: #75715e;">// 此时考虑C2</span>
+  <span style="color: #e6db74;">stack</span>.push(C2)
+  状态 = S(C2)
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">  需要注意的是，很多问题中（如八皇后/数独），stack中保存的部分解就可以表达当前问题的状态，此时就没有必要专门去跟踪了。</p>
+</li>
+<li style="line-height: 1.6;">函数 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">isComplete()</code> ，判断当前是否找到了完整解。<br/>通常根据 <strong style="font-weight: bold;">是否到达目标状态</strong>，<strong style="font-weight: bold;">当前路径的长度</strong> 判断。</li>
+<li style="line-height: 1.6;">剪枝函数 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">isPartial()</code> ，判断当前stack中保存的路径是不是一个合法的部分解。<br/>即判断还有没有必要继续向下探索。</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">给出用回溯法（递归的方式）求 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">全部解</code> 的模板如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 探索时存放路径，即部分解。当树的高度确定时，可用index+array代替栈，index是stack的栈顶位置, 其初始值为-1.</span>
+<span style="color: #F92672;">var</span> path = <span style="color: #F92672;">new</span> Stack()
+
+<span style="color: #75715e;">// 状态随节点转移而改变。注意，很多情况下status可以由path来表达(比如N皇后/数独，棋盘的状态就存放在path中)，这时就省去了状态转移的这个步骤了。</span>
+<span style="color: #F92672;">var</span> status = init status
+
+<span style="color: #75715e;">// 其含义其实是对当前栈顶节点的子树进行探索</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">function</span> <span style="color: #a6e22e;">explore</span><span style="color: #f8f8f2;">()</span></span>{
+    <span style="color: #75715e;">// 找到一个完整解</span>
+    <span style="color: #F92672;">if</span>(isComplete()){
+        print path
+        <span style="color: #F92672;">return</span>;
+    }
+
+    <span style="color: #F92672;">for</span>(choice : choices of last node(eg. P) <span style="color: #F92672;">in</span> path){ <span style="color: #75715e;">// 这里可以做一个优化：更优的选择先探索</span>
+        path.push(choice)     
+        transform status    <span style="color: #75715e;">// P转移到choice节点的状态计算</span>
+
+        <span style="color: #75715e;">// 剪枝</span>
+        <span style="color: #F92672;">if</span>(isPatial()){
+            <span style="color: #75715e;">// 剪枝失败，进入choice的子树探索</span>
+            explore()
+        }
+
+        <span style="color: #75715e;">// 剪枝成功或choice的子树探索完毕，探索P的下一个子节点。</span>
+
+        restore status <span style="color: #75715e;">// --&gt; 不要忘了状态的恢复!</span>
+        path.pop()
+    }
+}
+
+<span style="color: #75715e;">// 根据path或status判断是否找到了完整解</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">function</span> <span style="color: #a6e22e;">isComplete</span><span style="color: #f8f8f2;">()</span></span>{
+}
+
+<span style="color: #75715e;">// 剪枝</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">function</span> <span style="color: #a6e22e;">isPatial</span><span style="color: #f8f8f2;">()</span></span>{
+    <span style="color: #75715e;">// 对于path中存放的部分解进行 *可行性剪枝*，即判断status是否合法/后续探索是否有可能找到一个完整解</span>
+}
+
+<span style="color: #75715e;">// 调用</span>
+explore()
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只需保存路径，空间复杂度为O(height of tree)。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. 实例</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.1 八皇后</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">应用回溯法时，最重要的有两点：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">问题的状态</strong> 是什么（什么信息需要跟踪），<strong style="font-weight: bold;">初始状态</strong> 和 <strong style="font-weight: bold;">目标状态</strong> 各是什么；</li>
+<li style="line-height: 1.6;">如何明确定义解，即 <strong style="font-weight: bold;">如何一步一步进行探索</strong>。同一个问题，解的表达方式可能有多种，某些形式可能更容易处理，如更少的探索次数、更易剪枝、可以在搜索过程中避免状态重复等，要多利用解的特点；</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以八皇后为例，一种直接的探索方式为：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// --解的表示方式</span>
+使用一个长度为n的数组保存每个皇后在棋盘中的坐标（取值范围<span style="color: #ae81ff;">0.</span><span style="color: #f8f8f2;">.n</span>^<span style="color: #ae81ff;">2</span>）；
+<span style="color: #75715e;">// 探索过程</span>
+对第<span style="color: #ae81ff;">1</span>个皇后，可以放在棋盘的任意位置（n^<span style="color: #ae81ff;">2</span>种选择）；固定皇后<span style="color: #ae81ff;">1</span>后，皇后<span style="color: #ae81ff;">2</span>可以选皇后<span style="color: #ae81ff;">1</span>以外的位置；同样的，皇后<span style="color: #ae81ff;">3</span>可以选择皇后<span style="color: #ae81ff;">1</span>/<span style="color: #ae81ff;">2</span>之外的位置；...以此类推，每次选定位置后利用规则进行剪枝。
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这种探索方式的缺点有两点：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">平均每次探索的选择都是O(n^2)的，待选节点规模太大；</li>
+<li style="line-height: 1.6;">会出现<em>重复状态</em>（如皇后1选择[0][0]，2选择[0][1]；vs 1选择[0][1]，2选择[0][0]，这两者所到达的棋盘状态是一样的），需要额外的空间和时间进行状态保存和判重。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">仔细考虑解的特点，最后的解必然会在每一行上有且仅有一个棋子，因此可以用下面的探索方式：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// --解的表示方式</span>
+使用一个长度为n的数组，每个元素代表该行上皇后所在的列(取值范围<span style="color: #ae81ff;">0.</span><span style="color: #f8f8f2;">.n</span>)；
+<span style="color: #75715e;">// 探索过程</span>
+对第<span style="color: #ae81ff;">1</span>个行，皇后可以放在该行的任意位置（n种选择）；对第<span style="color: #ae81ff;">2</span>行，同理；...以此类推。
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到，上面的方法避免了前一种的两个问题：子节点的规模为O(n)，且不会出现重复状态。代码如下，和模板基本上是一一对应的：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">#!/usr/bin/python</span>
+<span style="color: #75715e;"># coding=utf-8</span>
+<span style="color: #F92672;">import</span> math
+
+<span><span style="color: #66d9ef;">class</span> <span style="color: #a6e22e; font-style: italic;">Solution</span>:</span>
+
+    <span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">solveNQueens</span><span style="color: #f8f8f2;">(self, n)</span>:</span>
+        self.n = n
+        <span style="color: #75715e;"># 栈（数组）和栈顶，保存每一行上皇后所在的列</span>
+        self.stack = [<span style="color: #F92672;">None</span>] * n
+        self.stackTop = -<span style="color: #ae81ff;">1</span>
+        <span style="color: #75715e;"># 不需要额外记录问题的状态，路径就可以表达棋盘的状态了</span>
+
+        self.explore()
+
+    <span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">explore</span><span style="color: #f8f8f2;">(self)</span>:</span>
+        <span style="color: #75715e;"># isComplete():</span>
+        <span style="color: #75715e;"># 探索完了最后一层，即栈指针指向最后一个元素。此时stack中保存一个完整解。</span>
+        <span style="color: #F92672;">if</span> self.stackTop == self.n - <span style="color: #ae81ff;">1</span>:
+            <span style="color: #F92672;">print</span> self.stack
+            <span style="color: #F92672;">return</span> 
+
+        <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(<span style="color: #ae81ff;">0</span>,self.n): <span style="color: #75715e;">#每一层有n个选择</span>
+            <span style="color: #75715e;"># push</span>
+            self.stackTop += <span style="color: #ae81ff;">1</span>
+            self.stack[self.stackTop] = i
+
+            <span style="color: #75715e;"># 剪枝 &amp; 继续探索</span>
+            <span style="color: #F92672;">if</span> self.isPatial():
+                self.explore()
+
+            <span style="color: #75715e;"># pop</span>
+            self.stack[self.stackTop] = <span style="color: #F92672;">None</span>
+            self.stackTop -= <span style="color: #ae81ff;">1</span>
+
+    <span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">isPatial</span><span style="color: #f8f8f2;">(self)</span>:</span>
+        <span style="color: #75715e;"># 可行性剪枝:</span>
+        <span style="color: #75715e;"># 两个皇后不能在一行/一列/一条斜线</span>
+
+        <span style="color: #75715e;"># 这里利用了一个特性：</span>
+        <span style="color: #75715e;"># stack中[0..stackTop - 1]的排列方式可以保证已经是符合规则的，只需要考察stackTop和之前的每个皇后是否满足规则即可。</span>
+        lastCol = self.stack[self.stackTop]    
+        i = self.stackTop - <span style="color: #ae81ff;">1</span>
+        <span style="color: #F92672;">while</span> i &gt;= <span style="color: #ae81ff;">0</span>:
+            col = self.stack[i]
+            <span style="color: #F92672;">if</span> lastCol == col <span style="color: #F92672;">or</span> math.fabs(self.stackTop - i) == math.fabs(lastCol - col):
+                <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+            i -= <span style="color: #ae81ff;">1</span>
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+
+
+<span style="color: #F92672;">if</span> __name__ == <span style="color: #e6db74;">"__main__"</span>:
+    Solution().solveNQueens(<span style="color: #ae81ff;">6</span>)
+    <span style="color: #75715e;"># [1, 3, 5, 0, 2, 4]</span>
+    <span style="color: #75715e;"># [2, 5, 1, 4, 0, 3]</span>
+    <span style="color: #75715e;"># [3, 0, 4, 1, 5, 2]</span>
+    <span style="color: #75715e;"># [4, 2, 0, 5, 3, 1]</span>
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4. 求最优解</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">思路：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">维护当前找到的最优（完整）解及其对应的状态；</li>
+<li style="line-height: 1.6;">剪枝时，除<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">可行性剪枝</code>，还需要进行<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">最优解剪枝</code>：如果当前的部分解比已知最优解还差，就可以停止往下探索了；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">最优解剪枝</code>会淘汰掉比已知最优解差的"完整解"，因此当确实找到了一个完整解时，即为新的最优解；</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此，在实现中需要增加的逻辑有：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">... <span style="color: #75715e;">// stack/status</span>
+<span style="color: #75715e;">// 已知最优解及其状态   ---- 改动1</span>
+<span style="color: #F92672;">var</span> bestSolution = None;
+<span style="color: #F92672;">var</span> bestStatus = None;
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">function</span> <span style="color: #a6e22e;">explore</span><span style="color: #f8f8f2;">()</span></span>{
+    <span style="color: #75715e;">// 找到一个完整解，即新的最优解</span>
+    <span style="color: #F92672;">if</span>(isComplete()){
+        <span style="color: #75715e;">// 更新已知最优解及其状态   ---- 改动2</span>
+        bestSolution = stack.copy();
+        bestStatus = status;
+        <span style="color: #F92672;">return</span>;
+    }
+
+    <span style="color: #F92672;">for</span>(choice : choices of last node(eg. P) <span style="color: #F92672;">in</span> path){
+        ... 
+        <span style="color: #75715e;">// 注意，即使choice已经到达最后一层且组成了一个合法的完整解，如果不是当前最优的，也会被剪掉。</span>
+    }
+}
+
+<span style="color: #75715e;">// 剪枝</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">function</span> <span style="color: #a6e22e;">isPatial</span><span style="color: #f8f8f2;">()</span></span>{
+    <span style="color: #75715e;">// 1. 可行性剪枝</span>
+    <span style="color: #75715e;">// 2. 最优解剪枝    ---- 改动3</span>
+}
+
+explore()
+<span style="color: #75715e;">// 算法结束后，bestSolution就是最优解了。</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">4.1 01背包</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">01背包属于下面提到的“子集树”的情况，为了搜索，使用一个长度为n的数组作为探索时的栈，每个元素只有两种可能取值，0-不选，1-选。问题的状态由 <em>当前物品的总价值</em> 以及 <em>当前物品的总空间</em> 二者表达，在遍历时需要维护这两个状态。虽然他们可以由stack中的元素计算而得，但耗时O(n)；</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">为了求最优解，还需要跟踪当前最优解及其对应的问题的状态；</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最后，如何利用最优解进行剪枝？ 假设考察k，物品[0..k-1]已经确定了是否选择，如果[0..k-1]得到的总价值，再加上剩余所有物品的价值总和，依然小于当前最优解，则可以放弃探索了。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码实现如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">#!/usr/bin/python</span>
+<span style="color: #75715e;"># coding=utf-8</span>
+
+<span style="color: #75715e;"># 0/1背包问题</span>
+
+v =  [<span style="color: #ae81ff;">8</span>, <span style="color: #ae81ff;">9</span>, <span style="color: #ae81ff;">10</span>, <span style="color: #ae81ff;">4</span>, <span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">15</span>]     <span style="color: #75715e;"># 物品价值</span>
+c = [<span style="color: #ae81ff;">2</span>, <span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">5</span>, <span style="color: #ae81ff;">3</span>, <span style="color: #ae81ff;">3</span>, <span style="color: #ae81ff;">7</span>]        <span style="color: #75715e;"># 物品空间</span>
+n = len(v)                    <span style="color: #75715e;"># 物品个数</span>
+bag = <span style="color: #ae81ff;">12</span>                    <span style="color: #75715e;"># 包的总空间</span>
+
+<span style="color: #75715e;"># DFS需要的信息</span>
+stack = [<span style="color: #F92672;">None</span>] * n             <span style="color: #75715e;"># stack</span>
+stackTop = -<span style="color: #ae81ff;">1</span>
+totalValue = <span style="color: #ae81ff;">0</span>                <span style="color: #75715e;"># 问题的状态 --     1. 所选物品的总价值，初始没选物品，为0; </span>
+totalCapacity = <span style="color: #ae81ff;">0</span>            <span style="color: #75715e;">#                 2.所有物品的总空间</span>
+                            <span style="color: #75715e;"># 其实由path中也可计算得到，但是耗时O(n).</span>
+
+<span style="color: #75715e;"># 求最优解需要的额外信息</span>
+bestSolution = <span style="color: #F92672;">None</span>            <span style="color: #75715e;"># 当前最优解</span>
+maxValueFound = <span style="color: #F92672;">None</span>        <span style="color: #75715e;"># 最优解时的物品总价值</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">explore</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #F92672;">global</span> stackTop,totalValue,bestSolution,maxValueFound,totalCapacity
+
+    <span style="color: #75715e;"># 找到了新的最优（完整）解</span>
+    <span style="color: #F92672;">if</span> stackTop == n - <span style="color: #ae81ff;">1</span>:
+        bestSolution = stack[:]
+        maxValueFound = totalValue
+        <span style="color: #F92672;">return</span>
+
+    <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(<span style="color: #ae81ff;">0</span>,<span style="color: #ae81ff;">2</span>):    <span style="color: #75715e;"># 子集树</span>
+        <span style="color: #75715e;"># push</span>
+        stackTop += <span style="color: #ae81ff;">1</span>
+        stack[stackTop] = i
+        <span style="color: #75715e;"># transform status</span>
+        totalValue += v[stackTop] * i
+        totalCapacity += c[stackTop] * i
+
+        <span style="color: #F92672;">if</span> isPartial():
+            explore()
+
+        <span style="color: #75715e;"># restore status</span>
+        totalValue -= v[stackTop] * i
+        totalCapacity -= c[stackTop] * i
+        <span style="color: #75715e;"># pop</span>
+        stack[stackTop] = <span style="color: #F92672;">None</span>
+        stackTop -= <span style="color: #ae81ff;">1</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">isPartial</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #75715e;"># 1. 可行性剪枝</span>
+    <span style="color: #F92672;">if</span> totalCapacity &gt; bag:        <span style="color: #75715e;"># 占用空间超过袋子的总空间，则不合法</span>
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+
+    <span style="color: #75715e;"># 2. 最优解剪枝</span>
+    <span style="color: #F92672;">if</span> maxValueFound != <span style="color: #F92672;">None</span>:    <span style="color: #75715e;"># 已经找到了一个最优解才进行最优解剪枝</span>
+        <span style="color: #75715e;"># 剪枝的依据：如果当前获得的物品价值（totalValue），加上剩余所有物品的价值，依然小于当前最优解，则剪掉</span>
+        c = totalValue
+        <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(stackTop + <span style="color: #ae81ff;">1</span>,n):
+            c += v[i]
+        <span style="color: #F92672;">if</span> c &lt; maxValueFound:
+            <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+    <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+
+<span style="color: #F92672;">if</span> __name__ == <span style="color: #e6db74;">"__main__"</span>:
+    explore()
+    <span style="color: #F92672;">print</span> bestSolution,maxValueFound
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5. 排列树和子集树</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">给定一个集合和提问，有两种特殊的情况：</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.1 子集树直接用原来的即可。</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">从集合中挑一个满足条件的子集，解是[0,1,0,0,1]的形式，表示各个元素是否选择，01背包问题就是一个例子：<br/><img alt="Alt text" class="en-media" longdesc="data:image,local://1394690224453" name="d94bf7f9-bedc-4288-8c48-2dfe54d38128" src="/assets/img/c3c23757d2149a02fb84418b84a8afa9" style="border: 0; -ms-interpolation-mode: bicubic; max-width: 100%; border-radius: 8px;"/><br/>每次探索只有两个选择，0和1：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// old</span>
+<span style="color: #F92672;">for</span>(choice : choices of last node(eg. P) <span style="color: #F92672;">in</span> path){
+    ...
+}
+
+<span style="color: #75715e;">// new</span>
+<span style="color: #F92672;">for</span>(i = <span style="color: #ae81ff;">0</span>;i&lt;=<span style="color: #ae81ff;">1</span>;i++){
+    ...
+}
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.2 排列树</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">求集合的满足条件的某种排列形式：<br/><img alt="Alt text" class="en-media" longdesc="data:image,local://1394690256154" name="deca2065-049d-4af1-aa28-73e629ff0b95" src="/assets/img/c9590fdaa9eaafdfb3e318b1ab7e086a" style="border: 0; -ms-interpolation-mode: bicubic; max-width: 100%; border-radius: 8px;"/><br/>每次探索都只能选择之前没出现过的元素，这个限制可以用一个简单的方式实现：  </p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">保存探索路径的 <em>stack</em> 和 <em>初始集合</em> 共用同一个数组；</li>
+<li style="line-height: 1.6;">假设0..k-1是已经探索了的那部分，在考察k时，则可以选k..n之间的每个元素;</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">因为1的缘故，stack pop前必须恢复栈顶处原来的值</strong>：</li>
+</ol>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// old</span>
+<span style="color: #F92672;">for</span>(choice : choices of last node(eg. P) <span style="color: #F92672;">in</span> path){
+    ...
+}
+
+<span style="color: #75715e;">// new</span>
+<span style="color: #75715e;">// [0..stackTop]已经确定，对stackTop+1考察，可选元素为 [stackTop+1 .. n-1]</span>
+<span style="color: #F92672;">for</span>(i <span style="color: #F92672;">in</span> [stackTop+<span style="color: #ae81ff;">1</span> .. n-<span style="color: #ae81ff;">1</span>]){
+    stackTop++;             <span style="color: #75715e;">// push. a)</span>
+    <span style="color: #F92672;">var</span> old = a[stackTop];  <span style="color: #75715e;">// 记录原数组在栈顶位置的原值       &lt;-- 重要！</span>
+    a[stackTop] = a[i];     <span style="color: #75715e;">// push. b)</span>
+    <span style="color: #75715e;">// transform status...</span>
+
+    <span style="color: #75715e;">// ..</span>
+
+    <span style="color: #75715e;">// restore status..</span>
+    a[stackTop--] = old;   <span style="color: #75715e;">// 恢复栈顶的原值，再pop &lt;-- 重要！</span>
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用两个swap也可以达到同样的效果且更简洁，但不太好理解。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">排列树</strong> 和 <strong style="font-weight: bold;">子集树</strong> 是很常见的两类问题，且都不会出现重复状态，属于比较简单的情况，一定要好好理解。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">6. 状态记录和判重</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在稍微复杂的问题中，经常会出现状态重复的情况，即经过若干步探索后到达了一个之前已经探索过的状态，这种情况在讨论八皇后问题时已经看到过了。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通常用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">hashset</code>保存所有已经访问过的状态，并且利用它们进行剪枝。当求<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">最优解</code>时，不仅要保存状态，还要保存到达该状态的路径的某些信息如长度；进行<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">状态重复剪枝</code>时，当状态重复但 <em>当前的部分解</em> 优于 <em>记录的部分解</em> 时，是不能剪枝的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码的改动有：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">... <span style="color: #75715e;">// stack/status...</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">function</span> <span style="color: #a6e22e;">explore</span><span style="color: #f8f8f2;">()</span></span>{
+    <span style="color: #75715e;">// 记录已经访问过的状态，在此处进行可以保证初始状态和最终状态都被记录</span>
+    recordStatus();  <span style="opacity: 0.5;"><span style="color: #f8f8f2;">&lt;<span style="color: #F92672;">----</span> <span style="color: #F92672;">1</span>
+
+    <span style="color: #F92672;">if</span>(<span style="color: #F92672;">isComplete</span>()){
+    <span style="color: #F92672;">...</span>
+}
+
+<span style="color: #F92672;">var</span> <span style="color: #F92672;">statuses</span> = <span style="color: #F92672;">new</span> <span style="color: #F92672;">HashSet</span>/<span style="color: #F92672;">HashMap</span>()    // 所有已经访问过的状态   &lt;<span style="color: #F92672;">----</span> <span style="color: #F92672;">2</span>
+<span style="color: #F92672;">function</span> <span style="color: #F92672;">recordStatus</span>(){
+    <span style="color: #F92672;">statuses.put</span>(<span style="color: #F92672;">curStatus</span>);    // 如果状态复杂，可以拼接出一个<span style="color: #F92672;">String</span>表示
+}
+
+// 剪枝
+<span style="color: #F92672;">function</span> <span style="color: #F92672;">isPatial</span>(){
+    // 可行性剪枝
+    // [最优解剪枝]
+    <span style="color: #F92672;">...</span>
+    // 状态重复剪枝     &lt;<span style="color: #F92672;">----</span> <span style="color: #F92672;">3</span>
+}</span></span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">6.1 传教士和野人问题</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">题目如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;"># 有P个牧师和C个野人过河，只有一条能装下两个人的船，</span>
+<span style="color: #75715e;"># 在河的任何一方或者船上，如果野人的人数大于牧师的人</span>
+<span style="color: #75715e;"># 数，那么牧师就会有危险. 你能不能找出一种安全的渡河</span>
+<span style="color: #75715e;"># 方法呢（P&gt;=C）？</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">由于是求任意一个解，因此按照回溯法的思路分析如下：  </p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">很明显，解空间树的高度是不确定的，不能用数组+索引当stack用，需要一个动态的栈；</li>
+<li style="line-height: 1.6;">问题的状态由什么表达？<br/>左岸牧师人数 + 左岸野人人数 + 船的位置</li>
+<li style="line-height: 1.6;">初始状态和目标状态是什么？<br/>初始：左岸P个牧师，C个野人，船在左边；目标：全部牧师和野人、船都在右岸</li>
+<li style="line-height: 1.6;">每一步有哪些选择？<br/>这里每一次探索的选项是固定的：运送2p/1p/1p1c/1c/2c，5个选择</li>
+<li style="line-height: 1.6;">哪些可行性约束？<br/>显然的，两岸的野人和牧师都不能是负数；此外，当有牧师存在时，牧师不能少于野人</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">但是，这个问题显然是会出现重复状态的。举个例子，假设第一步送两个牧师到对岸，第二步也选择送两个牧师，这样状态就和初始状态一模一样了；即很有可能经过n步搜索后发现到达了一个曾经到过的状态。因此，为了防止无限的搜索，必须在搜索的过程中记录当前状态并以此剪枝。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">#!/usr/bin/python</span>
+<span style="color: #75715e;"># coding=utf-8</span>
+
+<span style="color: #75715e;"># 牧师和传教士问题</span>
+<span style="color: #75715e;"># 有P个牧师和C个野人过河，只有一条能装下两个人的船，</span>
+<span style="color: #75715e;"># 在河的任何一方或者船上，如果野人的人数大于牧师的人</span>
+<span style="color: #75715e;"># 数，那么牧师就会有危险. 你能不能找出一种安全的渡河</span>
+<span style="color: #75715e;"># 方法呢（P&gt;=C）？</span>
+
+<span style="color: #75715e;"># 4种选择</span>
+<span><span style="color: #66d9ef;">class</span> <span style="color: #f8f8f2;">Step</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">__init__</span><span style="color: #f8f8f2;">(self,p,c)</span>:</span>
+        self.p = p
+        self.c = c
+
+    <span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">__str__</span><span style="color: #f8f8f2;">(self)</span>:</span>
+        <span style="color: #F92672;">return</span> <span style="color: #e6db74;">'Pastor: '</span> + str(self.p) + <span style="color: #e6db74;">'    Cannibal: '</span>+ str(self.c)
+
+Step.all = [Step(<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">1</span>),Step(<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">0</span>),Step(<span style="color: #ae81ff;">0</span>,<span style="color: #ae81ff;">1</span>),Step(<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">0</span>),Step(<span style="color: #ae81ff;">0</span>,<span style="color: #ae81ff;">2</span>)]
+
+totalP = <span style="color: #ae81ff;">3</span>            <span style="color: #75715e;"># 总牧师</span>
+totalC = <span style="color: #ae81ff;">3</span>            <span style="color: #75715e;"># 总野人</span>
+
+<span style="color: #75715e;"># DFS需要的信息</span>
+stack = []             <span style="color: #75715e;"># stack</span>
+p = totalP            <span style="color: #75715e;"># 问题的状态。 p：左岸的牧师，c：左岸的野人，boat：船在哪边(为了方便计算，在左岸时-1，右岸时1)</span>
+c = totalC
+boat = -<span style="color: #ae81ff;">1</span>
+
+<span style="color: #75715e;"># 第一个找到的完整解</span>
+aSolution = <span style="color: #F92672;">None</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">explore</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #F92672;">global</span> aSolution,p,c,boat
+
+    <span style="color: #75715e;"># 记录当前到达的状态</span>
+    recordStatus()
+
+    <span style="color: #75715e;"># 如果找到了解，返回</span>
+    <span style="color: #F92672;">if</span> aSolution != <span style="color: #F92672;">None</span>:
+        <span style="color: #F92672;">return</span>
+
+    <span style="color: #75715e;"># 根据目标状态判断是否找到了完整解</span>
+    <span style="color: #F92672;">if</span> p == <span style="color: #ae81ff;">0</span> <span style="color: #F92672;">and</span> c == <span style="color: #ae81ff;">0</span> <span style="color: #F92672;">and</span> boat == <span style="color: #ae81ff;">1</span>:
+        aSolution = stack[:]
+        <span style="color: #F92672;">return</span>
+
+    <span style="color: #F92672;">for</span> step <span style="color: #F92672;">in</span> Step.all:
+        <span style="color: #75715e;"># push &amp; 状态转移</span>
+        stack.append(step)
+        p += boat * step.p
+        c += boat * step.c
+        boat = -boat
+
+        <span style="color: #F92672;">if</span> isPartial():
+            explore()
+
+        <span style="color: #75715e;"># 状态恢复 &amp; pop</span>
+        p += boat * step.p
+        c += boat * step.c
+        boat = - boat
+        stack.pop()
+
+<span style="color: #75715e;"># 状态记录相关</span>
+statuses = {}
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">recordStatus</span><span style="color: #f8f8f2;">()</span>:</span>
+    statuses[curStatus()] = <span style="color: #F92672;">True</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">curStatus</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #F92672;">return</span> str(p) + <span style="color: #e6db74;">"_"</span> + str(c) + <span style="color: #e6db74;">"_"</span> + str(boat)    <span style="color: #75715e;"># 当前状态："左岸牧师_左岸传教士_船的位置"</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">isPartial</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #75715e;"># 1. 可行性剪枝:</span>
+    <span style="color: #75715e;"># a. 两岸的牧师和野人不可&lt;0</span>
+    <span style="color: #75715e;"># b. 两岸当有牧师时，牧师不得少于野人</span>
+    <span style="color: #F92672;">if</span> p &lt; <span style="color: #ae81ff;">0</span> <span style="color: #F92672;">or</span> c &lt; <span style="color: #ae81ff;">0</span> \
+        <span style="color: #F92672;">or</span> totalP - p &lt; <span style="color: #ae81ff;">0</span> <span style="color: #F92672;">or</span> totalC &lt; <span style="color: #ae81ff;">0</span> \
+        <span style="color: #F92672;">or</span> (p &lt; c <span style="color: #F92672;">and</span> p &gt; <span style="color: #ae81ff;">0</span>) \
+        <span style="color: #F92672;">or</span> (totalP - p &lt; totalC - c <span style="color: #F92672;">and</span> totalP - p &gt; <span style="color: #ae81ff;">0</span>):
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+
+    <span style="color: #75715e;"># 2. 状态判重剪枝</span>
+    <span style="color: #F92672;">if</span> curStatus() <span style="color: #F92672;">in</span> statuses:
+        <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+    <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+
+<span style="color: #F92672;">if</span> __name__ == <span style="color: #e6db74;">"__main__"</span>:
+    explore()
+    <span style="color: #F92672;">if</span> aSolution == <span style="color: #F92672;">None</span>:
+        <span style="color: #F92672;">print</span> <span style="color: #e6db74;">"no solution"</span>
+    <span style="color: #F92672;">else</span>: 
+        <span style="color: #F92672;">print</span> [str(s) <span style="color: #F92672;">for</span> s <span style="color: #F92672;">in</span> aSolution]
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果是求步骤数最少的方案呢？</p>
+</div>

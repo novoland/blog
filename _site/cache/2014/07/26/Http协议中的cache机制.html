@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!--[if lte IE 9]><meta http-equiv="refresh" content="0;url=/ie.html"><![endif]-->
+
+    <title>Http协议中的cache机制</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+  </head>
+  <body>
+    <aside id="sidebar">
+      <nav id="tags">
+        <a href="/index.html" id="avatar"></a>
+
+        <ul id="tags__ul">
+          <li id="js-label1" class="tags__li tags-btn active">所有文章 <span class="post_count"></span></li>
+          <li id="js-label2" class="tags__li tags-btn">并发<span class="post_count"></span></li>
+          <li id="js-label3" class="tags__li tags-btn">算法<span class="post_count"></span></li>
+          <li id="js-label4" class="tags__li tags-btn">数据库<span class="post_count"></span></li>
+          <li id="js-label5" class="tags__li tags-btn">cache<span class="post_count"></span></li>
+          <li id="js-label6" class="tags__li tags-btn">c和os<span class="post_count"></span></li>
+          <li id="js-label7" class="tags__li tags-btn">网络<span class="post_count"></span></li>
+        </ul>
+
+        <div id="tags__bottom">
+          <a href="mailto:novohust@163.com" id="icon-email" class="tags-btn fontello"></a>
+          <a href="/rss.xml" id="icon-feed" class="tags-btn fontello"></a>
+        </div>
+      </nav> <!-- end #tags -->
+
+      <div id="posts-list">
+        <form action="" id="search-form">
+          <a href="/index.html" id="mobile-avatar"></a>
+          <!-- NOTE: input field is disabled by default -->
+          <input id="search-input" type="text" placeholder="Search..." disabled >
+        </form>
+
+        <nav id="pl__container">
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%AB%98%E6%80%A7%E8%83%BD%E7%BD%91%E7%BB%9C%E9%80%9A%E8%AE%AF%E7%AC%94%E8%AE%B0.html"><span class="pl__circle"></span><span class="pl__title">高性能网络通讯笔记</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86.html"><span class="pl__circle"></span><span class="pl__title">非递归的二叉树遍历</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%93%BE%E8%B7%AF%E5%B1%82%20%E7%BD%91%E7%BB%9C%E5%B1%82%20UDP%20IO%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">链路层 网络层 UDP IO模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%B4%9D%E5%8F%B6%E6%96%AF.html"><span class="pl__circle"></span><span class="pl__title">贝叶斯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98.html"><span class="pl__circle"></span><span class="pl__title">背包问题</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"><span class="pl__circle"></span><span class="pl__title">网卡中断负载均衡</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E7%BA%BF%E6%AE%B5%E6%A0%91.html"><span class="pl__circle"></span><span class="pl__title">线段树</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E6%A1%B6%E6%8E%92%E5%BA%8F%E5%9C%A8%E6%8E%92%E8%A1%8C%E6%A6%9C%E9%97%AE%E9%A2%98%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"><span class="pl__circle"></span><span class="pl__title">桶排序在排行榜问题中的应用</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%B9%B6%E6%9F%A5%E9%9B%86.html"><span class="pl__circle"></span><span class="pl__title">并查集</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%B9%B6%E5%8F%91%E9%9B%86%E5%90%88.html"><span class="pl__circle"></span><span class="pl__title">并发集合</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0.html"><span class="pl__circle"></span><span class="pl__title">定时器（Timer）的实现</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%A0%86.html"><span class="pl__circle"></span><span class="pl__title">堆</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%9B%9E%E6%BA%AF.html"><span class="pl__circle"></span><span class="pl__title">回溯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B4%A2%E5%BC%95%E6%A0%91(%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84).html"><span class="pl__circle"></span><span class="pl__title">二进制索引树(树状数组)</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/TCP.html"><span class="pl__circle"></span><span class="pl__title">TCP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/RST%E5%8F%8Ajava%20socket%E5%85%B3%E9%97%AD%E5%90%8E%E8%AF%BB%E5%86%99%E7%9A%84%E5%90%84%E7%A7%8D%E5%BC%82%E5%B8%B8.html"><span class="pl__circle"></span><span class="pl__title">RST及java socket关闭后读写的各种异常</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html"><span class="pl__circle"></span><span class="pl__title">Netty3 源码分析</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%204%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8C%BA%E5%88%AB.html"><span class="pl__circle"></span><span class="pl__title">Netty3 4线程模型的区别</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="数据库 pl__all" href="/%E6%95%B0%E6%8D%AE%E5%BA%93/2014/07/26/MySQL%E6%80%BB%E7%BB%93.html"><span class="pl__circle"></span><span class="pl__title">MySQL总结</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/Mode%20Switch%20%E5%92%8C%20Context%20Switch.html"><span class="pl__circle"></span><span class="pl__title">Mode Switch 和 Context Switch</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Lock-Free%20%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Lock-Free 算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/LCA%20%E5%92%8C%20RMQ.html"><span class="pl__circle"></span><span class="pl__title">LCA 和 RMQ</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/KMP.html"><span class="pl__circle"></span><span class="pl__title">KMP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">Java内存模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%20%E5%B9%B6%E5%8F%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html"><span class="pl__circle"></span><span class="pl__title">Java 并发基本知识</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html"><span class="pl__circle"></span><span class="pl__title">Http协议中的cache机制</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/Hash%20&%20Rabin-Karp%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Hash & Rabin-Karp字符串查找算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">Executor 之 线程池及定时器</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/C%E6%80%BB%E7%BB%93%20+%20%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98.html"><span class="pl__circle"></span><span class="pl__title">C总结 + 虚拟内存</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html"><span class="pl__circle"></span><span class="pl__title">Cache 相关理论</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/CPU%20Cache%20%E4%B8%8E%20%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.html"><span class="pl__circle"></span><span class="pl__title">CPU Cache 与 存储器层次结构</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">AQS 和 高级同步器</span><span class="pl__date">Jul 2014</span></a>
+        
+        </nav>
+      </div> <!-- end #posts-list -->
+    </aside> <!-- end #sidebar -->
+
+    <div id="post">
+      <div id="pjax">
+        <article id="post__content">
+  <h1 id="post__title" data-identifier="20140726">Http协议中的cache机制</h1>
+  <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">http协议的缓存机制包括两种：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">直接本地缓存</strong> </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 直接使用浏览器端的cache，不会发出真正的request，直到cache过期：<br/><img alt="Alt text" class="en-media" longdesc="./1398155164552.png" name="06884e1d-7c4e-43aa-a18b-45554c1cbca7" src="/assets/img/2667e0efd991ba61a1876d79d2de6cc2.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/>最省流量和服务器资源，但可能存在数据不一致，适合实时性不高的场景。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">304校验缓存</strong> </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 将浏览器端cache的信息发送到服务器校验，如果服务器认为cache依然有效，则返回304，浏览器再使用该cache。<br/><img alt="Alt text" class="en-media" longdesc="./1398155357600.png" name="eb7e3642-4a6d-41a3-b065-e4497d733d55" src="/assets/img/ce13998233d18ae5b33b4413e67660fc.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/>会发出一次请求且需要服务器端校验，因此没有第一种方式那么有效，但可以保证实时，适合写少实时性要求又较高的场景。</p>
+</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 直接本地缓存</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.1 http 1.1的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Cache-Control</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Response中的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Cache-Control</code> 头指示浏览器按何种规则缓存该资源，例：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span><span style="color: #F92672;">Cache</span>-Control: <span style="color: #F92672;">public</span>, <span style="color: #F92672;">max</span>-age=<span style="color: #ae81ff;">31536000</span></span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该header是复合类型，常见参数的含义：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">public</code> : 用户浏览器和中间proxy都会cache</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">private</code> : 只有用户端会cache</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">max-age=xxx</code> : 设置cache的最大存活时间，单位s</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">no-store</code>: 不要缓存</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">no-cache</code>: 同上，但是浏览器的支持可能不一致，最好两个一起用</li>
+</ul>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.2 http 1.0的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Expires</code> &amp; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pragma</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Expires: Mon, 19 Nov 2012 08:40:01 GMT</code><br/>指定cache的<em>绝对</em>过期时间，和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Cache-Control</code>一起使用时以后者为准。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pragma: no-cache</code><br/>指定不要缓存。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 304校验缓存</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这种方式需要向服务器发送本地cache的信息让其校验，通常校验的标准有两个：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">内容</li>
+<li style="line-height: 1.6;">最后修改时间</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 基于内容的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ETag</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ETag</code>是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Entity Tag</code>的缩写，它由服务器端指定，通常是一个资源的内容的hash（需要自己在代码中计算）。当Response中指定了ETag：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">Etag</span>: <span style="color: #e6db74;">427fe7b6442f2096dff4f92339305444</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">浏览器将资源缓存到本地，下次访问时在Request中将该ETag传回服务器：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">If-None-Match</span>: <span style="color: #e6db74;">427fe7b6442f2096dff4f92339305444</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">服务器将该资源最新版本的ETag与收到的ETag比对，不一致则渲染页面发送200响应，一致则返回304(not modified)，通知浏览器使用本地缓存。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 基于最后修改时间的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Last-Modified</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">工作机制和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ETag</code>一致，Request将本地缓存的最后修改时间通过 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">If-Modified-Since</code> 发送到服务器。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">有关Http cache机制的使用场景和具体应用方法，见<strong style="font-weight: bold;"><a href="http://robbinfan.com/blog/13/http-cache-implement" style="background: transparent;" target="_blank">Robbin_基于资源的HTTP Cache的实现介绍</a></strong>，介绍的非常详细。</p>
+</div>
+</article> <!-- end #post__content -->
+
+<div id="post__share">
+  <a id="icon-twitter" class="fontello" href="https://twitter.com/intent/tweet?url=http://novoland.github.io/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html&text=Http协议中的cache机制" target="_blank"></a>
+  <a id="icon-cc" class="fontello" href="http://creativecommons.org/licenses/by-nc-sa/3.0" target="_blank"></a>
+  <a id="icon-weibo" class="fontello" href="http://v.t.sina.com.cn/share/share.php?url=http://novoland.github.io/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html&title=Http协议中的cache机制" target="_blank"></a>
+</div> <!-- end #post__share -->
+
+<div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink" target="_blank">Loading Disqus comments...</a>
+</div> <!-- end #disqus_thread -->
+
+<p id="copyright">Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>&nbsp;&nbsp;|&nbsp;&nbsp;Theme <a href="https://github.com/P233/3-Jekyll" target="_blank">3-Jekyll</a></p>
+      </div> <!-- end #pjax -->
+
+      <div id="post__toc-trigger">
+        <div id="post__toc">
+          <span id="post__toc-title">Table of Contents</span>
+          <ul id="post__toc-ul"></ul>
+        </div>
+      </div>
+    </div> <!-- end #post -->
+
+    <button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+
+    <script src="/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="/assets/js/jquery.pjax.js"></script>
+    <script src="/assets/js/nprogress.js"></script>
+    <script src="/assets/js/script.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+---
+layout: post
+title: "Netty3 4线程模型的区别"
+category: "网络"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Netty3中，Pipeline中事件的处理可能是嵌套的，这是个串行的过程（对于单个线程而言）：<br/><img alt="Alt text" class="en-media" longdesc="./1401933779784.png" name="4d85a569-f3d9-4f73-963a-06f627dd4b0e" src="/assets/img/2ceac197f26a0588b2b651733ac0a2f2.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Netty3中，Upstream事件一般是由底层transport service发起的，发起者必然是IO线程；但Downstream事件可以由任意线程发起并处理，这就给Handler/Sink带来了并发问题，如并发地在一个Channel上调用write，或并发地调用Channel.close()。<br/><img alt="Alt text" class="en-media" longdesc="./1402024711706.png" name="84b460b8-3228-4fc8-9afc-b4be794c2146" src="/assets/img/b3018fbde0cdbb9fbb57663472baaa90.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">并发写会导致数据交错，NioWorker的做法是将write事件 缓存在队列中等待IO线程顺序执行，但其他事件如close/bind是直接由sink所在的线程执行的；OioWorker则是对输出流加锁，从而直接在发起线程中处理write事件</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">另一个问题是，downstream事件的处理结果通常要用一个upstream事件来传递，比如发起一个exceptionCaught事件，但发起者是User thread，必须要把事件传递给IO thread才满足“upstream事件由IO线程发起“的约束。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Netty4，事件的处理（handler/sink）都必须在IO线程中进行，write事件的排队提前到了第一个handler中：在第一个handler中判断发起线程是否IO线程，是则处理，否则连带next handler一起放入eventloop排队，这意味着handler始终在一个单线程环境中运行。优点是并行转串行，handler不用担心并发问题，缺点是带来了延迟。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">不管是3还是4，无论如何不要阻塞io线程，否则后续连接上的事件无法处理。</p>
+</div>

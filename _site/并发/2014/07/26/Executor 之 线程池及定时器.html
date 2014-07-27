@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!--[if lte IE 9]><meta http-equiv="refresh" content="0;url=/ie.html"><![endif]-->
+
+    <title>Executor 之 线程池及定时器</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+  </head>
+  <body>
+    <aside id="sidebar">
+      <nav id="tags">
+        <a href="/index.html" id="avatar"></a>
+
+        <ul id="tags__ul">
+          <li id="js-label1" class="tags__li tags-btn active">所有文章 <span class="post_count"></span></li>
+          <li id="js-label2" class="tags__li tags-btn">并发<span class="post_count"></span></li>
+          <li id="js-label3" class="tags__li tags-btn">算法<span class="post_count"></span></li>
+          <li id="js-label4" class="tags__li tags-btn">数据库<span class="post_count"></span></li>
+          <li id="js-label5" class="tags__li tags-btn">cache<span class="post_count"></span></li>
+          <li id="js-label6" class="tags__li tags-btn">c和os<span class="post_count"></span></li>
+          <li id="js-label7" class="tags__li tags-btn">网络<span class="post_count"></span></li>
+        </ul>
+
+        <div id="tags__bottom">
+          <a href="mailto:novohust@163.com" id="icon-email" class="tags-btn fontello"></a>
+          <a href="/rss.xml" id="icon-feed" class="tags-btn fontello"></a>
+        </div>
+      </nav> <!-- end #tags -->
+
+      <div id="posts-list">
+        <form action="" id="search-form">
+          <a href="/index.html" id="mobile-avatar"></a>
+          <!-- NOTE: input field is disabled by default -->
+          <input id="search-input" type="text" placeholder="Search..." disabled >
+        </form>
+
+        <nav id="pl__container">
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%AB%98%E6%80%A7%E8%83%BD%E7%BD%91%E7%BB%9C%E9%80%9A%E8%AE%AF%E7%AC%94%E8%AE%B0.html"><span class="pl__circle"></span><span class="pl__title">高性能网络通讯笔记</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E9%9D%9E%E9%80%92%E5%BD%92%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86.html"><span class="pl__circle"></span><span class="pl__title">非递归的二叉树遍历</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/%E9%93%BE%E8%B7%AF%E5%B1%82%20%E7%BD%91%E7%BB%9C%E5%B1%82%20UDP%20IO%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">链路层 网络层 UDP IO模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%B4%9D%E5%8F%B6%E6%96%AF.html"><span class="pl__circle"></span><span class="pl__title">贝叶斯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98.html"><span class="pl__circle"></span><span class="pl__title">背包问题</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/%E7%BD%91%E5%8D%A1%E4%B8%AD%E6%96%AD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"><span class="pl__circle"></span><span class="pl__title">网卡中断负载均衡</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E7%BA%BF%E6%AE%B5%E6%A0%91.html"><span class="pl__circle"></span><span class="pl__title">线段树</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E6%A1%B6%E6%8E%92%E5%BA%8F%E5%9C%A8%E6%8E%92%E8%A1%8C%E6%A6%9C%E9%97%AE%E9%A2%98%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"><span class="pl__circle"></span><span class="pl__title">桶排序在排行榜问题中的应用</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%B9%B6%E6%9F%A5%E9%9B%86.html"><span class="pl__circle"></span><span class="pl__title">并查集</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%B9%B6%E5%8F%91%E9%9B%86%E5%90%88.html"><span class="pl__circle"></span><span class="pl__title">并发集合</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/%E5%AE%9A%E6%97%B6%E5%99%A8%EF%BC%88Timer%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0.html"><span class="pl__circle"></span><span class="pl__title">定时器（Timer）的实现</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%A0%86.html"><span class="pl__circle"></span><span class="pl__title">堆</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E5%9B%9E%E6%BA%AF.html"><span class="pl__circle"></span><span class="pl__title">回溯</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%B4%A2%E5%BC%95%E6%A0%91(%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84).html"><span class="pl__circle"></span><span class="pl__title">二进制索引树(树状数组)</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/TCP.html"><span class="pl__circle"></span><span class="pl__title">TCP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/RST%E5%8F%8Ajava%20socket%E5%85%B3%E9%97%AD%E5%90%8E%E8%AF%BB%E5%86%99%E7%9A%84%E5%90%84%E7%A7%8D%E5%BC%82%E5%B8%B8.html"><span class="pl__circle"></span><span class="pl__title">RST及java socket关闭后读写的各种异常</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html"><span class="pl__circle"></span><span class="pl__title">Netty3 源码分析</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="网络 pl__all" href="/%E7%BD%91%E7%BB%9C/2014/07/26/Netty3%204%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8C%BA%E5%88%AB.html"><span class="pl__circle"></span><span class="pl__title">Netty3 4线程模型的区别</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="数据库 pl__all" href="/%E6%95%B0%E6%8D%AE%E5%BA%93/2014/07/26/MySQL%E6%80%BB%E7%BB%93.html"><span class="pl__circle"></span><span class="pl__title">MySQL总结</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/Mode%20Switch%20%E5%92%8C%20Context%20Switch.html"><span class="pl__circle"></span><span class="pl__title">Mode Switch 和 Context Switch</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Lock-Free%20%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Lock-Free 算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/LCA%20%E5%92%8C%20RMQ.html"><span class="pl__circle"></span><span class="pl__title">LCA 和 RMQ</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/KMP.html"><span class="pl__circle"></span><span class="pl__title">KMP</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B.html"><span class="pl__circle"></span><span class="pl__title">Java内存模型</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Java%20%E5%B9%B6%E5%8F%91%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html"><span class="pl__circle"></span><span class="pl__title">Java 并发基本知识</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Http%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84cache%E6%9C%BA%E5%88%B6.html"><span class="pl__circle"></span><span class="pl__title">Http协议中的cache机制</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="算法 pl__all" href="/%E7%AE%97%E6%B3%95/2014/07/26/Hash%20&%20Rabin-Karp%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95.html"><span class="pl__circle"></span><span class="pl__title">Hash & Rabin-Karp字符串查找算法</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">Executor 之 线程池及定时器</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/C%E6%80%BB%E7%BB%93%20+%20%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98.html"><span class="pl__circle"></span><span class="pl__title">C总结 + 虚拟内存</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="cache pl__all" href="/cache/2014/07/26/Cache%20%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA.html"><span class="pl__circle"></span><span class="pl__title">Cache 相关理论</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="c和os pl__all" href="/c%E5%92%8Cos/2014/07/26/CPU%20Cache%20%E4%B8%8E%20%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.html"><span class="pl__circle"></span><span class="pl__title">CPU Cache 与 存储器层次结构</span><span class="pl__date">Jul 2014</span></a>
+        
+          <a class="并发 pl__all" href="/%E5%B9%B6%E5%8F%91/2014/07/26/AQS%20%E5%92%8C%20%E9%AB%98%E7%BA%A7%E5%90%8C%E6%AD%A5%E5%99%A8.html"><span class="pl__circle"></span><span class="pl__title">AQS 和 高级同步器</span><span class="pl__date">Jul 2014</span></a>
+        
+        </nav>
+      </div> <!-- end #posts-list -->
+    </aside> <!-- end #sidebar -->
+
+    <div id="post">
+      <div id="pjax">
+        <article id="post__content">
+  <h1 id="post__title" data-identifier="20140726">Executor 之 线程池及定时器</h1>
+  <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. Executor系列接口</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1405070577041.png" name="79b9c390-a3d2-412b-892e-54b0cc0efec4" src="/assets/img/dacf292cba972f398489ca1a64001269.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Executor</code>用于解耦任务（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Runnable</code>）提交者和执行者，它只有一个方法<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">void execute(Runnable command)</code>，通过调用它向执行者提交任务，但无法知道执行的结果/进度，也无法拿到任务返回值。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ExecutorService</code> 继承<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Executor</code>，是一个更具体的接口。它额外提供了以下方法：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">关闭执行者</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"> shutdown(); <span style="color: #75715e;">// 拒绝接受任务，但继续执行旧任务</span>
+ shutdownNow();  <span style="color: #75715e;">// 拒绝接受任务，且返回所有未执行的旧任务</span>
+ awaitTermination(<span style="color: #F92672;">long</span>,TimeUnit);    <span style="color: #75715e;">// 等待执行者完全关闭</span>
+</code></pre>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">查询执行者当前状态</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"> isShutdown();
+ isTerminated();
+</code></pre>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">submit</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">invokeall</code>系列方法<br/> 接受<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Runnable/Callable</code>类型的参数，返回<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Future</code>，让提交者可以了解任务执行的进度/拿到执行结果。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Future</code>是提交者和执行者之间的通信手段，它代表任务的执行情况：<br/> <img alt="Alt text" class="en-media" longdesc="./1405066079429.png" name="6e5954eb-c15d-4977-a4cc-2587a0ca9a89" src="/assets/img/3f68dfa9bd9ac873340c28e701c18508.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/> 其中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">get</code>方法会阻塞直到任务被完成，常用于异步转同步的场景。   </p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ScheduledExecutorService</code>是一个定时器，它在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ExecutorService</code>的基础上增加了若干定时/延迟/循环调度任务的方法：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 延迟执行</span>
+<span style="color: #F92672;">public</span> ScheduledFuture&lt;?&gt; <span style="color: #a6e22e;">schedule</span>(Runnable command, 
+                                    <span style="color: #F92672;">long</span> delay, 
+                                    TimeUnit unit);
+<span style="color: #F92672;">public</span> &lt;V&gt; ScheduledFuture&lt;V&gt; <span style="color: #a6e22e;">schedule</span>(Callable&lt;V&gt; callable,
+                                        <span style="color: #F92672;">long</span> delay, 
+                                        TimeUnit unit);
+<span style="color: #75715e;">// 固定频率执行（不管单个任务执行时间，间隔到了就执行）</span>
+<span style="color: #F92672;">public</span> ScheduledFuture&lt;?&gt; <span style="color: #a6e22e;">scheduleAtFixedRate</span>(Runnable command,
+                                                <span style="color: #F92672;">long</span> initialDelay,
+                                                <span style="color: #F92672;">long</span> period,
+                                                TimeUnit unit);
+<span style="color: #75715e;">// 固定延迟执行（任务1执行完和任务2开始执行之间的间隔是固定的）</span>
+<span style="color: #F92672;">public</span> ScheduledFuture&lt;?&gt; <span style="color: #a6e22e;">scheduleWithFixedDelay</span>(Runnable command,
+                                                    <span style="color: #F92672;">long</span> initialDelay,
+                                                    <span style="color: #F92672;">long</span> delay,
+                                                    TimeUnit unit);
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 线程池<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ThreadPoolExecutor</code></h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ThreadPoolExecutor</code>是 <em>线程池</em> 和 <em>任务队列(BlockingQueue)</em> 实现的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ExecutorService</code>，和所有的<strong style="font-weight: bold;">池</strong>一样，它的主要功能有两个：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">降低频繁创建/销毁线程的开销；</li>
+<li style="line-height: 1.6;">防止滥用线程资源</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">作为一个对外提供服务的容器，它很多方面的实现都值得参考。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 服务能力的逐步降级 &amp; 占用资源的自动伸缩</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">提交任务时调用的是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">offer()</code>方法，如果不成功则立即返回<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">false</code>，这意味着客户端不会因为队列满而被阻塞。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">submit(...)</code>方法对传入的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Runnable</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Callable</code>包装进一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">FutureTask</code>，再调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">execute(...)</code>处理，最后返回这个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">FutureTask</code>对象。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">FutureTask</code>是一个实现了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Runnable</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Future</code>的类，它本质上是一个任务，同时又是一个同步器，提供了具有阻塞/唤醒语义的查询和执行方法。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">execute(...)</code>处理策略如下：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">轻负载</strong> (当前线程数 &lt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">corePoolSize</code>)：创建一个线程(内部类<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>)，该任务作为其初始任务。</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">中负载</strong> (当前线程数 = <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">corePoolSize</code>)：任务入队列(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">offer()</code>方法，客户不会阻塞)。</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">重负载</strong> (当前线程数 ∈ [<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">corePoolSize</code>, <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">maximumPoolSize</code>]，且任务队列已满)：继续创建线程。</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">超负载</strong> (当前线程数 = <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">maximumPoolSize</code>，且任务队列已满)： 拒绝新任务。</li>
+</ol>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">随着负载增加，线程池的处理速度 <strong style="font-weight: bold;">逐渐下降</strong>；超负荷时拒绝新请求，保证容器不挂：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: #fff; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"> 快 --&gt; 部分快，部分慢 --&gt; 慢 --&gt; 慢，且拒绝新任务
+</code></pre>
+</blockquote><h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>线程的逻辑</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>不停地从任务队列中拿任务执行，如果拿到 null，则退出。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>从<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">BlockingQueue</code>中取元素有两种选择：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">poll(timeout)</code> 或 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">take()</code>，选择策略如下：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当前线程数 &lt;= <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">corePoolSize</code>：默认使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">take()</code>，当队列为空时线程一直阻塞而不退出，原因是线程池在大部分时间都会处在轻/中负载的状态，避免此时线程的频繁创建和销毁。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">也可以更改这个默认行为。如果手动设置<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">allowCoreThreadTimeOut</code>，将用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">poll(timeout)</code>，超过指定时间还没任务线程就退出。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当前线程数 &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">corePoolSize</code>：重负载状态下使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">poll(timeout)</code>，负载回落后多余线程退出，避免不必要的资源占用。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">不管哪种情况，调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">poll</code>的超时时间由参数<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">keepAliveTime</code>指定。 </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>通过以上行为保证了容器占用的资源随负载程度而自动弹性伸缩。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 资源的懒加载和预加载</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">默认线程是懒加载的，即只有当新任务提交时才会创建<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>。可以调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">prestartAllCoreThreads()</code>或<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">prestartCoreThread()</code>方法预启动 corePoolSize 个或1个线程，一来避免任务队列初始就有元素时没有线程执行；二来避免接受任务时在线程创建上消耗时间。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.3 拒绝服务的方式</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当线程数和队列容量都达到上限时，容器将拒绝新来的服务请求，这是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">RejectedExecutionHandler</code>接口负责的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ThreadPoolExecutor</code>内部提供了以下 4 个实现：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">CallerRunsPolicy</code>：由客户线程自己执行任务；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">AbortPolicy</code>（默认）：抛出<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">RejectedExecutionException</code>；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">DiscardPolicy</code>：忽略，什么也不做；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">DiscardOldestPolicy</code>：移除任务队列里呆的最久的任务(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">poll()</code>)，重新提交。</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.4 状态管理</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">线程池的状态图如下：<br/><img alt="Alt text" class="en-media" longdesc="./1405154174067.png" name="e55d9ee5-b428-4e94-a099-8148a92da48a" src="/assets/img/5646cfa30d7cec46c10a3eaabc7273b5.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">初始状态为 running；</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">进入 shutDown 和 stop 区别是：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">shutDown: 不接受新任务，但会继续执行已有任务</li>
+<li style="line-height: 1.6;">stop: 不接受新任务，也不执行已有任务；队列中的剩余任务被返回给客户</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当队列为空且线程数为0时，进入 tidying 状态。该状态下会调用一个预留给子类实现的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">terminated</code>方法进行额外的资源清理工作。结束后进入 terminated 状态。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.4 任务队列的选择</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果要求任务立即得到处理，可以使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">SynchronousQueue</code>。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">SynchronousQueue</code>是一个容量为0的阻塞队列，当 offer 元素时，如果当前没有线程阻塞在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">take / poll(timeout)</code>上就立即失败；否则将元素交给其中的一个线程。因此它更像是线程之间传递对象的工具，而不是一个队列。</p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">SynchronousQueue</code>时，线程池将无法缓存任务，每个任务都会立即创建一个线程来执行它，任务可以得到快速处理。这种策略下线程池最多只能处理<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">maximumPoolSize</code>个任务。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果可以接受任务执行的延迟，但需要尽可能多的处理任务，可以使用无界的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">LinkedBlockingQueue</code>或有界的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ArrayBlockingQueue</code>。若是前者，线程数将不超过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">corePoolSize</code>，参数<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">maximumPoolSize</code>无效；若是后者，则需要在线程数和队列长度间权衡：短队列需要更多的线程，但这会带来更多的资源占用和 context switch；少线程则需要更长的队列，但此时吞吐量较低。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">定时器<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ScheduledThreadPoolExecutor</code><br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ScheduledThreadPoolExecutor</code>是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ScheduledExecutorService</code>定时器接口的实现，它继承自<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ThreadPoolExecutor</code>，因此底层的工作原理和线程池是一样的，但其任务队列是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">DelayBlockingQueue</code>的变种；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Worker</code>依次从中获取最快到期的任务执行。对于需要重复执行的任务，第一次执行完毕后计算其下次执行时间，再重新入队。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这个不太了解，以后看。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. 工厂类 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Executors</code></h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">提供了创建线程池、定时器的工厂方法。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">线程池：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">newCachedThreadPool()</code></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> corePoolSize = 0， maximumPoolSize = int 最大值，keepAliveTime = 1分钟，缓存队列为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">SynchronousQueue</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 每个任务都会重用已有线程或创建一个新线程执行，直到线程数达到上限；没有任务时所有线程都会自然退出。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">newFixedThreadPool</code></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> corePoolSize = n， maximumPoolSize = n，keepAliveTime = 0，缓存队列为无界的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">LinkedBlockingQueue</code>。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">newSingleThreadExecutor</code></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> corePoolSize = 1， maximumPoolSize = 1，keepAliveTime = 0，缓存队列为无界的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">LinkedBlockingQueue</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 效果和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">newFixedThreadPool(1)</code>一样。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">newScheduledThreadPool 定时器</code> </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> corePoolSize = n, maximumPoolSize = int 最大值，keepAliveTime = 0，缓存队列为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">DelayedWorkQueue</code>。</p>
+</li>
+</ol>
+</div>
+</article> <!-- end #post__content -->
+
+<div id="post__share">
+  <a id="icon-twitter" class="fontello" href="https://twitter.com/intent/tweet?url=http://novoland.github.io/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html&text=Executor 之 线程池及定时器" target="_blank"></a>
+  <a id="icon-cc" class="fontello" href="http://creativecommons.org/licenses/by-nc-sa/3.0" target="_blank"></a>
+  <a id="icon-weibo" class="fontello" href="http://v.t.sina.com.cn/share/share.php?url=http://novoland.github.io/%E5%B9%B6%E5%8F%91/2014/07/26/Executor%20%E4%B9%8B%20%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%8A%E5%AE%9A%E6%97%B6%E5%99%A8.html&title=Executor 之 线程池及定时器" target="_blank"></a>
+</div> <!-- end #post__share -->
+
+<div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink" target="_blank">Loading Disqus comments...</a>
+</div> <!-- end #disqus_thread -->
+
+<p id="copyright">Powered by <a href="http://jekyllrb.com" target="_blank">Jekyll</a>&nbsp;&nbsp;|&nbsp;&nbsp;Theme <a href="https://github.com/P233/3-Jekyll" target="_blank">3-Jekyll</a></p>
+      </div> <!-- end #pjax -->
+
+      <div id="post__toc-trigger">
+        <div id="post__toc">
+          <span id="post__toc-title">Table of Contents</span>
+          <ul id="post__toc-ul"></ul>
+        </div>
+      </div>
+    </div> <!-- end #post -->
+
+    <button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+
+    <script src="/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="/assets/js/jquery.pjax.js"></script>
+    <script src="/assets/js/nprogress.js"></script>
+    <script src="/assets/js/script.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </body>
+</html>

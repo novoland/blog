@@ -1,0 +1,917 @@
+---
+layout: post
+title: "C总结 + 虚拟内存"
+category: "c和os"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 数据类型</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.1 整数</h3>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 32位下：</span>
+<span style="color: #F92672;">char</span>            <span style="color: #75715e;">// 1 byte</span>
+<span style="color: #F92672;">short</span> (<span style="color: #F92672;">int</span>)     <span style="color: #75715e;">// 2 byte，int可以省略</span>
+<span style="color: #F92672;">int</span>             <span style="color: #75715e;">// 4 byte，int可以省略</span>
+<span style="color: #F92672;">long</span> (<span style="color: #F92672;">int</span>)      <span style="color: #75715e;">// 4 byte</span>
+<span style="color: #F92672;">long</span> <span style="color: #F92672;">long</span> (<span style="color: #F92672;">int</span>) <span style="color: #75715e;">// 8 byte</span>
+
+<span style="color: #75715e;">// 每个类型都分为有符号/无符号两种</span>
+
+<span style="color: #75715e;">// 字面量的后缀：</span>
+<span style="color: #75715e;">// U: unsigned, L: long, LL: long long, 可以混合用</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.2 浮点数</h3>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 32位下：</span>
+<span style="color: #F92672;">float</span>       <span style="color: #75715e;">// 4 byte</span>
+<span style="color: #F92672;">double</span>      <span style="color: #75715e;">// 8 byte</span>
+<span style="color: #F92672;">long</span> <span style="color: #F92672;">double</span> <span style="color: #75715e;">// 10 byte</span>
+
+<span style="color: #75715e;">// 字面量后缀：</span>
+<span style="color: #75715e;">// 默认是double, F: float, L: long double</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.3 enum</h3>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">enum</span> color { black, red = <span style="color: #ae81ff;">5</span>, green, yellow };
+
+<span style="color: #F92672;">enum</span> color b = black;           <span style="color: #75715e;">// 0</span>
+<span style="color: #F92672;">enum</span> color r = red;             <span style="color: #75715e;">// 5</span>
+<span style="color: #F92672;">enum</span> color g = green;           <span style="color: #75715e;">// 6</span>
+<span style="color: #F92672;">enum</span> color y = yellow;          <span style="color: #75715e;">// 7</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.4 字符常量</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">'A'</code>默认是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>型，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">sizeof('A') == 4</code>.</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.4 字符串常量</h3>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">字符串是以 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">NUL</code> (也就是 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">\0</code>) 结尾的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char</code> 数组。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">strlen</code>不计算<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">NUL</code>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">sizeof</code>计算字节数（包括结尾的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">NUL</code>）。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char s1[] = "abc";</code> VS <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char* s2  = "abc";</code>：<br/>  前者是 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char s1[] = {'a','b','c'}</code> 的快捷方式， 定义了一个字符数组，其内容可以修改；后者定义了一个内容为abc的字符串常量，该常量运行时存储在 <strong style="font-weight: bold;">data段的read-only区</strong> ，无法修改，s2指向其第一个元素。</li>
+</ul>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 类型转换</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 寻常算术转换</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当操作符两端的操作数类型不一致时，按以下顺序做类型转换：<br/> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">long double</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">double</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">float</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">unsigned long</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">long</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">unsigned int</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code><br/>低级别自动转换到高级别。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">unsigned int</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code> 比较时，由于算术转换产生的BUG：</strong></p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> <span style="color: #e6db74;">array</span>[] = {<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>};
+<span>#<span style="color: #F92672;">define</span> LENGTH (sizeof(array) / sizeof(array[0]))</span>
+...
+<span style="color: #F92672;">if</span>(-<span style="color: #ae81ff;">1</span> &lt;LENGTH)  <span style="color: #75715e;">// 返回false！</span>
+...
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这是因为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">sizeof</code>返回的值是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">unsigned int</code>类型的，与<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">-1</code>这个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>比较时，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">-1</code>先转型为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">unsigned int</code>，结果是一个巨大的整数。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">所以，尽量不要使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">unsigned</code>。当混合使用时，在表达式中应该使用强制类型转换，使操作数均为有符号或无符号的。</p>
+</blockquote><h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 整型提升</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">上述列表覆盖了所有浮点数类型和部分整型，当操作数的类型为列表之外的<em>短整型</em>，如<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">short</code>时，即使两端的操作数类型一致，编译器也会先将操作数提升到<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>，运算后的结果也是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>。这种隐式的转换称为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">整型提升</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">char</span> a = <span style="color: #e6db74;">'A'</span>;
+<span style="color: #F92672;">char</span> b = <span style="color: #e6db74;">'B'</span>;
+<span style="color: #e6db74;">printf</span>(<span style="color: #e6db74;">"%d"</span>,<span style="color: #F92672;">sizeof</span>(a-b));   <span style="color: #75715e;">// 将打印4</span>
+</code></pre>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;"><strong style="font-weight: bold;">函数调用时参数的整型提升</strong></h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">函数调用时，形参和实参的传值和普通赋值一样，因此也会出现<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">整型提升</code>的情况。比如参数为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">short</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char</code>时，实际压入栈中的是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>类型，函数内部再进行隐式的<em>裁剪</em>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这就是为什么<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">printf()</code>中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">%d</code>可以适用几个不同的类型(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">short</code> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char</code>)。函数内部在处理<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">%d</code>时，总是按<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>长度从栈中取参数（可以用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">%d</code>打印一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">long long</code>整数验证下），刚好<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">整型提升</code>保证了这个行为的正确性。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. 运算符</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.1 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">sizeof</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">sizeof</code>是个运算符，返回操作数的<strong style="font-weight: bold;">字节数</strong>。返回值是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">size_t</code>类型，操作数可以是<strong style="font-weight: bold;">类型</strong>和<strong style="font-weight: bold;">变量</strong>，后者可以不用括号。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.2 重要的运算符优先级</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">指针相关：</h4>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">a. 后置运算符如 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">数组[] 函数()</code> 的优先级 &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指针*</code></h5>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead>
+<tr>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">错误</th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">正确</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int *ap[]</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">指向数组的指针，同<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int (*ap)[]</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">先<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">[]</code>再<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code>，ap是个数组，保存指针</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int *ap()</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">指向函数的指针，该函数返回<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">先<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">()</code>再<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code>，ap是个函数，返回<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int*</code></td>
+</tr>
+</tbody>
+</table>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">b. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指针*</code></h5>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead>
+<tr>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">错误</th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">正确</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*p.f</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">(*p).f</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">先<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.</code>，取p中的f指针，再<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code></td>
+</tr>
+</tbody>
+</table>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">c. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">++ --</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指针*</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">加减运算符 +-</code></h5>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead>
+<tr>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">错误</th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">正确</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*p++</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">(*p)++</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">指针p先自增，返回自增前的值，再<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code></td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*p+1</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*(p+1)</code></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">先<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code>，得到指向的值后再+1</td>
+</tr>
+</tbody>
+</table>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">== !=</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">赋值 =</code></h5>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">错误方式： <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">c = getchar() != EOF</code><br/>正确方式： <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">(c = getchar()) != EOF</code></p>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">&amp;&amp;</code> &gt; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">||</code></h5>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.3 结合律</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">规定当几个操作符有相同优先级时，先执行哪一个。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">常见的都是从左到右，<strong style="font-weight: bold;">赋值运算符(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">= += -= ...</code>)的结合律是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">从右向左</code></strong>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">a=b=c</code>，先执行<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">b=c</code></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.4 计算的次序</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">大部分表达式中，操作数的执行次数是不确定的，如 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">x = f() + g() * h()</code>，f/g/h三者的执行顺序是不确定的；</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">函数调用时，参数的计算次序也是不确定的；</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">但是，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">&amp;&amp;</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">||</code>是<strong style="font-weight: bold;">短路求值</strong>的，即从左到右计算，得到结果即停止。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4. 语句</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">4.1 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">do...while(0)</code> 的作用</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">类似其他高级语言的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">try...catch</code>异常机制。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">do</span>{
+    <span style="color: #75715e;">// 前置条件的检查</span>
+    <span style="color: #F92672;">if</span>(firstCheckFail())
+        <span style="color: #F92672;">break</span>;
+    <span style="color: #F92672;">if</span>(secondCheckFail())
+        <span style="color: #F92672;">break</span>;
+
+    <span style="color: #75715e;">// 检查通过，正式开始业务逻辑。</span>
+
+}<span style="color: #F92672;">while</span>(<span style="color: #ae81ff;">0</span>);
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5 声明</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.1 阅读复杂声明的方法</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">取最左边的标识符，由最内的括号开始往外一层层考察，考察时先往右后往左：<br/>向右：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">[]</code>："含有...的 <strong style="font-weight: bold;">数组</strong>"</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">()</code>: "返回...的 <strong style="font-weight: bold;">函数</strong>"</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">先考察右侧的这两个符号是因为他们的优先级比<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code>高。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">向左(从右向左阅读)：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code>: "指向...的 <strong style="font-weight: bold;">指针</strong>"</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">const/volatile</code>:</li>
+<li style="line-height: 1.6;">类型信息</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.2 声明和定义 (declare &amp; define)</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">声明</strong>：指代其他地方定义的对象，向编译器提供一个符号的信息（如变量的类型/函数的参数返回值），使后面使用该符号的地方不会出错。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">extern</code>关键字进行声明：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">声明一个 <em>变量</em>：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">extern int i;</code>，没有<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">extern</code>关键字则成为定义</li>
+<li style="line-height: 1.6;">声明一个 <em>函数</em>：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">extern int fn(int);</code>，即函数原型，参数名可以不</li>
+<li style="line-height: 1.6;">写，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">extern</code>关键字也可以省略。没有参数时要用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">void</code>，否则会被解释成任意多的参数。</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">定义</strong>：为对象分配内存。</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">变量<br/> 定义在函数之外的，是 全局 的。<br/> 定义在函数之内的，是局部变量，分配在栈上，有一个关键字<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">auto</code>用来修饰这种类型，但一般不会使用。<br/> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>变量和全局变量类似，除了它只在当前文件中可见。<br/> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">register</code>关键字让编译器尽可能将该变量存储在寄存器中。</li>
+<li style="line-height: 1.6;">函数<br/> 定义函数时要提供函数体。<br/> 函数默认是全局的，有一个冗余的修饰符<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">extern</code>，但一般不会用。<br/> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>也可以修饰函数，表示该函数仅在当前文件中可见。<br/> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">inline</code>内联，向编译器建议需要更快地执行该函数，这通常是通过将该函数的代码提升到调用者内部实现的，省去了函数调用的开销，但会造成调用者的函数体变大。<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">inline函数</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">#define</code>的区别：<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">#define</code> 工作在 <em>预处理阶段</em> 仅做简单的文本替换。 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">inline</code>工作在 <em>编译阶段</em>，从语义上讲和调用一个普通函数的效果是一样的，也会对参数做检查和转型，因此更安全。</p>
+</blockquote></li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以有多个声明，但只能有一个定义。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.3 const</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">const</code>并不能把变量变成常量，它只是说明 <strong style="font-weight: bold;">这个符号不能被赋值</strong>，即它的值对于这个符号而言是只读的，可以通过别的途径修改，比如通过一个指针。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">const</code>和指针连用：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> <span style="color: #F92672;">const</span> * a;
+<span style="color: #F92672;">const</span> <span style="color: #F92672;">int</span> * b;
+<span style="color: #F92672;">int</span> * <span style="color: #F92672;">const</span> c;
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">阅读类型时，是<strong style="font-weight: bold;">从右向左</strong>看的，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code>表示<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指向...的指针</code>，因此有：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">a和b中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">const</code>是修饰<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>的，ab是一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指针，指向const int</code>，自己可以修改，但指向的内容不能修改</li>
+<li style="line-height: 1.6;">c中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">const</code> 是修饰 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*</code> 的，c是一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">const指针，指向int</code>，自己不能修改，指向的内容可以修改。</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">更详细的规则可以见《声明》一部分。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指向const的指针</code>一般在数组形式的参数中使用，表示该函数不会修改数组内部的值。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.4 typedef</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">typedef</code>的语法和<strong style="font-weight: bold;">声明一个变量</strong>是一样的，但它的作用是为某个类型赋一个别名。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">typedef</span> <span style="color: #F92672;">struct</span>{<span style="color: #F92672;">int</span> a,<span style="color: #F92672;">int</span> b} pair;   <span style="color: #75715e;">// struct</span>
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">int</span> <span style="color: #e6db74;">array</span>[<span style="color: #ae81ff;">5</span>];       <span style="color: #75715e;">// 数组</span>
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">int</span> (*fn)(<span style="color: #F92672;">char</span>);    <span style="color: #75715e;">// 函数指针</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">5.5 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.h</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.c</code>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">interface</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">implementation</code></h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个模块通常由<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">interface</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">implementation</code>两部分组成，前者声明了模块对外提供的服务，包括对外公开的函数和变量，后者是对前者的实现，客户端仅依赖<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">interface</code>而不关心具体实现。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在C中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">interface</code>的角色是由<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.h</code>文件担任的，其中通常包括了：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">对模块公开变量（即全局变量）的声明;</li>
+<li style="line-height: 1.6;">对模块公开方法的声明；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code> / <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">union</code> / <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">enum</code> 类型声明；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">#define</code> / <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">typedef</code></li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">客户端通过include<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.h</code>文件使用该模块提供的服务。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.c</code>文件中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>类似java中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">private</code>关键字，不需要暴露给外部的函数/变量都应该定义为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>的。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.c</code>include该模块的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.h</code>文件，编译器可以保证二者的一致性。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">为了防止重复include，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">.h</code>文件中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">include guard</code></p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 开头：</span>
+<span>#ifndef MODULE_A</span>
+<span>#<span style="color: #F92672;">define</span> MODULE_A</span>
+
+<span style="color: #75715e;">// 其他内容</span>
+
+<span style="color: #75715e;">// 结尾：</span>
+<span>#<span style="color: #F92672;">endif</span></span>
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">6. 函数</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">6.1 调用</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">6.1.1 传值调用</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">所有的调用都是传值调用。</p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">6.1.2 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">stdcall</code> vs <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cdecl</code></h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">不同的编译器对函数调用有不同的实现，一般有两种方式：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">stdcall</code><br/>调用者负责参数入栈，被调用者在结束时负责参数出栈，只能根据自己的参数列表出栈，因此 <strong style="font-weight: bold;">无法实现可变参数</strong>。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cdecl (默认)</code><br/>调用者负责参数的入栈和出栈，调用者是知道参数长度的，因此 <strong style="font-weight: bold;">可以实现可变参数</strong>。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">二者参数入栈的顺序都是 <strong style="font-weight: bold;">从右到左</strong>。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">6.2 不定参数的函数</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">不定参数列表只能放在参数的最后面：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> sum(<span style="color: #F92672;">int</span> n, ...){}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">基本的工作原理是用一个指针，初始指向栈中 <em>最后一个确定参数的结束地址</em> ，按给定的数据类型，依次读取对应长度的字节，并移动该指针。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">函数内部无法知道可变参数列表的长度，因此需要显式告知：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">将长度作为函数参数;</li>
+<li style="line-height: 1.6;">用一个约定的值表示参数结束，类似字符串字面两结尾的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">NUL</code>.</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">需要依赖的几个宏：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span>#<span style="color: #F92672;">include</span> &lt;stdarg.h&gt;</span>
+
+va_list ptr; <span style="color: #75715e;">// 移动并读取可变参数的指针</span>
+va_start(ptr, 最后一个确定参数) <span style="color: #75715e;">// 用最后一个确定参数初始化ptr</span>
+va_arg(ptr, 参数类型)   <span style="color: #75715e;">// 按指定类型读取一个可变参数，并移动ptr</span>
+va_end(ptr) <span style="color: #75715e;">// 使ptr无效</span>
+
+<span style="color: #75715e;">/*使用模式*/</span>
+<span style="color: #F92672;">void</span> foo( <span style="color: #F92672;">int</span> bar, ... ) {
+  va_list ptr;                                  <span style="color: #75715e;">// 1</span>
+  va_start(ptr, bar );                          <span style="color: #75715e;">// 2</span>
+
+  <span style="color: #F92672;">for</span> (未读取完参数) {
+    some_type arg = va_arg(ptr, some_type );    <span style="color: #75715e;">// 3</span>
+    <span style="color: #75715e;">/* Do something with arg */</span>
+  }
+  va_end(ptr);                                  <span style="color: #75715e;">// 4</span>
+}
+
+<span style="color: #75715e;">// 参考：以上宏x86上的一种实现</span>
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">char</span> *va_list;
+<span>#<span style="color: #F92672;">define</span> va_start( ptr, param ) (ptr = (va_list)(&amp;param + sizeof( param ))) <span style="color: #75715e;">// 让ptr指向param的结束地址</span></span>
+<span>#<span style="color: #F92672;">define</span> va_arg( ptr, type ) (*(type *)((ptr += sizeof( type )) - sizeof( type )) <span style="color: #75715e;">// 按type读取ptr指向的值并移动ptr</span></span>
+<span>#<span style="color: #F92672;">define</span> va_end(ptr) ( ptr = (va_list)0 ) <span style="color: #75715e;">// 使ptr无效</span></span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">6.3 函数指针</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">注意，<strong style="font-weight: bold;">函数名是指向该函数的指针</strong></p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">typedef</span> <span style="color: #F92672;">void</span> (*FuncPtr)();  <span style="color: #75715e;">// 声明了一个函数指针类型</span>
+
+<span style="color: #F92672;">void</span> foo(){}                <span style="color: #75715e;">// 函数名foo是个函数指针</span>
+
+FuncPtr bar = foo;          <span style="color: #75715e;">// 或：void (*bar)() = foo</span>
+(*bar)();
+bar();                      <span style="color: #75715e;">// 直接通过函数指针也可以调用</span>
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">7. 指针</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个指针有两个属性：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">指向的 <strong style="font-weight: bold;">内存地址</strong>；</li>
+<li style="line-height: 1.6;">指向的 <strong style="font-weight: bold;">类型</strong>。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">void*</code> 指针： “万能指针”，只知道地址，不知道类型，必须转型成其他类型的指针才能使用。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">指针的运算：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">和整数加减：     以该指针指向的类型为单位，偏移指针；</li>
+<li style="line-height: 1.6;">指针之间相减：   获得两个元素在数组间相隔多少个元素；</li>
+<li style="line-height: 1.6;">指针大小比较：   判断两个元素在数组间的相对位置。</li>
+<li style="line-height: 1.6;">取下标<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">p[i]</code>：   效果和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*(p+i)</code>相同，就是偏移指针</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">8. 数组</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">8.1 数组和指针</h3>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">在所有表达式中，数组名是一个指针<strong style="font-weight: bold;">字面量</strong>，它的值是数组第一个元素的地址，可以认为是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">指向数组第一个元素的指针</code>。以下情况例外：</li>
+</ol>
+<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">sizeof(数组名)</code>：返回整个数组的字节长度；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">&amp;数组名</code>： 返回一个指向数组的指针，它的地址和数组内第一个元素的地址相同，但其指向的类型是一个数组，而不是元素的类型，这是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">指向数组的指针</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">指向数组第一个元素的指针（数组名）</code>唯一的区别。</li>
+</ul>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">注意，数组名是个<strong style="font-weight: bold;">指针字面量</strong>，因此：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">无法对数组名重新赋值，因为它是个字面量；</li>
+<li style="line-height: 1.6;">用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">p[i]</code>对指针偏移，p为数组名和指针时是有区别的：<br/> <img alt="Alt text" class="en-media" longdesc="./1399881344881.png" name="e98c0bf3-d7d8-4994-83ec-0e0c2c5e186f" src="/assets/img/3cbcd623b7dba27c34ef651bedf2174f.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/> <img alt="Alt text" class="en-media" longdesc="./1399881360977.png" name="49ac79a4-1c2c-4107-9e39-bdee478dbe2f" src="/assets/img/ee6b8a1494f3a742233b6f87c1dbc95a.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当 <em>定义为数组，但声明为指针使用</em> 时的错误：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// file a.c</span>
+<span style="color: #F92672;">char</span> p[<span style="color: #ae81ff;">10</span>]; <span style="color: #75715e;">// 假设编译时确定p的地址是776</span>
+
+<span style="color: #75715e;">// file b.c</span>
+<span style="color: #F92672;">extern</span> <span style="color: #F92672;">char</span> *p;
+<span style="color: #F92672;">char</span> a = p[<span style="color: #ae81ff;">2</span>];
+<span style="color: #75715e;">/*
+将p当作指针做偏移，步骤如下：
+1. 到地址776，取其内容； &lt;-- 实际得到的是p的第一个元素，一个char
+2. 进行偏移； &lt;-- 在一个char上进行指针运算，显然是错误的。
+3. 访问2得到的地址
+*/</span>
+</code></pre>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;">若函数的参数声明为数组，内部得到的实际上是一个指向数组第一个元素的<strong style="font-weight: bold;">指针变量</strong>。</li>
+</ol>
+</blockquote><ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">因此对数组形式的参数，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">sizeof()</code>返回的是指针长度（即机器字长），也可以对其赋值；</li>
+<li style="line-height: 1.6;">声明函数时，参数可以用数组形式，也可以用指针形式：<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">  <span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> *p){}     <span style="color: #75715e;">// 更精确</span>
+  <span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> a[]){}    <span style="color: #75715e;">// 长度可以省略，因为函数内部不知道数组长度</span>
+  <span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> a[<span style="color: #ae81ff;">200</span>]){}
+</code></pre>
+</li>
+<li style="line-height: 1.6;">对以上形参，可以用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">指针</code>/<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">数组名</code>调用。所有属于实参的数组，都会被编译器改写成指针：<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">  <span style="color: #F92672;">int</span> <span style="color: #e6db74;">array</span>[<span style="color: #ae81ff;">10</span>] = {..};
+  <span style="color: #F92672;">int</span> *p = ...;
+  func(<span style="color: #e6db74;">array</span>);        <span style="color: #75715e;">//  传递数组</span>
+  func(<span style="color: #e6db74;">array</span> + <span style="color: #ae81ff;">2</span>);    <span style="color: #75715e;">//  传递数组的一部分</span>
+  func(p);            <span style="color: #75715e;">//  传递一个指针</span>
+</code></pre>
+</li>
+</ul>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">8.2 初始化</h3>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> a[<span style="color: #ae81ff;">5</span>] = {<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">3</span>};     <span style="color: #75715e;">// 给定长度和不完整的初始化列表，剩下的元素被初始化为0</span>
+<span style="color: #F92672;">int</span> a[] = {<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">3</span>};      <span style="color: #75715e;">// 有初始化列表，可以省略数组长度</span>
+
+<span style="color: #75715e;">// 字符数组：</span>
+<span style="color: #F92672;">char</span> a[<span style="color: #ae81ff;">10</span>] = <span style="color: #e6db74;">"abc"</span>;     <span style="color: #75715e;">// 一个长度为10的char数组</span>
+<span style="color: #75715e;">// 不是定义一个数组，而是定义指向字符串常量的指针</span>
+<span style="color: #F92672;">char</span> *b = <span style="color: #e6db74;">"abc"</span>;        
+<span style="color: #F92672;">char</span> c[] = <span style="color: #e6db74;">"abc"</span>;       <span style="color: #75715e;">// 同上</span>
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">8.3 二维数组</h3>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">数组的数组；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int a[2][3]</code>的内存布局：^^^|^^^；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">a</code>是指向数组第一个元素的指针，即一个指向<strong style="font-weight: bold;">长度为3的数组</strong>的指针（类型是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int (*a)[3]</code>），它<strong style="font-weight: bold;">指向的地址</strong>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">&amp;a[0][0]</code>相同，不同的是<strong style="font-weight: bold;">指向的类型</strong>。对它+1将指向下一个子数组；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">*(*(a+1) + 1)</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">a[1][1]</code>一样；</li>
+</ul>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">8.3.1 二维数组的初始化</h4>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">int m[<span style="color: #e6db74;">2</span>][<span>3</span>] = {1,2,3,4,5,6};    // 初始化列表坍缩为一维
+int m[][3] = {                  // 第一维可以自动计算
+<span style="color: #a6e22e;">    {1,2,3},</span>
+<span style="color: #a6e22e;">    {4,5,6}</span>
+};
+char const s[][9] = {           // char型二维数组，15*9，空的位置填0
+<span style="color: #a6e22e;">    "string1",</span>
+<span style="color: #a6e22e;">    "another string"</span>
+};
+</code></pre>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">8.3.2 指向数组的指针</h4>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> a[<span style="color: #ae81ff;">10</span>] = ...;    <span style="color: #75715e;">// a是一个指向a第一个元素的指针</span>
+<span style="color: #F92672;">int</span> (*p)[<span style="color: #ae81ff;">10</span>] = &amp;a;  <span style="color: #75715e;">// p是一个指向数组a的指针</span>
+a == p;             <span style="color: #75715e;">// TRUE，即a和p指向的地址是一样的，不一样的只是指向的类型</span>
+*p;                 <span style="color: #75715e;">// 数组a</span>
+*a;                 <span style="color: #75715e;">// a[0]</span>
+</code></pre>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">8.3.3 指针数组</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">常用于<em>锯齿状二维数组</em>，数组的每个元素是一个指针，常用于字符串数组。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">char</span> *words[] = {   <span style="color: #75715e;">// 每个指针都指向一个字符串常量</span>
+    <span style="color: #e6db74;">"first"</span>,
+    <span style="color: #e6db74;">"second"</span>,
+    <span style="color: #ae81ff;">NULL</span>
+}
+</code></pre>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">8.3.4 二维数组作为函数参数</h4>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 一维：                   二维（按数组的数组方式理解）：</span>
+<span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> *p)           <span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> (*p)[<span style="color: #ae81ff;">10</span>]);    <span style="color: #75715e;">// 指向子数组的指针</span>
+<span style="color: #75715e;">// 除了第一维，后面的维度都不能省略。因为需要知道内部元素（即子数组）具体的类型。</span>
+<span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> a[])          <span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> p[][<span style="color: #ae81ff;">10</span>])      
+<span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> a[<span style="color: #ae81ff;">200</span>])       <span style="color: #F92672;">void</span> func(<span style="color: #F92672;">int</span> p[<span style="color: #ae81ff;">2</span>][<span style="color: #ae81ff;">10</span>])
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">9. struct</h2>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">struct</span> Foo{
+    <span style="color: #F92672;">int</span> a;
+    <span style="color: #F92672;">char</span> b;
+    <span style="color: #F92672;">float</span> c;
+};
+<span style="color: #F92672;">struct</span> Foo bar = {  <span style="color: #75715e;">// 初始化</span>
+    <span style="color: #ae81ff;">1</span>,
+    <span style="color: #e6db74;">'c'</span>,
+    <span style="color: #ae81ff;">3.14</span>
+};
+bar<span style="color: #f8f8f2;">.a</span>;              <span style="color: #75715e;">// 直接访问</span>
+<span style="color: #F92672;">struct</span> Foo *p = &amp;bar;
+bar-&gt;a;             <span style="color: #75715e;">//间接访问</span>
+
+<span style="color: #75715e;">// typedef struct:</span>
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">struct</span>{...} Foo;
+Foo bar;
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">9.1 内存补齐</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考：<a href="http://www.geeksforgeeks.org/structure-member-alignment-padding-and-data-packing/" style="background: transparent;" target="_blank">《Structure Member Alignment, Padding and Data Packing》</a></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个变量对起始内存地址有要求，默认条件下，n byte的类型是 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">n byte对齐</code> 的，即：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;">变量的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">起始地址</code> 必须要被n整除</li>
+<li style="line-height: 1.6;">变量的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">结束地址</code> 必须要被n整除（主要针对 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">struct</code> ）</li>
+</ol>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">原因：<strong style="font-weight: bold;">为了CPU能用最少的时钟周期读取一个变量</strong>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">举个例子，在一个字长32bit的机器上，CPU通过总线一次性可以读取4个字节，为了效率，内存按照字长被依次分组，每一组称为一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bank</code>，CPU对内存的读取是以这些<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bank</code>为单位的。如果一个4个byte的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>跨越了两个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bank</code>，则需要读两次；当起始地址刚好是4的倍数时，一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>刚好占一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bank</code>，CPU只需读一次。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">假设有以下<em>全局变量</em>（32位平台）：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">/*
+典型32位下的类型长度：
+char               1 byte
+short              2 bytes
+int/long/float     4 bytes
+double             8 bytes
+*/</span>
+<span style="color: #F92672;">char</span> *p;
+<span style="color: #F92672;">char</span> c;
+<span style="color: #F92672;">int</span> x;
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">p是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">4字节对齐</code>，c是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">1字节对齐</code>，x是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">4字节对齐</code>。因此按照规则：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">p开始的地址必然是4的倍数；</li>
+<li style="line-height: 1.6;">p和c之间不需要补齐，因为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">char</code>可以从任意地址开始存放；</li>
+<li style="line-height: 1.6;">c和x之间需要3字节补齐</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果p和c的位置换一下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">char</span> c;
+<span style="color: #F92672;">char</span> *p;
+<span style="color: #F92672;">int</span> x;
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在c和p之间需要补齐，但具体长度不能确定，因为无法确定c是在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bank</code>中的哪个位置存放。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">再看看<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">第一个成员的起始地址就是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>的起始地址，即开头是没有空隙的；</li>
+<li style="line-height: 1.6;">内部的变量均得满足自身的对齐规则；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;"> <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>类型自身必须按照其内部最长的成员变量进行对齐 </strong>。即假如内部最长的成员是4个byte长，则该<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>类型是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">4 byte对齐</code>的。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">举个例子：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">struct</span> foo{
+    <span style="color: #F92672;">char</span> a;
+    <span style="color: #F92672;">int</span> b;
+    <span style="color: #F92672;">short</span> c;
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">内部最长成员是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">int</code>4个字节，因此<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct foo</code>是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">4 byte对齐</code>的。</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">按照规则1，a的起始位置肯定是4的倍数（一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">bank</code>的开始）；</li>
+<li style="line-height: 1.6;">b是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">4 byte对齐</code>，a和b之间需要长度为3的padding；</li>
+<li style="line-height: 1.6;">bc之间不需要padding；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;"> 按照规则2，c后面需要长度为2的padding，这样结束地址才能被4整除 </strong>。<br/>这是为了当声明一个struct数组时，每个元素的起始地址都满足对齐条件（n+1的起始地址是n的结束地址）。</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">减少padding：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">按长度顺序声明<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">struct</code>的member</p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">查看<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>中member的偏移量：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span>#<span style="color: #F92672;">include</span> &lt;stddef.h&gt;</span>
+... offsetof(<span style="color: #F92672;">struct</span> foo,b) ...
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">修改默认的对齐策略：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span>#<span style="color: #F92672;">pragma</span> pack(push) <span style="color: #75715e;">//保存对齐状态</span></span>
+<span>#<span style="color: #F92672;">pragma</span> pack(1)<span style="color: #75715e;">//设定为1字节对齐，其实就是不要对齐</span></span>
+<span style="color: #F92672;">struct</span> test{
+    <span style="color: #F92672;">char</span> m1;
+    <span style="color: #F92672;">double</span> m4;
+    <span style="color: #F92672;">int</span> m3;
+};
+<span>#<span style="color: #F92672;">pragma</span> pack(pop)<span style="color: #75715e;">//恢复对齐状态</span></span>
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">10. 编译/链接/装载</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1399972844477.png" name="65bafc81-08fa-41f0-8d7a-7ac161ca255a" src="/assets/img/13ba4f962989e6337a5fe31aef3af7a4.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">动态链接的优点：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">减小可执行文件的体积大小；</li>
+<li style="line-height: 1.6;">所有链接了某个动态库的可执行文件，在运行时共享该共享库在<em>物理内存</em>中的同一份拷贝，节约内存开销。<br/> 装载可执行文件/动态库基本上都是依赖<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap()</code>系统调用进行的，当多个进程映射了同一个共享库，它在<em>物理内存</em>中的开销却只有一份。<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">mmap()</code><br/>该系统调用将磁盘上的文件映射到<em>虚拟内存</em>，对文件的读写就像访问普通内存，<em>物理内存</em>作为二者之间的cache。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">mmap()</code>的一个重要特性是，当多个进程映射了同一个文件，其所占用的<em>物理内存</em>可以被共享，这一特性通常用来实现名为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">共享内存</code>的进程间通信。</p>
+</blockquote></li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用gcc创建动态库/链接动态库生成可执行文件，见<a href="http://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html" style="background: transparent;" target="_blank">《Shared libraries with GCC on Linux》</a>。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">11. 运行时结构</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">11.1 段</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">目标文件/可执行文件遵循ELF格式，主要由3个段组成：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">文本段 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">text</code><br/> 存储代码；</li>
+<li style="line-height: 1.6;">数据段 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">data</code><br/> 有初始值的全局变量和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>变量，包括他们的初始值；<br/> 字符串常量。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">BSS</code><br/> 没有初始化的全局变量和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>变量，只记录这些变量需要的空间大小。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1400047077428.png" name="9a80e751-7f76-48a1-9403-5f74e8409b66" src="/assets/img/6a94f1ece61495f9e645a043007c3c5d.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">11.2 运行时内存结构</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">程序运行时，装载器简单地使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap()</code>将可执行文件中的各个段映射到<strong style="font-weight: bold;">虚拟内存</strong>中：<br/><img alt="Alt text" class="en-media" longdesc="./1400049398214.png" name="6e069bb0-7f58-4157-a459-7a1e67d96fa2" src="/assets/img/3cdefeee381cf3a33bfbc1ff765bb053.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">虚拟地址空间的不同段，或者段的不同部分会被设置不同的权限，如<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">text</code>段一般是<em>可读可执行</em>的；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">data</code>中存储全局/静态变量的部分是<em>可读可写</em>的，存储字符串常量的部分是<em>只读</em>的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">BSS段</code>会被初始化为0。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">BBS</code>上方是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">堆</code>，用于运行时动态分配内存，向上增长；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">栈</code> 用于函数的执行，它是从高地址向低地址增长的，每个线程有自己的栈，初始大小为1M，按需要增长。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此外，虚拟地址空间还需要分配一部分映射到共享库文件（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>），将共享库考虑在内进程的地址空间如下（省略了内核空间）：<br/><img alt="Alt text" class="en-media" longdesc="./1400049903304.png" name="c98771cb-6f6c-44c8-b8d2-ab2149cff9f6" src="/assets/img/5be2119026fe4ec8811e7b402bff20a0.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">11.3 函数调用和栈</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">栈的基本单位是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">stack frame</code>，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">frame</code>的入栈出栈实现了函数的调用和返回。此外，栈主要为函数运行时提供必要的<em>数据</em>，如：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">函数的局部变量；</li>
+<li style="line-height: 1.6;">参数；</li>
+<li style="line-height: 1.6;">保存返回地址，被调用函数返回后可以继续执行；</li>
+<li style="line-height: 1.6;">保存寄存器，防止被调用函数污染；</li>
+<li style="line-height: 1.6;">等等。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">两个栈相关的寄存器：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp (base pointer)</code><br/> 始终指向当前frame的底部，在当前函数运行的过程中不会更改。局部变量和函数参数一般都是通过它加上偏移量访问的；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">esp (stack pointer)</code><br/> 指向当前frame的顶部，随程序运行不停伸缩。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cdecl</code>方式的函数调用过程如下（<a href="http://unixwiz.net/techtips/win32-callconv-asm.html" style="background: transparent;" target="_blank">参考</a>）：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead>
+<tr>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">调用者frame</th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">被调用者frame</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">1</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">参数依次入栈，顺序从右到左</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">2</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">保存部分寄存器</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">3</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">call 被调用函数地址</code>： 1. 返回地址(即<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">eip</code>，第12步指令的地址)入栈；2. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">eip = 被调用函数地址</code>，流程进入被调用函数</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">4</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">push %ebp</code>：保存父frame的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp</code>以便恢复</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">5</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp = esp</code>: 将<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp</code>指向子frame的底部。由上一步可知，此时frame底部保存着父frame的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp</code>。</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">6</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">保存部分寄存器</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">7</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">为局部变量分配内存</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">8</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">...代码逻辑中...</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">9</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">恢复部分寄存器</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">10</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">leave</code>, 恢复<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">esp</code>到调用前（第3步）父frame中的状态： 1.<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">esp = ebp - 4</code>; 2. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ebp = *ebp</code>。注意，此时<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">esp</code>指向的内存中保存着函数的返回地址。</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">11</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ret</code>:将返回地址出栈，并设置给<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">eip</code>。流程回到调用者。</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">12</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">恢复部分寄存器</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;"></td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">13</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">参数出栈</td>
+</tr>
+</tbody>
+</table>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cdecl</code>约定下)参数是保存在父frame中的，由父frame传递和清除</strong>。这也是为什么<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cdecl</code>调用方式支持可变长参数；</li>
+<li style="line-height: 1.6;">寄存器在进入调用和退出调用时要保存和恢复。被分为两类，一类由调用者在父frame中维护，一类由被调用者在子frame中维护；</li>
+<li style="line-height: 1.6;">子函数的退出主要是两点：1. 恢复<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">esp eip</code>两个寄存器到进入调用时的状态；2. 跳转到之前保存的返回地址。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">不要在函数中返回指向栈内分配的内存的指针，如:</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">char</span>* fn(){
+    <span style="color: #F92672;">char</span> p[<span style="color: #ae81ff;">2</span>] = {...};
+    <span style="color: #F92672;">return</span> p;
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">函数退出后，数组就会被撤销，p指向的内存是未定义的。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">12. 虚拟内存</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">虚拟内存(Virtual Memory, VM)是对硬件（物理内存/磁盘扩展）的抽象，它主要有两个优点：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">为所有进程提供一个连续的/统一的/互相隔离的虚拟内存空间；</li>
+<li style="line-height: 1.6;">将磁盘作为物理内存的扩展，突破物理内存的限制。</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.1 基本思路</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用磁盘扩充物理内存，这一部分磁盘空间被称为swap空间，它和物理内存一起组成实际可用的内存；物理内存用于存放最近需要的热点数据，当物理内存中的数据有一段时间未被使用，它就可能被淘汰，移入swap，空出来的空间用于载入需要使用的其他数据。这个数据交换过程类似cache。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">每个程序在运行时看到的都是自己私有的虚拟地址空间，在32位机器下是一块从0到4G的连续空间。CPU中的MMU(内存管理单元)负责截获CPU发出的内存访问（虚拟地址），将其翻译成实际的物理地址。当访问的内存不在物理内存中而在swap时，MMU将触发<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page fault</code>，内核负责将数据从磁盘载入到物理内存，如果物理内存已满，内核还会依据一定的淘汰算法将某些冷数据移动到swap以腾出空间，整个过程对CPU和进程而言是透明的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">虚拟内存被划分成若干<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>，一个典型的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>是4k大小，它是虚拟内存/物理内存间映射的基本单位，也是物理内存和swap数据交换（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page in/out</code>）的基本单位。虚拟内存中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>只可能有3种状态：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><strong style="font-weight: bold;"> 未分配 </strong>： 不占用任何物理内存或磁盘上的空间。</li>
+<li style="line-height: 1.6;">已分配<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">映射到物理内存</strong></li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold;">映射到swap</strong></li>
+</ul>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1400117363662.png" name="08dc0b0e-dd26-48fd-9d69-450c95327a01" src="/assets/img/d498f86674008cc21c0b5b73aede45f1.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.2 Page Table</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">虚拟内存和物理内存/SWAP间page的映射关系保存在一张常驻内存的表中，该表由操作系统维护，构称为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Table</code>，MMU在翻译虚拟地址时需要查询该表。每个进程有自己的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Table</code>，其结构基本如下：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1400060657417.png" name="d218d25d-4d26-4f9c-a5dc-0a55a9a5376e" src="/assets/img/36c93d5accf60e039dbcedde723f05d9.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">虚拟内存中的每个page在表中对应一个记录，第一个bit表明该页是否在内存中，若在内存中，address字段存储该页在物理内存中的起始地址；若不在内存中，当address字段如果不为空时，存储的是该页在swap中的起始地址，否则说明未分配。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">多级<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Table</code><br/>假设在32位系统中，每页4k，则页表需要1M个记录，假设每个记录4byte，每个进程的页表占用4M物理空间，且是常驻内存的，这是不可接受的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Linux对页做了进一步的分级。原先地址的前20位表示页的序号，后12位是页内的偏移；现在将前20位划分为两部分，前10位表示<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">目录(directory)</code>，后10位表示目录内的页号，如下所示：<br/><img alt="Alt text" class="en-media" longdesc="./1400136655592.png" name="19febe2a-7488-4ce0-a326-f1dcf2745543" src="/assets/img/aabea97bc99fd5edf9e07edaa8ab6a97.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这种分级的方式可以节约内存，因为：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">如果某个目录内没有分配页，那该目录就不需要一个页表。在实际应用中，一个进程的大部分内存空间都是未分配的，因此可以节约大量空间；</li>
+<li style="line-height: 1.6;">B、只有目录表才需要常驻物理内存，页表和其他普通的页一样，可以被换入换出，只有最经常使用的二级页表才被缓存在物理主存中。  ——不过Linux并没有完全享受这种福利，它的目录表和页表都是常驻内存的。</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.3 Page Fault</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当MMU在查询<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Table</code>后发现某一页不在物理内存中，将触发<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Fault</code>，按照标准的错误处理机制，OS将切换到内核态执行对应的处理程序，Linux下的逻辑为：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">如果该页未分配，触发<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">segment fault</code>异常并退出；</li>
+<li style="line-height: 1.6;">已分配但权限错误（如访问内核态内存空间/对只读区段写），触发<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">protection exception</code>退出；</li>
+<li style="line-height: 1.6;">否则说明该页在SWAP中，内核负责将其移入物理内存。如果物理内存已满，某个page被淘汰至SWAP以腾出空间。处理程序退出后，重新运行引发<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Page Fault</code>的指令。</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.4 Page的分配</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当为进程分配虚拟内存（如通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>）时，对一个新分配的页，首先会在SWAP上分配一个页（也可以指定映射到一个文件，或内核创建的一个虚拟匿名文件，后续<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>会提到），然后更新该页在页面中的记录，并建立二者的映射。因此，虚拟内存中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>刚刚分配时是不占用物理内存的，直到第一次使用时被内核换入，才真正消耗了物理内存。<br/><img alt="Alt text" class="en-media" longdesc="./1400137543674.png" name="746301ad-1113-44a9-bbf6-eb183b750429" src="/assets/img/e412abc7c4a6149db38289b7a2586639.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.5 Linux进程的虚拟内存布局:</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1400135645976.png" name="832de3dc-981e-4e11-ba46-626f6d00201c" src="/assets/img/f9395f03b289237d2d016bdc2bc3bb1e.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/>虚拟内存被分为了两个部分，下半部分为用户空间，上半部分为内核空间，32位系统中前者3G，后者1G。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">内核空间保存着内核所需的代码和数据结构。某些部分所映射的物理页是所有进程共享的，如内核代码和某些全局数据结构；此外，一块连续的虚拟内存空间与系统所有可用物理内存相映射，这是为了方便内核访问任意地址的物理内存。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">内核空间的其他部分存放进程特有的数据，如<strong style="font-weight: bold;">页表</strong> / <strong style="font-weight: bold;">内核栈（如执行系统调用时使用）</strong> / 其他进程元数据。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.6 Memory Mapping和mmap系统调用</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>系统调用可以分配一块虚拟内存，并将其和磁盘上的某个文件关联起来：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">文件系统中的文件<br/>映射也是以<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>为单位的，根据虚拟内存的SWAP机制，这些<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>在第一次访问时才会从映射文件换入物理内存，否则是不占内存的。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">内核创建的匿名文件<br/>当第一次访问某页时，内核将为其在物理内存中分配空间（初始化为0）并建立映射，效果就是为进程分配了一块虚拟内存。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一旦建立了文件映射，分配的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>同样会在物理内存和SWAP间page in/out，和其他的普通<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page</code>并无区别。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>一个重要的特性是可以指定共享模式（shared/private）。假设两个进程映射了同一个文件，如果是shared模式，他们使用的物理内存是共享的，此时任一进程对该区域的修改对其他进程是即时可见的。<br/><img alt="Alt text" class="en-media" longdesc="./1400142988177.png" name="d3755d5b-e62b-4946-b67f-2318fea1702b" src="/assets/img/f8e6962df5daae7a1aec5b4e50b01f9c.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果指定了private，各进程之间对映射区域的修改互不可见。操作系统为了节约内存使用了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">copy-on-write</code>方式：假设AB以private方式映射了同一个文件，初始他们使用的物理内存是共享的，和上图一样，但其权限设置为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">read-only</code>。当A写时将触发<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page fault</code>，内核在错误处理程序中将为A复制该page，并修改A的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">page table</code>中的映射关系，这种惰性部分复制的方式有效减少了内存的开销：<br/><img alt="Alt text" class="en-media" longdesc="./1400144637599.png" name="a8f13c72-3372-44eb-8230-9be5c8a7f1a5" src="/assets/img/f5df6a1276ae3a07c6fc659c34460c16.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">常见用途：<br/><strong style="font-weight: bold;">1: 装载/动态库</strong><br/>装载器载入可执行文件/ 动态连接库的映射都是通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>方式实现的。得益于<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">shared</code>模式，同一可执行文件上的不同进程可以共享text段/data段中read-only区的物理内存；依赖同一个库的不同进程也只需一份内存开销。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当很多进程都对同一个文件读时，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>可以节省大量内存。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">2:更快更方便地读写文件</strong><br/>更快：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">每次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">read/write</code>都是一次系统调用，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>方式只需要一次系统调用，减少了用户态和内核态的切换；</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">read/write</code>需要将数据在内核缓冲区和用户缓冲区间来回拷贝，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>不用；</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">更方便：<br/>像操作内存一样读写文件。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">注意，对<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>分配的虚拟内存写时，只是写到了物理内存中，并未同步到磁盘，需要调用另一个系统调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">msync</code>同步，一般在一段时间的写后调用一次，这样可以合并写，并将随机IO转化为顺序IO，提高性能。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">3:共享内存实现进程间通信</strong><br/>依然是对<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">shared</code>模式的利用，普通进程间通过映射同一文件实现进程间通信。父子进程则可以选择映射匿名文件的方式，在父进程中先调用mmap()，然后调用fork()，子进程继承父进程匿名映射后的地址空间，同样也继承mmap()返回的地址，这样，父子进程就可以通过映射区域进行通信了。 </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">4:分配虚拟内存</strong></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">12.7 动态内存分配</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">底层提供了两个系统调用分配虚拟内存：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">brk</code>: 伸缩<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">system break</code>指针，即扩展或缩小堆。<br/> 堆(heap)是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">BSS段</code>上方的一块区域，用于内存的动态分配，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">system break</code>指针指向它的顶端。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>：更灵活，可以映射任意位置的内存空间，不仅限于堆。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">C标准库提供了<em>内存分配器</em>，内部基于上述两个系统调用管理内存的分配和释放，并对上层提供统一的接口：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>：分配内存</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">calloc</code>：分配内存并清0</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">realloc</code>：改变一个指针指向的内存块的大小，它经常把内存拷贝到别的地方然后返回新地址</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>： 释放内存</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">(<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">alloca</code>是在<em>栈</em>上分配内存)</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><em>（以下讨论仅针对只维护heap的分配器，某些分配器当申请大内存时会使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">mmap</code>，在堆和栈之间的区域进行分配）</em></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><em>内存分配器</em>通常将heap当作一系列<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>维护，为了减少系统调用，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>时可能只将对应的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>送回内存分配器内部维护的内存池中，不会返回给系统；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>类似。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">分配和释放的无序性必然导致碎片的出现，存在两种碎片：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">内部碎片：<br/> 分配器实际分配的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>比请求的要大，如规定了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>的最短长度/给<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>加上padding以满足内存对齐。</li>
+<li style="line-height: 1.6;">外部碎片：<br/> 外部碎片是指，存在若干非连续的小块空闲<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>，其总量满足分配请求，但没有足够大的单块<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>。    </li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">实现算法（<a href="http://moss.cs.iit.edu/cs351/assets/slides-dma.pdf" style="background: transparent;" target="_blank">参考1</a>,<a href="http://moss.cs.iit.edu/cs351/assets/slides-malloc.pdf" style="background: transparent;" target="_blank">参考2</a>）：</p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">12.7.1 implicit free list</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">整个堆由若干连续的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>组成，一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>的结构如下：<br/><img alt="Alt text" class="en-media" longdesc="./1400220511002.png" name="6f657bb0-6653-4569-bbae-bb94835ca206" src="/assets/img/9831c6b126bf3edfec0664d3364b3fda.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">3部分组成：<br/>a. header，定长，保存整个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>的大小，以及使用状态；<br/>b. payload，用户实际得到的内存块；<br/>c. padding，为了内存对齐</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">给定一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>，根据其初始地址和长度，可以快速得到下一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>的位置，组成一个隐式的<em>单向链表</em>:<br/><img alt="Alt text" class="en-media" longdesc="./1400220892801.png" name="41b59719-26ff-4ee3-ad11-f931c265de2c" src="/assets/img/470c37a94ca3ea8b5e65acce5b1e3c40.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>的实现：<br/>从头开始遍历list，挑选一块足够大的空闲<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>，切分为两块，并返回指向payload的指针；如果没有满足条件的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>，则通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">brk</code>扩充堆，O(N)。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">挑选<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free block</code>一般有以下算法：</p>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">first fit，选第一个满足条件的，优点是简单，且分配优先发生在前端，链表后端保存大块的free空间；缺点是前端存在大量的小块碎片，利用率低且增加搜索时间；</li>
+<li style="line-height: 1.6;">best fit，选所有满足条件中最小的，优点是内存利用率高，缺点是每次搜索都要遍历整个list。</li>
+</ul>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>的实现：<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>的参数是指向payload的指针，根据它往前移动可以拿到它所在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>的header，并标记为<em>未分配</em>。最后我们需要看情况合并该<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>前后的空闲块，合并后面空闲块是很容易做到的，只需要根据当前块的大小移动指针即可找到紧邻着的下一个块，但是如何找到前面的块呢？一种方式是从头遍历<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">list</code>，但这样耗时O(N)；另一种优化的方式是在现有<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">block</code>的结构上，在末尾增加一个<em>footer</em>，其结构/内容和header一样，如此，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>将参数往前移动两个header的距离，就能知道上一个块的信息了。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>耗时<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">O(1)</code>：<br/><img alt="Alt text" class="en-media" longdesc="./1400222373973.png" name="32483929-d742-4d6d-8c3f-af734432bddf" src="/assets/img/d7c21329147943a293777963bec0c097.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">每次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>即合并有可能导致空闲块频繁的合并/分裂，因此有些实现将合并的动作推迟到某次<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>失败时，再整个扫描并合并。</p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">12.7.2 buddy system</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">将一块内存不断等分为一棵二叉树。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>时深度优先遍历找best-fit的空闲块；<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>时考察其<em>buddy</em>（如4k等分为两个2k，他们就称为buddy），如果空闲则合并，合并是向上递归的：<br/><img alt="Alt text" class="en-media" longdesc="./1400223566318.png" name="458a21cb-9dec-45ea-ac50-41043c7448c1" src="/assets/img/f2e57306cd7978460c5b1b434688c9dc.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优点：快速，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">malloc</code>: O(log2N)，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">free</code>: O(log2N)。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">缺点：大量的内部碎片，因为需要对请求的内存向上取整。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">13 C实现面向对象</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">OO的3要素：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">封装：数据和行为的封装，信息的隐藏</li>
+<li style="line-height: 1.6;">继承</li>
+<li style="line-height: 1.6;">多态</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">13.1 封装的实现</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>+函数指针模拟类：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">typedef</span> <span style="color: #F92672;">struct</span> _parent{
+    <span style="color: #F92672;">int</span> name;
+
+    <span style="color: #F92672;">void</span> (*printName) (<span style="color: #F92672;">struct</span> _parent* <span style="color: #F92672;">this</span>); <span style="color: #75715e;">// 必须显式将this传入</span>
+    <span style="color: #F92672;">void</span> (*printSecret)(<span style="color: #F92672;">struct</span> _parent* <span style="color: #F92672;">this</span>);
+}Parent;
+
+<span style="color: #75715e;">// constructor</span>
+Parent* newParent(<span style="color: #F92672;">int</span> name,<span style="color: #F92672;">int</span> secret);
+<span style="color: #75715e;">// de-constructor</span>
+<span style="color: #F92672;">void</span> destroyParent(Parent* <span style="color: #F92672;">this</span>);
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">将private信息放在一个不公开定义的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>中，实现信息隐藏：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// parent_private.h</span>
+<span style="color: #F92672;">struct</span> ParentPrivate{
+    <span style="color: #F92672;">int</span> secret;
+};
+
+<span style="color: #75715e;">// parent.h</span>
+<span>#<span style="color: #F92672;">include</span> "parent_private.h"</span>
+<span style="color: #F92672;">struct</span> ParentPrivate;
+
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">struct</span> _parent{
+    <span style="color: #F92672;">int</span> name;
+
+    <span style="color: #F92672;">void</span> (*printName) (<span style="color: #F92672;">struct</span> _parent* <span style="color: #F92672;">this</span>);
+    <span style="color: #F92672;">void</span> (*printSecret)(<span style="color: #F92672;">struct</span> _parent* <span style="color: #F92672;">this</span>);
+
+    <span style="color: #75715e;">// private attributes，外部仅包含parent.h，不知道ParentPrivate的具体结构</span>
+    <span style="color: #F92672;">struct</span> ParentPrivate* priv;
+} Parent;
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">static</code>在类的实现中模拟private方法和类变量。完整代码如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// parent_private.h</span>
+<span>#ifndef PARENT_PRIVATE_H_</span>
+<span>#<span style="color: #F92672;">define</span> PARENT_PRIVATE_H_</span>
+
+<span style="color: #F92672;">struct</span> ParentPrivate{
+    <span style="color: #F92672;">int</span> secret;
+};
+
+<span>#<span style="color: #F92672;">endif</span></span>
+
+<span style="color: #75715e;">// parent.h 类的声明</span>
+<span>#ifndef PARENT_H_</span>
+<span>#<span style="color: #F92672;">define</span> PARENT_H_</span>
+<span>#<span style="color: #F92672;">include</span> "parent_private.h"</span>
+<span style="color: #F92672;">struct</span> ParentPrivate;
+
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">struct</span> _parent{
+    <span style="color: #75715e;">// instance variables</span>
+    <span style="color: #F92672;">int</span> name;
+
+    <span style="color: #75715e;">// instance methods</span>
+    <span style="color: #F92672;">void</span> (*printName) (<span style="color: #F92672;">struct</span> _parent* <span style="color: #F92672;">this</span>);
+    <span style="color: #F92672;">void</span> (*printSecret)(<span style="color: #F92672;">struct</span> _parent* <span style="color: #F92672;">this</span>);
+
+    <span style="color: #75715e;">// private attributes</span>
+    <span style="color: #F92672;">struct</span> ParentPrivate* priv;
+} Parent;
+
+<span style="color: #75715e;">// constructor</span>
+Parent* newParent(<span style="color: #F92672;">int</span> name,<span style="color: #F92672;">int</span> secret);
+<span style="color: #75715e;">// de-constructor</span>
+<span style="color: #F92672;">void</span> destroyParent(Parent* <span style="color: #F92672;">this</span>);
+<span>#<span style="color: #F92672;">endif</span></span>
+
+<span style="color: #75715e;">// parent.c 类的实现</span>
+<span>#<span style="color: #F92672;">include</span> "parent_private.h"</span>
+<span>#<span style="color: #F92672;">include</span> "parent.h"</span>
+<span>#<span style="color: #F92672;">include</span> &lt;stdio.h&gt;</span>
+
+<span style="color: #F92672;">void</span> destroyParent(Parent* <span style="color: #F92672;">this</span>){
+    <span style="color: #e6db74;">free</span>(<span style="color: #F92672;">this</span>);
+}
+
+<span style="color: #F92672;">void</span> printParentName(Parent* <span style="color: #F92672;">this</span>){
+    <span style="color: #e6db74;">printf</span>(<span style="color: #e6db74;">"name: %d\n"</span>,<span style="color: #F92672;">this</span>-&gt;name);
+}
+
+<span style="color: #F92672;">void</span> printParentSecret(Parent* <span style="color: #F92672;">this</span>){
+    <span style="color: #e6db74;">printf</span>(<span style="color: #e6db74;">"secret: %d\n"</span>,<span style="color: #F92672;">this</span>-&gt;priv-&gt;secret);
+}
+
+<span style="color: #75715e;">// 私有方法</span>
+<span style="color: #F92672;">static</span> <span style="color: #F92672;">void</span> privateFn(){}
+
+<span style="color: #75715e;">// 构造器</span>
+Parent* newParent(<span style="color: #F92672;">int</span> name,<span style="color: #F92672;">int</span> secret){
+    Parent* p = (Parent*) <span style="color: #e6db74;">malloc</span>(<span style="color: #F92672;">sizeof</span>(Parent));
+    p-&gt;name = name;
+
+    <span style="color: #75715e;">// 构造私有变量部分</span>
+    <span style="color: #F92672;">struct</span> ParentPrivate* priv = (<span style="color: #F92672;">struct</span> ParentPrivate*) <span style="color: #e6db74;">malloc</span>(<span style="color: #F92672;">sizeof</span>(<span style="color: #F92672;">struct</span> ParentPrivate));
+    priv-&gt;secret = secret;
+    p-&gt;priv = priv;
+
+    <span style="color: #75715e;">// 设置实例方法</span>
+    p-&gt;printName = printParentName;
+    p-&gt;printSecret = printParentSecret;
+
+    <span style="color: #F92672;">return</span> p;
+}
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">13.2 嵌套<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>实现继承</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">将父类的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">struct</code>对象放在子类的第一个位置，子类自动获得父类的内容；现在如果想通过子类访问父类的属性，必须通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">(o-&gt;super).attr</code>的方式。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">重写父类结构体中的函数指针，可以实现简单的方法覆盖。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// child.h</span>
+<span>#ifndef CHILD_H_</span>
+<span>#<span style="color: #F92672;">define</span> CHILD_H_</span>
+<span>#<span style="color: #F92672;">include</span> "parent.h"</span>
+
+<span style="color: #F92672;">typedef</span> <span style="color: #F92672;">struct</span> _child{
+    Parent super;
+    <span style="color: #F92672;">int</span> gender;
+}Child;
+
+Child* newChild(<span style="color: #F92672;">int</span> name,<span style="color: #F92672;">int</span> secret,<span style="color: #F92672;">int</span> gender);
+<span style="color: #F92672;">void</span> destroyChild(Child* <span style="color: #F92672;">this</span>);
+
+<span>#<span style="color: #F92672;">endif</span></span>
+
+<span style="color: #75715e;">// child.c</span>
+<span>#<span style="color: #F92672;">include</span> "parent.h"</span>
+<span>#<span style="color: #F92672;">include</span> "child.h"</span>
+
+<span style="color: #F92672;">void</span> destroyChild(Child* <span style="color: #F92672;">this</span>){
+    <span style="color: #e6db74;">free</span>(<span style="color: #F92672;">this</span>);
+}
+
+<span style="color: #F92672;">void</span> printChildName (Child* <span style="color: #F92672;">this</span>){
+    <span style="color: #e6db74;">printf</span>(<span style="color: #e6db74;">"name:%d, gender:%d\n"</span>,((Parent*)<span style="color: #F92672;">this</span>)-&gt;name,<span style="color: #F92672;">this</span>-&gt;gender);
+}
+
+Child* newChild(<span style="color: #F92672;">int</span> name,<span style="color: #F92672;">int</span> secret,<span style="color: #F92672;">int</span> gender){
+    <span style="color: #75715e;">// 构造父类部分</span>
+    Parent* super = newParent(name,secret);
+    <span style="color: #75715e;">// override父类的方法</span>
+    super-&gt;printName = printChildName;
+
+    Child* <span style="color: #F92672;">this</span> = (Child*)<span style="color: #e6db74;">malloc</span>(<span style="color: #F92672;">sizeof</span>(Child));
+    <span style="color: #F92672;">this</span>-&gt;super = *super;
+    <span style="color: #F92672;">this</span>-&gt;gender = gender;
+
+    <span style="color: #F92672;">return</span> <span style="color: #F92672;">this</span>;
+}
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">13.3 多态</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">多态指的是像父类一样调用子类，由于一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Child*</code>指针可以无障碍地强转为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Parent*</code>，因此可以如下简单地实现：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">void</span> print(Parent* o){  <span style="color: #75715e;">// 可以传入Parent*，也可以传入Child*</span>
+    o-&gt;printName(o);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">完整的测试代码：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// main.c 测试代码</span>
+<span>#<span style="color: #F92672;">include</span> "parent.h"</span>
+<span>#<span style="color: #F92672;">include</span> "child.h"</span>
+<span>#<span style="color: #F92672;">include</span> &lt;stdio.h&gt;</span>
+
+<span style="color: #F92672;">void</span> print(Parent* o){
+    o-&gt;printName(o);
+}
+
+<span style="color: #F92672;">int</span> main(<span style="color: #F92672;">void</span>){
+    Parent* p = newParent(<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>);
+
+    <span style="color: #75715e;">// public attribute</span>
+    <span style="color: #e6db74;">printf</span>(<span style="color: #e6db74;">"name is public: %d\n"</span>,p-&gt;name);
+
+    <span style="color: #75715e;">// p-&gt;priv-&gt;secret; // error,cannot access private attribute</span>
+
+    <span style="color: #75715e;">// public methods</span>
+    p-&gt;printName(p);
+    p-&gt;printSecret(p);
+
+    Child* c = newChild(<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">3</span>);
+    <span style="color: #75715e;">// 测试多态</span>
+    print(p);   <span style="color: #75715e;">// 打印 name: 1</span>
+    print(c);   <span style="color: #75715e;">// 打印 name:1,gender:3</span>
+
+    destroyParent(p);
+    destroyChild(c);
+    <span style="color: #F92672;">return</span> <span style="color: #ae81ff;">0</span>;
+}
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">参考资料</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">《C和指针》<br/>《C专家编程》<br/>《Computer Systems -- A Programmer's perspective》<br/>雨痕的《C语言笔记》<br/><a href="http://www.ibm.com/developerworks/cn/linux/l-memory/" style="background: transparent;" target="_blank">内存管理内幕</a><br/><a href="http://courses.engr.illinois.edu/cs241/sp2012/lectures/09-malloc.pdf" style="background: transparent;" target="_blank">Heap allocation: Malloc</a><br/><a href="http://unixwiz.net/techtips/win32-callconv-asm.html" style="background: transparent;" target="_blank">Intel x86 Function-call Conventions</a><br/><a href="http://blog.csdn.net/foruok/article/details/18192167" style="background: transparent;" target="_blank">C语言面向对象编程（一）：封装与继承</a></p>
+</div>

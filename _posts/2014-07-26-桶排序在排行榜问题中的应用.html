@@ -1,0 +1,33 @@
+---
+layout: post
+title: "桶排序在排行榜问题中的应用"
+category: "算法"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">基本思路</h2>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">将集合的值的范围分割成n个桶，极端情况下一个值一个桶；</li>
+<li style="line-height: 1.6;">遍历集合，每个值入桶；</li>
+<li style="line-height: 1.6;">桶内用其他方式如快速排序排序。</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">适用场景</h2>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">集合总体取值范围较小的场景</p>
+</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">应用</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">总排名</code>这种场景中经常使用，一个<a href="http://blog.codingnow.com/2014/03/mmzb_db_2.html" style="background: transparent;" target="_blank">例子</a>：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">针对陌陌争霸我们是这样做的：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">陌陌争霸中用于排名的分数区间不大，也就是 0 分到 5000 分。而参与排名的人数众多，数以百万计。对百万用户做插入排序，每个插入即使是 O(N) 的也不可接受。可事实是大量玩家的分数相同，都是并列排名的。所以我们只需要做 5000 个桶，每个桶里仅记录这个分数有多少个人就可以了。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">当玩家分数变迁，把原来的桶减一，新的桶加一。这个操作就是 O(1) 的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">而排行榜的查询仅需要把当前分数靠前的桶累加，就能获知查询者的名次。对于上百万玩家，看到哪些人和你并列的人的名字是没有意义的。这个查询虽然是 O(n) 复杂度，但 n 只有区区 5000 ，还可以做 cache 以应对查询频率远高于更新频率的情况。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">真正需要精确知道人名的是榜单的前 200 个人，而对前 200 个人做插入排序也很快，所以并不会造成性能问题。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">我们在系统的单点做排行榜的维持，完全没有外部数据库操作，它只是一小段操作普通内存结构的 c 代码。而这个单点远远成为不了整个系统的热点。</p>
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">我们在系统临时退出时，把已经排好的榜单落地，下次启动的时候恢复。但也不必完全信任落地的数据，可以用离线脚本检索整个数据库重新生成一份正确的榜单。所以数据库中的榜单只是被 cache 起来而已，系统运行期间是不需要写入数据库的，也不用担心数据丢失。</p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个分值一个桶，给一个玩家计算排名时，统计他所在桶之前所有桶的玩家数即可。这不是一个精确的值，因为同分的没有计算在内。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">同样的思路也可以用在 <strong style="font-weight: bold;">在线时长排名</strong> 等类似场景，只要：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">集合取值范围不大；</li>
+<li style="line-height: 1.6;">不要求精确，因为不计入得分并列的人数</li>
+</ol>
+</div>

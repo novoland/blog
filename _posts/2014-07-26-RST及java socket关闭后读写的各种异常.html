@@ -1,0 +1,63 @@
+---
+layout: post
+title: "RST及java socket关闭后读写的各种异常"
+category: "网络"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. RST (Reset)</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">TCP连接的断开有两种方式：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">连接正常关闭时双方会发送FIN，经历4次挥手过程；</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通过RST包异常退出，此时会丢弃缓冲区内的数据，也不会对RST响应ACK。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">java中，调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Socket#close()</code>可以关闭Socket，该方法类似Unix网络编程中的close方法，将Socket的 <strong style="font-weight: bold;">读写</strong> 都关闭，已经排队等待发送的数据会被尝试发送，最后（默认）发送FIN。考虑一个典型的网络事务，A向B发送数据，A发送完毕后<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">close()</code>，FIN发送出去；B一直read直到返回了-1，也通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">close()</code>发送FIN，4次挥手，连接关闭，一切都很和谐。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">那什么时候会用RST而非FIN关闭连接呢？</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Socket#setSoLinger(true,0)</code>，则close时会发送RST</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果主动关闭方缓冲区还有数据没有被应用层消费掉，close会发送RST并忽略这些数据</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">A向B发送数据，B已经通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">close()</code>方法关闭了Socket，虽然TCP规定半关闭状态下B仍然可以接收数据，但close动作关闭了该socket上的任何数据操作，如果此时A继续write，B将返回RST，A的该次write无法立即通知应用层（因为write仅把数据写入发送缓冲区），只会把状态保存在tcp协议栈内，下次write时才会抛出<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">SocketException</code>。</p>
+</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 对已关闭socket读写会产生的异常</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 主动关闭方</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">close()</code>后，无论是发送FIN/RST关闭的，之后再读写均会抛<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">java.net.SocketException:socket is closed</code>.</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 被动关闭方</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">被FIN关闭</h4>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">写（即向"已被对方关闭的Socket"写）<br/> 如上所说，第一次write得到RST响应但不抛异常，第二次write抛异常，ubuntu下是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">broken pipe (断开的管道)</code>，win7下是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Software caused connection abort: socket write error</code></p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">读 -- 始终返回 -1</p>
+</li>
+</ol>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">被RST关闭</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">读写都会抛出异常：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">connection reset (by peer)</code></p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">重点在于：</h4>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">connection reset</code>：另一端用RST主动关闭连接</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">broken pipe / Software caused connection abort: socket write error</code> ： 对方已调用Socket#close()关闭连接，己方还在写数据</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">java中网络编程时很大一部分代码在做各种fail时的处理，了解各种异常发生时背后的逻辑才能正确地处理之。以上列举的只是连接关闭的异常，还有其他各种异常没有提及，以后有机会再补上。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. 怎么避免意外的RST？</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">针对几种出现RST的情况：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">利用应用层协议定义结构化的数据，双方对何时数据发送/接收完毕/可以安全关闭连接有明确一致的契约；</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">close之前消费掉数据；</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">需要在半关闭状态下读数据时，使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">shutdownOutput()</code>，它会发送FIN但依然可以读取数据；等对方发送FIN，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">read()</code>返回-1后再调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">close()</code>释放socket。</p>
+</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">参考资料</h2>
+<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/net/articles/connection_release.html" style="background: transparent;" target="_blank">Orderly Versus Abortive Connection Release in Java</a></li>
+<li style="line-height: 1.6;"><a href="http://blog.csdn.net/ctthuangcheng/article/details/9430587" style="background: transparent;" target="_blank">UNIX网络编程——shutdown 与 close 函数 的区别</a></li>
+<li style="line-height: 1.6;"><a href="http://my.oschina.net/costaxu/blog/127394" style="background: transparent;" target="_blank">几种TCP连接中出现RST的情况</a></li>
+</ul>
+</div>

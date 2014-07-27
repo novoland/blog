@@ -1,0 +1,143 @@
+---
+layout: post
+title: "二进制索引树(树状数组)"
+category: "算法"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">概述</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">二进制索引树通常用一个数组实现，它的思路是用数组下标的二进制表达节点在树中的位置。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">每个节点存储该位置的元素与其左子树代表所有节点之和，只适用于求区间和问题。  </p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">例子：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">原始数组 raw:
+[ <span style="color: #ae81ff;">5</span>] [ <span style="color: #ae81ff;">1</span>] [<span style="color: #ae81ff;">15</span>] [<span style="color: #ae81ff;">11</span>] [<span style="color: #ae81ff;">52</span>] [<span style="color: #ae81ff;">28</span>] [ <span style="color: #ae81ff;">0</span>]
+  <span style="color: #ae81ff;">1</span>    <span style="color: #ae81ff;">2</span>    <span style="color: #ae81ff;">3</span>    <span style="color: #ae81ff;">4</span>    <span style="color: #ae81ff;">5</span>    <span style="color: #ae81ff;">6</span>    <span style="color: #ae81ff;">7</span>
+
+对应的二进制索引树 tree（与原始数组等长）:
+[ <span style="color: #ae81ff;">5</span>] [ <span style="color: #ae81ff;">6</span>] [<span style="color: #ae81ff;">15</span>] [<span style="color: #ae81ff;">32</span>] [<span style="color: #ae81ff;">52</span>] [<span style="color: #ae81ff;">80</span>] [ <span style="color: #ae81ff;">0</span>]
+  <span style="color: #ae81ff;">1</span>    <span style="color: #ae81ff;">2</span>    <span style="color: #ae81ff;">3</span>    <span style="color: #ae81ff;">4</span>    <span style="color: #ae81ff;">5</span>    <span style="color: #ae81ff;">6</span>    <span style="color: #ae81ff;">7</span>
+
+图形化:
+                 <span style="color: #ae81ff;">4</span>
+                [<span style="color: #ae81ff;">32</span>]
+              /     \
+           <span style="color: #ae81ff;">2</span>           <span style="color: #ae81ff;">6</span>
+          [<span style="color: #ae81ff;">6</span>]         [<span style="color: #ae81ff;">80</span>]
+         /   \       /   \
+        <span style="color: #ae81ff;">1</span>     <span style="color: #ae81ff;">3</span>     <span style="color: #ae81ff;">5</span>     <span style="color: #ae81ff;">7</span>
+       [<span style="color: #ae81ff;">5</span>]  [<span style="color: #ae81ff;">15</span>]   [<span style="color: #ae81ff;">52</span>]  [<span style="color: #ae81ff;">0</span>]
+
+tree[<span style="color: #ae81ff;">6</span>] = raw[<span style="color: #ae81ff;">5</span>,<span style="color: #ae81ff;">6</span>] 之和
+tree[<span style="color: #ae81ff;">4</span>] = raw[<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">4</span>] 之和
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">无论原始数组是什么样子，二进制索引树的结构是不变的</strong>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">节点在树中的位置，是由该节点在数组中下标的二进制形式决定的：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">            <span style="color: #ae81ff;">100</span>
+           [+<span style="color: #ae81ff;">37</span>]
+          /     \
+      <span style="color: #ae81ff;">010</span>         <span style="color: #ae81ff;">110</span>
+     [+<span style="color: #ae81ff;">11</span>]       [+<span style="color: #ae81ff;">80</span>]
+     /   \       /   \
+   <span style="color: #ae81ff;">001</span>   <span style="color: #ae81ff;">011</span>   <span style="color: #ae81ff;">101</span>   <span style="color: #ae81ff;">111</span>
+  [+<span style="color: #ae81ff;">10</span>] [+<span style="color: #ae81ff;">15</span>] [+<span style="color: #ae81ff;">52</span>] [ +<span style="color: #ae81ff;">0</span>]
+
+将每个下标最后一个<span style="color: #ae81ff;">1</span>及其后续bit位去掉，就变成了：
+
+          (empty)
+           [+<span style="color: #ae81ff;">37</span>]
+          /     \
+       <span style="color: #ae81ff;">0</span>           <span style="color: #ae81ff;">1</span>
+     [+<span style="color: #ae81ff;">11</span>]       [+<span style="color: #ae81ff;">80</span>]
+     /   \       /   \
+    <span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">01</span>     <span style="color: #ae81ff;">10</span>   <span style="color: #ae81ff;">11</span>
+  [+<span style="color: #ae81ff;">10</span>] [+<span style="color: #ae81ff;">15</span>] [+<span style="color: #ae81ff;">52</span>] [ +<span style="color: #ae81ff;">0</span>]
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果把 0 定义为左，1定义为右，那么节点在数组的下标就代表着从根到自己的路径；因此，给定一个下标，就能推导出它到根的路径。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">注意，原始数组和树数组的下标都是从1开始的，通常位置0被废弃不用。</strong></p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">操作</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">二进制索引树支持以下操作：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">update(i)</code>：更新raw[i]</li>
+<li style="line-height: 1.6;">查询<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">sum(i)</code>： 查询raw[1..i]的和</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">两个操作的时间复杂度都是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">O(log2N)</code>。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">单点更新</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当更新数组 raw 中某个元素(下标为i)时，会影响 BIT 中哪些节点呢？</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">首先，显然会影响 tree[i] 的值；<br/>从该节点向根回溯，因为节点值包含了左子树之和，因此在回溯的过程中，只要碰到一根 <strong style="font-weight: bold;">左边</strong>（意味着 tree[i] 属于它的左子树），就要更新该边的目标节点（方向是向上走的）；<br/>最后，tree[i] 所有的孩子节点则不会受到影响。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如何找到这些节点呢？</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">观察可知，从 i 开始，<strong style="font-weight: bold;">不停地将 i 最后的 1 进位</strong>，直到超出数组长度，所得到的就是会被影响的点。如上面例子中，如果更新 1 处的值，需要更新的节点为 001--010--100；如果更新 5，则需要更新的节点为 101--110， 符合要求。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">求 [1..i] 之和</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">求和的过程和更新很类似，依然是从节点 i 开始向上回溯，但这次要找的是 <strong style="font-weight: bold;">右边</strong>，即碰到一根右边就把节点的值加上。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">求这些节点下标的算法也类似，只不过现在要 <strong style="font-weight: bold;">不停地去掉 i 最后的 1</strong>，直到0。如求 [0..5]，101--100，即将 tree[4] 与 tree[5] 相加即可。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">实现</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">到此，所有问题集中在如何求 i 二进制形式最后的 1，算法很简单：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">lowbit</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #F92672;">return</span> i &amp; (-i)
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此，整个 BIT 的实现如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">raw = [<span style="color: #F92672;">None</span>,<span style="color: #ae81ff;">5</span>,<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">15</span>,<span style="color: #ae81ff;">11</span>,<span style="color: #ae81ff;">52</span>,<span style="color: #ae81ff;">28</span>,<span style="color: #ae81ff;">0</span>]  <span style="color: #75715e;"># 原始数组</span>
+BIT = [<span style="color: #ae81ff;">0</span>] * len(raw)    <span style="color: #75715e;"># 二进制索引树</span>
+<span style="color: #75715e;"># 二者索引都是从1开始</span>
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">lowbit</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #F92672;">return</span> i&amp;(-i)
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">initBIT</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(<span style="color: #ae81ff;">1</span>,len(raw)):
+        add(i,raw[i])
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">sum</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    sum = <span style="color: #ae81ff;">0</span>
+    <span style="color: #F92672;">while</span> i &gt; <span style="color: #ae81ff;">0</span>:
+        sum += BIT[i]
+        i -= lowbit(i)
+    <span style="color: #F92672;">return</span> sum
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">add</span><span style="color: #f8f8f2;">(i,u)</span>:</span>
+    <span style="color: #F92672;">while</span> i &lt; len(BIT):
+        BIT[i] += u
+        i += lowbit(i)
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">应用：求逆序数</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数组 a 中，对于位置 i，如果它前面存在 n 个比 a[i] 大的数，则称 i 处的逆序数等于 n。 求逆序数是二进制索引树的典型应用。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">假设有范围在[1,5]的若干个数组成的数组，求每个位置的逆序数。一个很直观的想法是遍历，对位置i，统计前面比它大的数即可。其实也可以换一种统计方式：统计前面&lt;= a[i] 的数的数量，然后用 i 减去结果，剩下的就是大于 a[i] 的数量了。因此，我们需要一种手段查询 <strong style="font-weight: bold;">所有从1到a[i]之间数字的出现次数</strong>，这可以通过一个 BIT 实现，该 BIT 维护 [1,5] 之每个数字的出现次数。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">举个例子，假如数组为 [5,2,1,4,3]，当遍历到数字 4 时，我们已经知道它的前面有 3 个位置，通过 BIT 又能快速知道 1/2/3/4 这4个数字已经出现过的总次数（2），二者相减就能得到此处的逆序数；最后更新 BIT，为数字 4 的出现次数加 1。就这样边计算逆序数边维护 BIT，即能求得数组中所有位置的逆序数。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到，BIT 的构造依赖于数组中所有数字的取值范围，上例是[1,5]，刚好适用；若范围是个很大的数字，则需要将其映射到[1,n]的形式，这是一个比较简单的转换。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">s = [<span style="color: #ae81ff;">5</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">4</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">5</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">1</span>]   <span style="color: #75715e;"># 待求逆序数的数组</span>
+tree = [<span style="color: #ae81ff;">0</span>] * (<span style="color: #ae81ff;">5</span> + <span style="color: #ae81ff;">1</span>)            <span style="color: #75715e;"># BIT，长度由数字范围决定</span>
+result = [<span style="color: #F92672;">None</span>] * len(s)        <span style="color: #75715e;"># 所有位置的逆序数</span>
+
+<span style="color: #75715e;"># 入口函数</span>
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">cal</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(len(s)):
+        number = s[i]
+        result[i] = i - sum(number)  <span style="color: #75715e;"># 逆序数 = 前面位置数 - 前面[1..number]出现个数</span>
+        add(number,<span style="color: #ae81ff;">1</span>)   <span style="color: #75715e;"># 更新 BIT</span>
+    <span style="color: #F92672;">print</span> result
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">add</span><span style="color: #f8f8f2;">(i,inc)</span>:</span>
+    <span style="color: #F92672;">while</span> i &lt; len(tree):
+        tree[i] += inc
+        i += lowbit(i)
+
+<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">sum</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    sum = <span style="color: #ae81ff;">0</span>
+    <span style="color: #F92672;">while</span> i &gt; <span style="color: #ae81ff;">0</span>:
+        sum += tree[i]
+        i -= lowbit(i)
+    <span style="color: #F92672;">return</span> sum
+
+cal()   <span style="color: #75715e;"># [0, 1, 2, 1, 2, 3, 5, 2, 0, 3, 6, 9]</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">很多问题都可以转变成 逆序数 的模型：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">求冒泡排序过程中需要交换的次数</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 每存在一对逆序的数字就要交换一次，这等于所有位置的逆序数之和。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">有一堆赛车手比赛，每个赛车手都有出发和到达时间，计算每个车手的分数。规则为：score = 所有出发比自己晚但是到达比自己早的车手数量之和。（所有的出发时间和到达时间没有重复的）</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 先将所有车手按到达时间排个序，然后问题就成了：对车手i，其得分为前面所有出发时间比他晚的车手个数，即逆序数。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 这个题目需要区间映射。</p>
+</li>
+</ol>
+</div>
