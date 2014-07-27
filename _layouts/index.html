@@ -40,7 +40,7 @@
 
         <nav id="pl__container">
         {% for post in site.posts %}
-          <a class="{{ post.categories }} pl__all" href="{{ post.url | escape }}"><span class="pl__circle"></span><span class="pl__title">{{ post.title }}</span><span class="pl__date">{{ post.date | date: "%b %Y" }}</span></a>
+          <a class="{{ post.categories }} pl__all" href="{{ post.url | escape | replace:'+','%20' }}"><span class="pl__circle"></span><span class="pl__title">{{ post.title }}</span><span class="pl__date">{{ post.date | date: "%b %Y" }}</span></a>
         {% endfor %}
         </nav>
       </div> <!-- end #posts-list -->
