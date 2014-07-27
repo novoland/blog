@@ -13,7 +13,7 @@
   <body>
     <aside id="sidebar">
       <nav id="tags">
-        <a href="/index.html" id="avatar"></a>
+        <a href="/blog/index.html" id="avatar"></a>
 
         <ul id="tags__ul">
           <li id="js-label1" class="tags__li tags-btn active">所有文章 <span class="post_count"></span></li>
@@ -40,7 +40,7 @@
 
         <nav id="pl__container">
         {% for post in site.posts %}
-          <a class="{{ post.categories }} pl__all" href="{{ post.url }}"><span class="pl__circle"></span><span class="pl__title">{{ post.title }}</span><span class="pl__date">{{ post.date | date: "%b %Y" }}</span></a>
+          <a class="{{ post.categories }} pl__all" href="/blog/{{ post.url }}"><span class="pl__circle"></span><span class="pl__title">{{ post.title }}</span><span class="pl__date">{{ post.date | date: "%b %Y" }}</span></a>
         {% endfor %}
         </nav>
       </div> <!-- end #posts-list -->
