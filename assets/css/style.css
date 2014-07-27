@@ -481,7 +481,6 @@ table th, table td {
     text-decoration: underline; }
 #post__content img {
   max-width: 100%;
-  max-height: 500px;
   border: 2px solid #e5e8ec;
   border-radius: 5px; }
 
