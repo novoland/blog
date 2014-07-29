@@ -13,11 +13,12 @@ if ($(window).width() <= 1280) {
 // Variables
     tag1       = $('.pl__all'),
     tag2       = $('.并发'),
-    tag3       = $('.算法'),
-    tag4       = $('.数据库'),
-    tag5       = $('.cache'),
-    tag6       = $('.c和os'),
-    tag7       = $('.网络');
+    tag3       = $('.jvm'),
+    tag4       = $('.算法'),
+    tag5       = $('.数据库'),
+    tag6       = $('.cache'),
+    tag7       = $('.c和os'),
+    tag8       = $('.网络');
 
 var sidebar    = $('#sidebar'),
     container  = $('#post'),
@@ -32,7 +33,7 @@ var clickHandler = function(k) {
     window['tag'+k].delay(50).fadeIn(350);
   }
 };
-for (var i = 1; i <= 7; i++) {
+for (var i = 1; i <= 8; i++) {
   $('#js-label' + i).on('click', clickHandler(i)).find('.post_count').text(window['tag'+i].length);
 }
 

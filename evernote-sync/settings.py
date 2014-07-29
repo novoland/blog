@@ -75,7 +75,9 @@ noteList = {
     	# RST/ java 网络异常
     	'https://www.evernote.com/shard/s133/sh/1f29d7f2-dcac-4cce-b270-049942a4d14d/910bbdfaab7174430de656d897d22fd7',
     	# 高性能网络通讯笔记
-    	'https://www.evernote.com/shard/s133/sh/db5e50f9-6e95-482e-9fc1-0402258c7169/d93f8456e248c46ee54651948785b13f'
+    	'https://www.evernote.com/shard/s133/sh/db5e50f9-6e95-482e-9fc1-0402258c7169/d93f8456e248c46ee54651948785b13f',
+        # http 状态码
+        'https://www.evernote.com/shard/s133/sh/a0a098e1-570a-42ce-aeda-e3baf2e9fc81/29d993ae1988bf7cc8b472aaa07867d4'
     ]
 }
 
