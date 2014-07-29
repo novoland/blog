@@ -15,6 +15,7 @@ import requests
 import hashlib
 
 postDir = '../_posts'
+imgDir = '../assets/img'
 
 con = sqlite3.connect("log.db",detect_types=sqlite3.PARSE_DECLTYPES)
 con.isolation_level = None
@@ -100,8 +101,13 @@ def capture(url,category, firstTime, file=None):
         if suffix != '':
             imgName = imgName + '.' + suffix
 
+        # 如果本地有图片，不重新抓取
+        files = [ f for f in os.listdir(imgDir) if os.path.isfile(os.path.join(imgDir,f)) and f == imgName]
+        if len(files) > 0:
+            continue
+
         # download the image
-        urllib.urlretrieve(src, "../assets/img/%s" % imgName)
+        urllib.urlretrieve(src, "%s/%s" % (imgDir,imgName))
 
         # update img src
         img['src'] = "/assets/img/%s" % imgName

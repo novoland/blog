@@ -94,13 +94,13 @@ category: "数据库"
 </ol>
 <hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">三. 优化query (粗略)</h1>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">定位瓶颈</h1>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">定位瓶颈</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">IO or CPU?</p>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">工具</h1>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">工具</h2>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6;">explain &amp; profile</li>
 </ol>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">基本原则</h1>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">基本原则</h2>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6;">join时小结果集驱动大结果集</li>
 <li style="line-height: 1.6;">利用索引完成排序/分组</li>
@@ -111,14 +111,14 @@ category: "数据库"
 <li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">避免复杂join和子查询<br/> 对于MyISAM，join会锁住所有相关的表（s lock），可能阻塞DML其他很长时间，此时可以在程序中做join，降低对锁的占用，减少阻塞；<br/> 对应用而言，SQL的执行时间：网络/执行（CPU+IO）/锁阻塞，优化瓶颈<br/> 子查询实现不好，不一定会走索引</p>
 </li>
 </ol>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">Explain</h1>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">Explain</h2>
 <hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">四. 索引</h1>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><a href="http://www.percona.com/files/presentations/percona-live/london-2011/PLUK2011-practical-mysql-indexing-guidelines.pdf" style="background: transparent;" target="_blank">Practical MySQL indexing guidelines</a></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MyISAM 和 InnoDB 的索引，采用的数据结构都是B+树。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. B树和B+树</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">B树</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">B树的结构类似二叉查找树，只不过节点的度远远大于2，查找的复杂度为树的高度，O(logdN)：<br/><img alt="Alt text" class="en-media" longdesc="./1402812459074.png" name="6110437c-cb5b-4148-9a0d-9cbea5a7d5fd" src="/assets/img/81bb92fa7c27d9aef499efc82c4aaa73.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">B树的结构类似二叉查找树，只不过节点的度远远大于2，查找的复杂度为树的高度，O(logdN)：<br/><img alt="Alt text" class="en-media" longdesc="./1402812459074.png" name="6110437c-cb5b-4148-9a0d-9cbea5a7d5fd" src="https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca/res/6110437c-cb5b-4148-9a0d-9cbea5a7d5fd/1402812459074.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通常会将根据硬盘上一个page的大小来调整节点的度，原因是在基于外存的查找数据结构中，性能的瓶颈在于IO，这样的处理一可以让一个节点一次IO即可读入，二可以显著降低树的高度，查找时只需几次page的IO即可定位到目标。</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">B+树</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">B+树是对B树的优化：</p>
@@ -126,11 +126,11 @@ category: "数据库"
 <li style="line-height: 1.6;">只有叶子节点存data，内节点只存key；<br/> 好处：提高内节点的度，降低高度</li>
 <li style="line-height: 1.6;">叶子节点加上了next指针，形成一个链表<br/> 好处：快速范围查找，只需确定起点和终点，顺序扫描即可。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813534888.png" name="f3392b7b-c733-4b80-ba43-d51f8cc1cf8c" src="/assets/img/9467b1f6665fb48464f4699db1a4bec2.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813534888.png" name="f3392b7b-c733-4b80-ba43-d51f8cc1cf8c" src="https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca/res/f3392b7b-c733-4b80-ba43-d51f8cc1cf8c/1402813534888.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. MyISAM的索引</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">索引和数据分离，数据文件：堆表(按插入有序)</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">主键索引和非主键索引结构一致，叶子节点存储的是行的物理位置信息（row number）</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813593672.png" name="a8cab548-fa57-4191-90c6-5ff93e80c322" src="/assets/img/10b0700762cf9c5bfd97396ccfb7c8b3.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813593672.png" name="a8cab548-fa57-4191-90c6-5ff93e80c322" src="https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca/res/a8cab548-fa57-4191-90c6-5ff93e80c322/1402813593672.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. InnoDB的索引</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">primary index（主键索引）</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据文件就是主键索引文件，叶子节点存真实数据，这种方式称为 聚集索引。</p>

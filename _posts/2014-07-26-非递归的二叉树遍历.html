@@ -1,8 +1,130 @@
 ---
 layout: post
-title: "非递归的二叉树遍历"
+title: "二叉树的各种遍历"
 category: "算法"
 ---
 
 <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 先序/后序/中序遍历</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">递归版本的就不谈了，主要看非递归版本。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">首先定义一个术语 <strong style="font-weight: bold;">左路径</strong>，它指的是从某个节点开始（包括该节点），沿着左孩子向下走直到叶子节点，所形成的路径。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">3个顺序的遍历都遵循以下代码框架：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">Node root = ... ;
+
+<span style="color: #F92672;">while</span>(root != null){        <span style="color: #75715e;">// 1. 用以 root 为起点的左路径初始化栈</span>
+    <span style="color: #e6db74;">stack</span>.push(root);
+    root = root.left;
+}
+
+<span style="color: #F92672;">while</span>(<span style="color: #e6db74;">stack</span>不为空){         <span style="color: #75715e;">// 当栈不为空，循环：</span>
+    Node n = <span style="color: #e6db74;">stack</span>.pop();   <span style="color: #75715e;">// 2. 从栈中 pop 一个节点出来</span>
+
+    Node tmp = n.right;     <span style="color: #75715e;">// 3. 将该节点 *右孩子* 的左路径入栈</span>
+    <span style="color: #F92672;">while</span>(tmp != null){
+        <span style="color: #e6db74;">stack</span>.push(tmp);
+        tmp = tmp.left;
+    }
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">简单来说就是下面两步：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">用根的左路径初始化栈；</li>
+<li style="line-height: 1.6;">循环从栈中 pop 节点，并将该节点<strong style="font-weight: bold;">右孩子的左路径</strong>入栈</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">不同遍历的实现都是这个思路，只在一些细节地方不同。是不是很简单呢？</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">先序和中序</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">先序遍历的过程中，每个节点的访问时机是在节点 <strong style="font-weight: bold;">入栈</strong> 时，因此对上述代码框架，在两处 push 处加上对节点的访问逻辑即可。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">Stack&lt;TreeNode&gt; s = <span style="color: #F92672;">new</span> Stack&lt;TreeNode&gt;();
+
+<span style="color: #F92672;">while</span>(root != <span style="color: #F92672;">null</span>){
+    visit(root);    <span style="color: #75715e;">// &lt;-- 1 visit when push</span>
+    s.push(root);
+    root = root.left;
+}
+
+<span style="color: #F92672;">while</span>(!s.isEmpty()){
+    TreeNode tmp = s.pop();
+
+    tmp = tmp.right;
+    <span style="color: #F92672;">while</span>(tmp != <span style="color: #F92672;">null</span>){
+        visit(tmp); <span style="color: #75715e;">// &lt;-- 2 visit when push</span>
+        s.push(tmp);
+        tmp = tmp.left;
+    }
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">对于中序，每个节点的访问时机是在节点 <strong style="font-weight: bold;">出栈</strong> 时，因此应当在 while 循环内每次 pop 时对节点进行访问。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">Stack&lt;TreeNode&gt; s = <span style="color: #F92672;">new</span> Stack&lt;TreeNode&gt;();
+
+<span style="color: #F92672;">while</span>(root != <span style="color: #F92672;">null</span>){
+    s.push(root);
+    root = root.left;
+}
+
+<span style="color: #F92672;">while</span>(!s.isEmpty()){
+    TreeNode tmp = s.pop();
+    visit(tmp);  <span style="color: #75715e;">// &lt;-- visit when pop</span>
+
+    tmp = tmp.right;
+    <span style="color: #F92672;">while</span>(tmp != <span style="color: #F92672;">null</span>){
+        s.push(tmp);
+        tmp = tmp.left;
+    }
+}
+</code></pre>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">后序</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">后序稍微复杂一些，当一个节点从 stack pop 出来时，意味着 <strong style="font-weight: bold;">它的左子树已经访问完毕</strong> 了，先序和中序此时都可以直接去处理它的右子树；但是后序遍历要求访问完它的右子树后，再访问该节点。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此对于后序遍历，节点第一次出栈时，必须将其重新入栈，再走后续流程（将右孩子的左路径入栈）；当节点第二次出栈，说明 <strong style="font-weight: bold;">它的右子树也访问完了</strong>，这时才可以访问该节点。所以，对每个节点都必须用一个额外的标志位，记录它是初次还是第二次出栈。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">Stack&lt;TreeNode&gt; s = <span style="color: #F92672;">new</span> Stack&lt;TreeNode&gt;();
+
+<span style="color: #F92672;">while</span>(root != <span style="color: #ae81ff;">null</span>){
+    s.push(root);
+    root = root.left;
+}
+
+<span style="color: #F92672;">while</span>(!s.isEmpty()){
+    TreeNode tmp = s.pop();
+
+    <span style="color: #F92672;">if</span>(tmp.poped){          <span style="color: #75715e;">// 1. 如果是第二次出栈，访问它</span>
+        visit(tmp);
+    }<span style="color: #F92672;">else</span>{
+        tmp.poped = <span style="color: #ae81ff;">true</span>;   <span style="color: #75715e;">// 2. 如果是第一次出栈，标记并重新入栈</span>
+        s.push(tmp);
+
+        tmp = tmp.right;
+        <span style="color: #F92672;">while</span>(tmp != <span style="color: #ae81ff;">null</span>){
+            s.push(tmp);
+            tmp = tmp.left;
+        }
+    }
+}
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 层序遍历</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">基本的层序遍历用一个队列，循环出队并将其左右孩子依次入队，比较简单。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果要区分每一行，则可以用一个标记节点标记一行的结束。遍历的过程中，如果出队的是标记节点，说明已经访问完了一行；此外也意味着这一行的孩子都已入队，标记节点应当重新入队。队列为空时遍历完成。</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">TreeNode mark = <span style="color: #F92672;">new</span> TreeNode(<span style="color: #ae81ff;">0</span>);        <span style="color: #75715e;">// 行末标记</span>
+
+LinkedList&lt;TreeNode&gt; q = <span style="color: #F92672;">new</span> LinkedList&lt;TreeNode&gt;();
+q.add(root);
+q.add(mark);
+
+<span style="color: #F92672;">List</span>&lt;Integer&gt; row = <span style="color: #F92672;">new</span> LinkedList&lt;Integer&gt;();
+<span style="color: #F92672;">List</span>&lt;<span style="color: #F92672;">List</span>&lt;Integer&gt;&gt; rows = <span style="color: #F92672;">new</span> LinkedList&lt;<span style="color: #F92672;">List</span>&lt;Integer&gt;&gt; ();
+
+<span style="color: #F92672;">while</span>(!q.isEmpty()){
+    TreeNode n = q.removeFirst();
+
+    <span style="color: #F92672;">if</span>(n == mark){                  <span style="color: #75715e;">// 碰到行末标记了</span>
+        rows.add(row);              <span style="color: #75715e;">// 说明访问完了一行</span>
+        <span style="color: #F92672;">if</span>(q.isEmpty()) <span style="color: #F92672;">break</span>;      <span style="color: #75715e;">// 队列为空则遍历完成</span>
+        q.add(mark);                <span style="color: #75715e;">// 这一行的全部孩子也已入队，将标记节点重新入队</span>
+        row = <span style="color: #F92672;">new</span> LinkedList&lt;Integer&gt;();
+    }<span style="color: #F92672;">else</span>{
+        row.add(n.val);
+        <span style="color: #F92672;">if</span>(n.left != <span style="color: #F92672;">null</span>) q.add(n.left);
+        <span style="color: #F92672;">if</span>(n.right != <span style="color: #F92672;">null</span>) q.add(n.right);
+    }
+}
+</code></pre>
 </div>

@@ -377,7 +377,7 @@ char const s[][9] = {           // char型二维数组，15*9，空的位置填0
 </code></pre>
 <h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">8.3.2 指向数组的指针</h4>
 <pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> a[<span style="color: #ae81ff;">10</span>] = ...;    <span style="color: #75715e;">// a是一个指向a第一个元素的指针</span>
-<span style="color: #F92672;">int</span> (*p)[<span style="color: #ae81ff;">10</span>] = &amp;a;  <span style="color: #75715e;">// p是一个指向数组a的指针</span>
+<span style="color: #F92672;">int</span> (*p)[<span style="color: #ae81ff;">10</span>] = &a;  <span style="color: #75715e;">// p是一个指向数组a的指针</span>
 a == p;             <span style="color: #75715e;">// TRUE，即a和p指向的地址是一样的，不一样的只是指向的类型</span>
 *p;                 <span style="color: #75715e;">// 数组a</span>
 *a;                 <span style="color: #75715e;">// a[0]</span>
@@ -409,7 +409,7 @@ a == p;             <span style="color: #75715e;">// TRUE，即a和p指向的地
     <span style="color: #ae81ff;">3.14</span>
 };
 bar<span style="color: #f8f8f2;">.a</span>;              <span style="color: #75715e;">// 直接访问</span>
-<span style="color: #F92672;">struct</span> Foo *p = &amp;bar;
+<span style="color: #F92672;">struct</span> Foo *p = &bar;
 bar-&gt;a;             <span style="color: #75715e;">//间接访问</span>
 
 <span style="color: #75715e;">// typedef struct:</span>

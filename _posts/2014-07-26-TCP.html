@@ -45,7 +45,7 @@ category: "网络"
 <li style="line-height: 1.6;">用RST而不是FIN关闭连接，称为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">abortive release</code>（相对<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">orderly release</code>）；api会通知应用层连接是异常关闭的。</li>
 <li style="line-height: 1.6;">常见的产生时机：<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
 <li style="line-height: 1.6;">连接到/发送数据到没有使用的端口，收到RST</li>
-<li style="line-height: 1.6;">关闭连接时接收缓冲区有数据，将发送RST</li>
+<li style="line-height: 1.6;">关闭连接时接收缓冲区还有数据没被消费，将发送RST</li>
 <li style="line-height: 1.6;">向一个已经close()的socket发送数据，将收到RST ---- close和shutdown虽然都是发送FIN关闭连接，但前者的语义是关闭读写，后者是关闭写，但依然能读。</li>
 </ul>
 </li>
@@ -55,7 +55,6 @@ category: "网络"
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">同时关闭</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">两端都是主动关闭，FIN ACK / FIN ACK，两端最后都进入2MSL状态。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">并发TCP服务器</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Listen的服务器在接受连接后，创建一个ESTABLISHED的连接，Listen的依然存在，二者在服务器端公用一个端口。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Listen状态的socket在接收连接请求后，内核会创建一个新的established状态的socket；原socket依然是listen状态；二者在服务器端使用同一个端口。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">backlog队列</h2>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
@@ -65,8 +64,8 @@ category: "网络"
 <li style="line-height: 1.6;">backlog队列满后，不会回应发来的FIN，让客户端重试。如果backlog队列一直满，客户端终将超时。</li>
 </ol>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">2. 滑动窗口</h1>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">Urgent Mode</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">URG标志位为1时，说明报文段是紧急数据，需要尽快被应用进程接收和处理。普通数据在接收端是按序接收的，紧急模式在两端间建立了一个<strong style="font-weight: bold;">独立于普通数据的<em>逻辑信道</em></strong>，接收端通常将普通数据和紧急数据分开存放，二者之间不遵守有序的规则，越过普通数据而直接读取后面的紧急数据。这种数据也被称为”带外数据“（out-of-band data），但实际上，他们和普通数据是共享物理信道的。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">urgent mode</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">URG标志位为1时，说明报文段是紧急数据，需要尽快被应用进程接收和处理。普通数据在接收端是按序接收的，紧急模式在两端间建立了一个<strong style="font-weight: bold;">独立于普通数据的<em>逻辑信道</em></strong>，接收端通常将普通数据和紧急数据分开存放，二者之间不遵守有序的规则，允许越过普通数据直接读取后面的紧急数据。这种数据也被称为”带外数据“（out-of-band data），但实际上，带外数据和普通数据是共享物理信道传输的。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">delayed ack</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">接收端不立即发送ack，而是等待一段时间，和数据一起发送，或和另一个ack合并成一个发送。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">滑动窗口的工作方式</h2>
