@@ -41,7 +41,9 @@ noteList = {
         # kmp
         'https://www.evernote.com/shard/s133/sh/c080ba1b-77e9-46fb-a48c-d9a372b412f2/6dcb405f3c8bc0f26e66300bbb016081',
         # rabin-karp
-        'https://www.evernote.com/shard/s133/sh/8e679736-320d-4478-a8df-b872415bfdcb/adb7dc5f3409de988aa882bdb0b5d706'
+        'https://www.evernote.com/shard/s133/sh/8e679736-320d-4478-a8df-b872415bfdcb/adb7dc5f3409de988aa882bdb0b5d706',
+        # bloomfilter
+        'https://www.evernote.com/shard/s133/sh/9f84a875-3cbd-43e1-b4f0-7b887c2f4143/84fbe9ca12eedec98c63c4e894e2d955'
     ],
     '数据库' : [
     	# MYSQL
