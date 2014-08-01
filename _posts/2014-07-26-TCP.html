@@ -20,8 +20,8 @@ category: "网络"
 <li style="line-height: 1.6;">半关闭。通过半关闭向另一端告知数据发送完毕。</li>
 </ol>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">状态变换：</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1401174323234.png" name="c6428ae2-b0b5-4fc5-835a-01b6b0e551dc" src="/assets/img/1b7d77e4bd3391e09d1ada152392c072.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1401174353330.png" name="e8c6cd20-be3f-4c5e-b2f6-be429eff673d" src="/assets/img/6d971061f8715b70ddb1b19ff0397478.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1401174323234.png" name="c6428ae2-b0b5-4fc5-835a-01b6b0e551dc" src="https://www.evernote.com/shard/s133/sh/9389230e-c3eb-415c-baa1-83114a8709c1/5715d770bd474dc0ae4460d15a3b7870/res/c6428ae2-b0b5-4fc5-835a-01b6b0e551dc/1401174323234.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1401174353330.png" name="e8c6cd20-be3f-4c5e-b2f6-be429eff673d" src="https://www.evernote.com/shard/s133/sh/9389230e-c3eb-415c-baa1-83114a8709c1/5715d770bd474dc0ae4460d15a3b7870/res/e8c6cd20-be3f-4c5e-b2f6-be429eff673d/1401174353330.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">MSS</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">根据物理层的MTU计算，避免IP层分段</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2MSL（TIME_WAIT）状态</h2>
@@ -161,6 +161,6 @@ category: "网络"
 </ol>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">分开处理的原因正如前所述，两种情况表达的拥塞程度不同。对超时表达的严重堵塞，需严厉地立刻降低发送速率，因此直接进入慢启动阶段；对重复ACK，说明双方仍然有数据流动，我们不希望执行slow start突然减少数据流。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果在slow start阶段就出现丢失数据，则slow start立刻开始，ssthresh更新为cwnd的一半。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1400765487595.png" name="4c1097c3-df4b-4994-a311-eca5c6892e64" src="/assets/img/4a26ce1a352129b148ba26f27f53016d.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1400765487595.png" name="4c1097c3-df4b-4994-a311-eca5c6892e64" src="https://www.evernote.com/shard/s133/sh/9389230e-c3eb-415c-baa1-83114a8709c1/5715d770bd474dc0ae4460d15a3b7870/res/4c1097c3-df4b-4994-a311-eca5c6892e64/1400765487595.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">总体来说，拥塞窗口的状态变迁是一个试探性的过程。slow start阶段起步速度低，不太可能出现拥塞，因此发送速度可以快速攀升；congestion avoidance阶段速度接近饱和，采用更保守的方式，速度缓慢增长逼近极限。一旦探测到拥塞，就将slow start的拐点降低为当前拥塞窗口的一半，且如果是严重堵塞，则立即重置，避免网络负担；如果是轻微拥塞，则快速恢复。</p>
 </div>

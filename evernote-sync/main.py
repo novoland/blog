@@ -44,7 +44,8 @@ def sync():
                 pass
         # 没抓取记录，说明这个文件是多余的，删除之
         else:
-            delete(file)
+            # delete(file)
+            pass
 
     # 对配置的每条笔记
     for category, urls in noteList.items():
