@@ -43,7 +43,13 @@ noteList = {
         # rabin-karp
         'https://www.evernote.com/shard/s133/sh/8e679736-320d-4478-a8df-b872415bfdcb/adb7dc5f3409de988aa882bdb0b5d706',
         # bloomfilter
-        'https://www.evernote.com/shard/s133/sh/9f84a875-3cbd-43e1-b4f0-7b887c2f4143/84fbe9ca12eedec98c63c4e894e2d955'
+        'https://www.evernote.com/shard/s133/sh/9f84a875-3cbd-43e1-b4f0-7b887c2f4143/84fbe9ca12eedec98c63c4e894e2d955',
+        # 洗牌 / 随机数生成器转换 / 蓄水池抽样
+        'https://www.evernote.com/shard/s133/sh/b7f9ff46-36e7-42cd-9c82-47a66c4b3a73/4d2448acee623012b471e63f5801a64b',
+        # 排序总结
+        'https://www.evernote.com/shard/s133/sh/cd6c9fc0-35ad-42f0-9e41-2774d8494245/0d528f72cb77a50f8717d2a0a6ace25a',
+        # 排序
+        'https://www.evernote.com/shard/s133/sh/e617429f-a936-4ae4-a67c-9b62d11d1378/8d344077ef8145b2bc638f12cb339d0d'
     ],
     '数据库' : [
     	# MYSQL
@@ -83,4 +89,4 @@ noteList = {
     ]
 }
 
-expire = 24 * 3600 # seconds, 1 day
+expire = 100 * 24 * 3600 # seconds, 1 day

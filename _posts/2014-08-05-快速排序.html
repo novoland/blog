@@ -1,0 +1,65 @@
+---
+layout: post
+title: "快速排序"
+category: "算法"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">怎么写一个正确的快速排序？</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">sort()</code>方法很简单：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">sort</span>(<span style="color: #F92672;">int</span>[] num,<span style="color: #F92672;">int</span> start, <span style="color: #F92672;">int</span> end){
+    <span style="color: #F92672;">if</span>(start &gt;= end) <span style="color: #F92672;">return</span>;
+
+    <span style="color: #F92672;">int</span> i = partition(num,start,end);
+    sort(num,start, i - <span style="color: #ae81ff;">1</span>);
+    sort(num,i+<span style="color: #ae81ff;">1</span>,end);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">主要的难点在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">partition()</code>方法。假定选定第一个元素为 pivot，且一次 partition 后数组分为两部分，左侧<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">&lt;=</code>pivot，右侧<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">&gt;</code>pivot。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">首先考虑一般情况。根据算法，我们需要两个指针 i/j 初始指向数组的两端，i 之前的元素 &lt;= pivot，j 之后的元素 &gt; pivot。两个指针均向中间移动，直到找到第一个不符合条件的元素。二者均停止时，交换 i/j 指针指向的元素，并重复这个过程。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1407240921581.png" name="875cdb5c-19e2-4277-a8a1-9a5a1329c143" src="/assets/img/a704a724a9d9f3ac2923ade3934d0bbe.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">很快可以写出算法的主要框架：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">while</span>(...){
+    <span style="color: #F92672;">while</span>(a[i] &lt;= pivot) i++;
+    <span style="color: #F92672;">while</span>(a[j] &gt; pivot) j--;
+    swap(a,i,j);
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">循环写出来了，自然要考虑什么时候停下来。稍微推演可知，当 i/j 两个指针穷尽了各自的区间时应当停止循环，此时 i和j 是个 <strong style="font-weight: bold;">交错的状态</strong>，i 指向 &gt; 区域的第一个元素，j 指向 &lt;= 区域的最后一个元素，如下所示：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1407245030987.png" name="f99cadc0-a6e4-42b0-8478-6b206ae293fb" src="/assets/img/0568de1c5403812afa20616e65f4ca20.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这时不能再交换 i/j 上的元素，而应将 pivot 移动到 <strong style="font-weight: bold;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">j</code></strong> 处，并返回该位置；至此一次 partition 就完成了。把这些想法加上，代码如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">while</span>(i&lt;j){
+    <span style="color: #F92672;">while</span>(a[i] &lt;= pivot) i++;   <span style="color: #75715e;">// 1</span>
+    <span style="color: #F92672;">while</span>(a[j] &gt; pivot) j--;    <span style="color: #75715e;">// 2</span>
+    <span style="color: #F92672;">if</span>(i&lt;j)
+        swap(a,i,j);
+}
+swap(a,start,j);
+
+<span style="color: #F92672;">return</span> j;
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">上述 1/2 处的循环看起来很有数组越界的危险，而事实也是如此。用几个 edge case 考察下，假设所有元素都 &lt;= pivot，很明显循环1会越界，因此这里需要加上对边界的判断；当数组除 pivot 之外的元素都 &gt; pivot 时，循环2却不会越界，因为最差情况下 j 也会在 pivot 处停下来，因此循环2可以不管。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">另一方面，这两个 edge case 最后 i/j 指针依然处于交错的状态，其他逻辑测试通过，所以把循环1的边界判断加上即可，最后<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">partition()</code>的完整代码如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">int</span> partition(<span style="color: #F92672;">int</span>[] a, <span style="color: #F92672;">int</span> start, <span style="color: #F92672;">int</span> end){
+    <span style="color: #F92672;">int</span> i = start, j = end, pivot = a[start];
+
+    <span style="color: #F92672;">while</span>(i &lt; j){
+        <span style="color: #F92672;">while</span>(i &lt;= end &amp;&amp; a[i] &lt;= pivot) i++;   <span style="color: #75715e;">// 加上越界判断</span>
+        <span style="color: #F92672;">while</span>(a[j] &gt; pivot) j--;
+        <span style="color: #F92672;">if</span>(i &lt; j){
+            swap(a,i,j);
+        }
+    }
+    swap(a,start,j);
+
+    <span style="color: #F92672;">return</span> j;
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">从这个过程总结一下平常写（算法）代码的思路：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;">根据抽象流程定下算法框架；</li>
+<li style="line-height: 1.6;">考虑循环（或递归）何时结束，结束时的处理方式；</li>
+<li style="line-height: 1.6;">用 edge case 测试代码，修正如数组越界 / 空指针异常等错误。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">总体而言是个从抽象到细节的过程。</p>
+</div>
