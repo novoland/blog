@@ -10,8 +10,8 @@ category: "算法"
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 基础问法</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">01背包是所有类型背包问题的基础，它又有各式各样的问法和约束，这些变化同样适用于其他类型的背包问题。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">有n个物品，价值v = [v1,v2,v3...]，体积c = [c1,c2,c3...]，放入总容量为 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px;">totalCapacity</code> 的背包中，求能获得的最大价值是多少？</p>
-</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">背包问题是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">动态规划</code>的经典问题。动态规划的基础是递归，和分治一样，都是假设子问题已经解决，由子问题的解组合计算得到父问题的解，类似数列中的递推式如f(n) = f(n-1) + f(n-2)。但在递归的过程中会出现重复计算子问题的现象，为了避免重复计算，用一个表格记录子问题的结果供查找，<em>从下往上</em>进行递推。</p>
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">有n个物品，价值v = [v1,v2,v3...]，体积c = [c1,c2,c3...]，放入总容量为 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin: 0 4px;">totalCapacity</code> 的背包中，求能获得的最大价值是多少？</p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">背包问题是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">动态规划</code>的经典问题。动态规划的基础是递归，和分治一样，都是假设子问题已经解决，由子问题的解组合计算得到父问题的解，类似数列中的递推式如f(n) = f(n-1) + f(n-2)。但在递归的过程中会出现重复计算子问题的现象，为了避免重复计算，用一个表格记录子问题的结果供查找，<em>从下往上</em>进行递推。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">找递推式（or 状态转移方程）的思路一般是由最终状态往前回溯，考察解答最终问题需要哪些子问题。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">背包问题应用动态规划：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
@@ -19,7 +19,7 @@ category: "算法"
 <li style="line-height: 1.6;"><strong style="font-weight: bold;">递推式</strong>：  <ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
 <li style="line-height: 1.6;">对第i件物品，不选择时，最大价值 = 前i-1件物品获得的最大价值 = f[i-1][j]；</li>
 <li style="line-height: 1.6;">选择时，最大价值 = 前i-1件物品放入j-c[i]获得的最大价值 + i的价值 = f[i-1][j-c[i]] + v[i]；</li>
-<li style="line-height: 1.6;">因此， <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">f[i][j] = max(f[i-1][j],f[i-1][j-c[i]] + v[i])</code>；</li>
+<li style="line-height: 1.6;">因此， <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">f[i][j] = max(f[i-1][j],f[i-1][j-c[i]] + v[i])</code>；</li>
 <li style="line-height: 1.6;">当然，若c[i] &gt; 背包总空间j，物品i只能不选，此时和第一种情况一样。</li>
 </ul>
 </li>
@@ -52,7 +52,7 @@ category: "算法"
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><strong style="font-weight: bold;">0</strong></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><strong style="font-weight: bold;">0</strong></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><strong style="font-weight: bold;">0</strong></td>
@@ -69,7 +69,7 @@ category: "算法"
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">1</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
@@ -86,7 +86,7 @@ category: "算法"
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">5</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">2</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
@@ -103,7 +103,7 @@ category: "算法"
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">6</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">3</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
@@ -118,7 +118,7 @@ category: "算法"
 </tbody>
 </table>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #75715e;">#!/usr/bin/python</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">#!/usr/bin/python</span>
 <span style="color: #75715e;"># coding=utf-8</span>
 n = <span style="color: #ae81ff;">3</span>                   <span style="color: #75715e;"># n个物品</span>
 c = [<span style="color: #F92672;">None</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">4</span>,<span style="color: #ae81ff;">5</span>]        <span style="color: #75715e;"># capacity -- 注意，物品编号从1开始</span>
@@ -148,7 +148,7 @@ totalC = <span style="color: #ae81ff;">10</span>             <span style="color:
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2 求最大价值时的物品选择方案</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">求最大价值下的物品选择方案有两种办法：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;">从后面往前，根据递推式依次看第i..1个物品有没有被选择：  <pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"> t = zeroOne()
+<li style="line-height: 1.6;">从后面往前，根据递推式依次看第i..1个物品有没有被选择：  <pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"> t = zeroOne()
  <span style="color: #75715e;"># print path 方法1</span>
  i = n
  j = totalC
@@ -161,7 +161,7 @@ totalC = <span style="color: #ae81ff;">10</span>             <span style="color:
 </code></pre>
 </li>
 <li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在求最大价值的同时用一个n*totalCapacity大小的二维数组path记录每个物品是否选择：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">zeroOneWithPath</span><span style="color: #f8f8f2;">()</span>:</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">zeroOneWithPath</span><span style="color: #f8f8f2;">()</span>:</span>
 t = [[<span style="color: #F92672;">None</span>] * (totalC + <span style="color: #ae81ff;">1</span>) <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(n+<span style="color: #ae81ff;">1</span>) ]    <span style="color: #75715e;"># [n+1][totalCapacity+1]</span>
 path = [[<span style="color: #ae81ff;">0</span>] * (totalC + <span style="color: #ae81ff;">1</span>) <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(n+<span style="color: #ae81ff;">1</span>) ]        <span style="color: #75715e;"># path, 0没选，1选了</span>
 
@@ -183,7 +183,7 @@ t[<span style="color: #ae81ff;">0</span>] = [<span style="color: #ae81ff;">0</sp
 <span style="color: #F92672;">return</span> t,path
 </code></pre>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">求物品选择方案的方法和前一种办法是一模一样的，只不过现在是根据path中的标记位，而不是最大价值与递推式来判断是否选择了该物品：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #75715e;"># print path 方法2</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;"># print path 方法2</span>
 t,path = zeroOneWithPath()
 i = n
 j = totalC
@@ -200,12 +200,12 @@ j = totalC
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">接下来讨论怎样将算法的空间复杂度降低到O(totalCapacity)。实际上，这里用到的思路就是所谓的 <em>滚动数组</em>：</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
 <p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">很多情况下，一个问题的解仅由其前面<em>有限个</em>子问题决定，除了这些子问题，之前记录的规模更小的子问题的解都可以舍去，所以，可以用更少的空间只保存这些子问题的解并循环利用，从而避免保存所有子问题的解。</p>
-</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">举个例子，斐波那契数列问题中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">f(n)=f(n-1)+f(n-2)</code>，当n为5时，f(5)仅与f(4)和f(3)有关，f(0)..f(2)都没有用了。因此，我们可以只用两个变量不停地维护f(n-1)和f(n-2)，而不是将f(0)..f(n-1)的结果都保存起来。</p>
+</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">举个例子，斐波那契数列问题中，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">f(n)=f(n-1)+f(n-2)</code>，当n为5时，f(5)仅与f(4)和f(3)有关，f(0)..f(2)都没有用了。因此，我们可以只用两个变量不停地维护f(n-1)和f(n-2)，而不是将f(0)..f(n-1)的结果都保存起来。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">回到01背包问题，求某个格子时，<strong style="font-weight: bold;">其值是由上一行的某两个格子（正上方的格子和左侧某一个格子）决定的，与更早的行没有关系</strong>，这些行的空间都被浪费了：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./屏幕快照 2014-06-28 上午10.28.16.png" name="15005da7-e83b-4f26-bc09-762e40a44d89" src="https://www.evernote.com/shard/s133/sh/d76f86c4-1ced-4491-a1df-88e898f9883f/b168fdd8dcff1573e6c42d1758302be7/res/15005da7-e83b-4f26-bc09-762e40a44d89/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202014-06-28%20%E4%B8%8A%E5%8D%8810.28.16.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./屏幕快照 2014-06-28 上午10.28.16.png" name="15005da7-e83b-4f26-bc09-762e40a44d89" src="https://www.evernote.com/shard/s133/sh/d76f86c4-1ced-4491-a1df-88e898f9883f/b168fdd8dcff1573e6c42d1758302be7/res/15005da7-e83b-4f26-bc09-762e40a44d89/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202014-06-28%20%E4%B8%8A%E5%8D%8810.28.16.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">所以，我们可以只用一行的空间保存前一行的值并循环利用，而不需要一个表格。但此时 <strong style="font-weight: bold;">递推顺序不能是从左到右了，而是应该反过来</strong>，因为如果是正序，在递推的时候用的就是第i行的新值，而非前一行的数据了。实际上，用表格时也可以从右到左递推。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">zeroOne2</span><span style="color: #f8f8f2;">()</span>:</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">zeroOne2</span><span style="color: #f8f8f2;">()</span>:</span>
     t = [<span style="color: #ae81ff;">0</span>] * (totalC + <span style="color: #ae81ff;">1</span>)
     <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(<span style="color: #ae81ff;">1</span>,n+<span style="color: #ae81ff;">1</span>):        <span style="color: #75715e;"># for i in 1..n, i是物品编号</span>
         <span style="color: #F92672;">for</span> j <span style="color: #F92672;">in</span> reversed(range(c[i],totalC+<span style="color: #ae81ff;">1</span>)):    <span style="color: #75715e;"># for j in totalC..c[i], j是背包总空间 //j&lt;物品体积c[i]时，i必定不选，c[i][j]=c[i-1][j]，不用考察</span>
@@ -256,7 +256,7 @@ j = totalC
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">0</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><strong style="font-weight: bold;">Null</strong></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><strong style="font-weight: bold;">Null</strong></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><strong style="font-weight: bold;">Null</strong></td>
@@ -273,7 +273,7 @@ j = totalC
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">1</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><em>null</em></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><em>null</em></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
@@ -290,7 +290,7 @@ j = totalC
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">5</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">2</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><em>null</em></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><em>null</em></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
@@ -307,7 +307,7 @@ j = totalC
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">6</td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"></td>
 <td style="text-align: right; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">3</td>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">0</code></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><em>null</em></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><em>null</em></td>
 <td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">4</td>
@@ -322,7 +322,7 @@ j = totalC
 </tbody>
 </table>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">zeroOneFullPack</span><span style="color: #f8f8f2;">()</span>:</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">zeroOneFullPack</span><span style="color: #f8f8f2;">()</span>:</span>
     t = [[<span style="color: #F92672;">None</span>] * (totalC + <span style="color: #ae81ff;">1</span>) <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(n+<span style="color: #ae81ff;">1</span>) ]    <span style="color: #75715e;"># [n+1][totalCapacity+1]</span>
 
     <span style="color: #75715e;"># 初始化</span>
@@ -364,7 +364,7 @@ j = totalC
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6;"><strong style="font-weight: bold;">子问题</strong><br/> f[i][j]为前i件物品放入j空间，刚好装满的方案数，无解时为0</li>
 <li style="line-height: 1.6;"><strong style="font-weight: bold;">递推式</strong> <ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">f[i][j] = f[i-1][j] (不选i) + f[i-1][j-c[i]] (选i)</code><br/>如果不选i，"前i件物品装满j空间的方案数" 等于 "前i-1件物品装满j空间的方案数" ；选i，则等于"前i-1件物品装满j-c[i]空间的方案数"。二者相加即为f[i][j]。</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">f[i][j] = f[i-1][j] (不选i) + f[i-1][j-c[i]] (选i)</code><br/>如果不选i，"前i件物品装满j空间的方案数" 等于 "前i-1件物品装满j空间的方案数" ；选i，则等于"前i-1件物品装满j-c[i]空间的方案数"。二者相加即为f[i][j]。</li>
 <li style="line-height: 1.6;">c[i] &gt; j时一定不能选i，f[i][j] = f[i-1][j]</li>
 </ul>
 </li>
@@ -374,7 +374,7 @@ j = totalC
 </ul>
 </li>
 </ol>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">waysToFillPack</span><span style="color: #f8f8f2;">()</span>:</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">waysToFillPack</span><span style="color: #f8f8f2;">()</span>:</span>
     t = [[<span style="color: #F92672;">None</span>] * (totalC + <span style="color: #ae81ff;">1</span>) <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(n+<span style="color: #ae81ff;">1</span>) ]    <span style="color: #75715e;"># [n+1][totalCapacity+1]</span>
 
     <span style="color: #75715e;"># 初始化</span>
@@ -410,7 +410,7 @@ j = totalC
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6;"><strong style="font-weight: bold;">子问题</strong><br/> f[i][j]为前i件物品放入j空间，刚好装满的最少物品数，用None表示无解</li>
 <li style="line-height: 1.6;"><strong style="font-weight: bold;">递推式</strong> <ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">f[i][j] = min{ f[i-1][j] (不选i), f[i-1][j-c[i]] + 1 (选i) }</code> </li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">f[i][j] = min{ f[i-1][j] (不选i), f[i-1][j-c[i]] + 1 (选i) }</code> </li>
 <li style="line-height: 1.6;">c[i] &gt; j时一定不能选i，f[i][j] = f[i-1][j]</li>
 </ul>
 </li>
@@ -420,7 +420,7 @@ j = totalC
 </ul>
 </li>
 </ol>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #75715e;"># 装满时的最少物品数</span>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;"># 装满时的最少物品数</span>
 <span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">leastObjFillPack</span><span style="color: #f8f8f2;">()</span>:</span>
     t = [[<span style="color: #F92672;">None</span>] * (totalC + <span style="color: #ae81ff;">1</span>) <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> range(n+<span style="color: #ae81ff;">1</span>) ]    <span style="color: #75715e;"># [n+1][totalCapacity+1]</span>
 
@@ -452,26 +452,26 @@ j = totalC
 <ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6;">有不同面额的若干硬币，每种面额只有一个，求最少需要多少硬币表示给定面值</li>
 </ul>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">除了上述几种情况，背包问题还有很多其他变种，不过基本思路和递推过程都是一样的，其核心都在于 1)根据询问的不同找到正确的递推式（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">min|max|sum...</code>）；2)确定基础子问题的解。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">除了上述几种情况，背包问题还有很多其他变种，不过基本思路和递推过程都是一样的，其核心都在于 1)根据询问的不同找到正确的递推式（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">min|max|sum...</code>）；2)确定基础子问题的解。</p>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">二. 完全背包</h1>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 基本解法</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">完全背包指每种物品有无数件，它和01背包的区别只有递推式的一个地方：</p>
 <ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;">01  : f[i][j] = max(f[i-1][j],<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">f[i-1][j-c[i]]</code> + v[i])</li>
-<li style="line-height: 1.6;">完全：f[i][j] = max(f[i-1][j],<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">f[i][j-c[i]]</code> + v[i])</li>
+<li style="line-height: 1.6;">01  : f[i][j] = max(f[i-1][j],<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">f[i-1][j-c[i]]</code> + v[i])</li>
+<li style="line-height: 1.6;">完全：f[i][j] = max(f[i-1][j],<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">f[i][j-c[i]]</code> + v[i])</li>
 </ul>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">解释：<br/>考虑第i种物品，若不选，则f[i][j] = f[i-1][j]；若选择，意味着至少有一件i物品，考虑这一件物品，剩余j-c[i]空间用来放 <em>0..i种</em> 物品（i依然能放），这部分空间的最大价值为f[i][j-c[i]]。综合即可得到上述公式。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">直观的，在递推时，01背包依赖的是<strong style="font-weight: bold;">上一行的某两个格子（正上方和左侧）</strong>，完全背包则依赖<strong style="font-weight: bold;">上一行正上方的格子 + 同一行左侧的某个格子</strong>。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 空间优化</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">与01背包类似，但是这里遍历顺序 <strong style="font-weight: bold;">不要逆序</strong> 了，即此时需要从左向右递推。因为01背包递推时f[i-1][j-c[i]]是上一行的值，而完全背包f[i][j-c[i]]则刚好是本行的新值。</p>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">三. 多重背包</h1>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">指的是第i个物品有n[i]件，此时直观上可以将每个物品拆成n[i]个单个物品，转化为01背包问题。但当n[i]比较大时物品件数将急剧增加，为了避免这种情况可以使用 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">二进制拆分法</code>，降低拆分后的物品数。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">指的是第i个物品有n[i]件，此时直观上可以将每个物品拆成n[i]个单个物品，转化为01背包问题。但当n[i]比较大时物品件数将急剧增加，为了避免这种情况可以使用 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">二进制拆分法</code>，降低拆分后的物品数。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 二进制拆分</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">原理：</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
 <p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">一个正整数n可以被分解成1,2,4,…,2^(k-1),n-(2^k+1)(即n-前面数的和), k是满足n&gt;2^k+1的最大整数，且1～n之内的所有整数均可以唯一表示成这些数中某几个数的和的形式。</p>
 </blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码更容易理解些：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672;">var</span> result = [];
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">var</span> result = [];
 <span style="color: #F92672;">var</span> n = ..;
 
 <span style="color: #75715e;">// 1,2,4,8...直到&gt;n (不包括最后一个数字)</span>

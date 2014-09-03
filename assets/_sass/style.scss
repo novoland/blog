@@ -698,44 +698,13 @@ iframe {
 
 
 //------- {{ post__toc }} -------//
-
-#post__toc-trigger {
-  width: 265px;
-  padding-left: 40px;
-  position: fixed;
-  top: $search-height - 1;
-  bottom: 0;
-  right: 0;
-  z-index: 98;
-  -webkit-transform: translateX(260px);
-  -moz-transform: translateX(260px);
-  -ms-transform: translateX(260px);
-  -o-transform: translateX(260px);
-  transform: translateX(260px);
-  -webkit-transition: -webkit-transform .35s ease-in-out .1s;
-  -moz-transition: -moz-transform .35s ease-in-out .1s;
-  -ms-transition: -ms-transform .35s ease-in-out .1s;
-  -o-transition: -o-transform .35s ease-in-out .1s;
-  transition: transform .35s ease-in-out .1s;
-  &:hover {
-    -webkit-transform: translateX(0);
-    -moz-transform: translateX(0);
-    -ms-transform: translateX(0);
-    -o-transform: translateX(0);
-    transform: translateX(0);
-  }
-  @media screen and (max-device-width: 1280px) {
-    display: none;
-  }
-}
 #post__toc {
   width: 260px;
-  height: 100%;
-  padding-top: 30px;
-  background: transparentize($pl-bg, 0.1);
-  border-top: 1px solid $border;
-  border-left: 1px solid $border;
-  border-radius: 10px 0 0 0;
+  max-height: 500px;
+  padding-top: 20px;
+  background: rgba(250, 250, 250, 0.9);
+  border: 1px solid #e5e8ec;
+  border-radius: 8px;
   display: block;
   overflow-y: scroll;
   -webkit-user-select: none;
@@ -743,6 +712,10 @@ iframe {
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
+  position: fixed;
+  right: 70px;
+  top: 65px;
+  display:none;
 }
 
 #post__toc-title {
@@ -915,7 +888,7 @@ iframe {
 
 //------- {{ js__fullscreen }} -------//
 
-#js-fullscreen {
+#js-fullscreen, #js-toc {
   @extend %fixed-btn-size;
   margin: 0;
   padding: 0;
@@ -951,6 +924,24 @@ iframe {
     border-radius: 0;
   }
 }
+
+#js-toc{
+  right:75px;
+  @media screen and (max-width: $sidebar-width) {
+    display:none;
+  }
+}
+
+#icon-list{
+  padding: 10px;
+  display: block;
+  &:before {
+    margin-left: -1px;
+    font-size: 20px;
+    line-height: 1;
+  }
+}
+
 #icon-arrow {
   padding: 10px;
   -webkit-transform: rotate(0deg);

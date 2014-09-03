@@ -19,6 +19,7 @@ if ($(window).width() <= 1280) {
     tag6       = $('.cache'),
     tag7       = $('.c和os'),
     tag8       = $('.网络');
+    tag9       = $('.工作');
 
 var sidebar    = $('#sidebar'),
     container  = $('#post'),
@@ -33,7 +34,7 @@ var clickHandler = function(k) {
     window['tag'+k].delay(50).fadeIn(350);
   }
 };
-for (var i = 1; i <= 8; i++) {
+for (var i = 1; i <= 9; i++) {
   $('#js-label' + i).on('click', clickHandler(i)).find('.post_count').text(window['tag'+i].length);
 }
 
@@ -71,6 +72,7 @@ $(document).pjax('#avatar, #mobile-avatar, .pl__all', '#pjax', { fragment: '#pja
 $(document).on({
   'pjax:click': function() {
     content.removeClass('fadeIn').addClass('fadeOut');
+    $('#post__toc').hide();
     NProgress.start();
   },
   'pjax:start': function() {
@@ -123,6 +125,10 @@ function afterPjax() {
     var asTag = onlyOneH1 ? tagName : (tagName == 'H1'?'h2':'h3');
     toc.append('<li class="post__toc-li post__toc-'+asTag.toLowerCase()+'"><a href="#' + $(this).attr('id') + '" class="js-anchor-link">' + $(this).text() + '</a></li>');
 
+  });
+
+  $('#icon-list').on('click',function(){
+    $('#post__toc').toggle();
   });
 
   // Smooth scrolling

@@ -1,0 +1,87 @@
+---
+layout: post
+title: "Skyline监控系统工作原理分析"
+category: "工作"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">概述</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Skyline是一个实时的异常监测系统，它被动地接收metrics数据，并使用一系列算法自动地判断metrics是否异常，此外，用户可以很容易地根据自己应用数据的特点，提供自己的异常检测算法。Skyline还提供了一个web Ui接口，异常的metrics会在webapp中得到展示。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Skyline内部由3个组件组成：Horizon/Analyzer/Webapp：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409638905577.png" name="d7f1c2c1-b7c6-49c8-bca0-0bc1499c7f0b" src="/assets/img/7ef2b048d05333ff5ca6e5cf5be92dc9.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">它们的工作方式如下：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Horizon负责接收外部发送过来的datapoint并转发到Redis，同时从Redis中删除过时的datapoint（所谓datapoint是指某个metric在一个特定时间点的数据，它包含timestamp和value）。Analyzer从Redis获取metrics数据，并使用算法判断是否异常。最后Webapp以图表的方式向用户展示异常的metrics。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Horizon和Analyzer的工作流程如下图所示，红色字体标注的是settings.py中定义的配置项：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409638939192.png" name="b55f09cd-526f-45c2-8ffd-497ff6cfa837" src="/assets/img/d3f0fc8692ffd01d09d7f7b12d6f4b90.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">Horizon</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Horizon是Skyline的数据收集器，它由3个角色组成：Listener/Worker/Roomba。Horizon通过bin/horizon.d启停。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409638965027.png" name="270f4d0c-9f18-4e2d-8b41-51164796a5a1" src="/assets/img/8e250921c3dbeee4f233ca21e6991fdc.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Listener</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Listener负责接收外部发送过来的数据，每个Listener是一个进程，目前会启动两种类型的Listener：TCP和UDP，它们使用的应用层协议不同，且数据的序列化方式也不同。应用向horizon发送metric数据时是以tuple为单位的，一个tuple的格式如下所示，表示某个metric在某个时刻的值：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;">tuple</span> == (metric_name, datapoint) == (metric_name, [timestamp,value])
+</code></pre>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">TCP pickle</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">TCP类型的Listener使用的序列化方式是cPickle，应用层协议如下：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;">+----------------------------+-------------------------------------------------------------------------------+
+| length(<span style="color: #ae81ff; margin-top: 0px;">4</span> bytes)            | [ [tuple1,tuple2...(<span style="color: #F92672;">of</span> metric <span style="color: #e6db74;">'A'</span>)], [tuple1,tuple2...(<span style="color: #F92672;">of</span> metric <span style="color: #e6db74;">'B'</span>)], ...]  |
++----------------------------+-------------------------------------------------------------------------------+
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">前4个字节是length，表示后续数据的长度。接下来是一个使用cPickle序列化的数组，tuple根据metric name分组，每组是该数组内的一个元素。</p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">UDP messagepack</h4>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">UDP类型的Listener使用的序列化方式是msgpack，应用层协议为：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #e6db74; margin-top: 0px;">+---------+</span>
+|  tuple  |
+<span style="color: #e6db74;">+---------+</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">是的，很简单，把tuple用msgpack序列化后发送即可。因为UDP可以保持消息边界的特性，因此不需要length字段。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Listener接收datapoint后将其缓存在内部的Chunk队列中，其长度由CHUNK_SIZE决定；Chunk满后被放入一个公共的队列Queue中，该队列的长度为MAX_QUEUE_SIZE。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Worker</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Worker负责处理公共队列Queue中的Chunk，Horizon在启动时会创建WORKER_PROCESSES个worker进程，不停地从Queue中出队Chunk，将Chunk内的datapoint经msgpack序列化后，按其所属的metric添加到对应的Redis队列中。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Skyline在Redis中定义了两个namespace：FULL_NAMESPACE和MINI_NAMESPACE，MINI的作用稍微次要一点，我们先忽略它，后面提及Roomba时再讲解。两个namespace下的结构都是一致的：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">FULL_NAMESPACE + ${metric name} ==&gt; List [ datapoint1,datapoint2,datapoint3 ... ] (<strong style="font-weight: bold; margin-top: 0px;">timeseries</strong>)</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 每个metric都有一个List保存着它所对应的datapoint集合，这个List在Skyline中又被称为timeseries，它保存着该metric在一段时间内的取值序列。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">FULL_NAMESPACE + ‘unique_metrics’  ==&gt; Set [metric name 1,  metric name 2, ... ]<br style="margin-top: 0px;"/>该Set保存着所有metric的名字以便快速查找。<br/>Worker根据Chunk内tuple所携带的metric name信息，将datapoint发送到Redis的两个namespace中以供Analyzer模块分析。</p>
+</li>
+</ol>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Roomba</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Roomba负责清除Redis各timeseries中过时的datapoint，只留下最近某段时间内的datapoint，保证Redis不爆掉。Horizon启动时会启动Roomba线程（Roomba和Worker不太一样，它是继承Thread的，虽然它的实际工作都是靠创建的进程完成的），对FULL和MINI两个namespace分别创建ROOMBA_PROCESSES个进程，从FULL/MINI_NAMESPACE + ‘unique_metrics’ 中找到所有的metrics并均匀地分配给每个进程处理。后者对每个分配的timeseries，删除距当前FULL/MINI_DURATION + ROOMBA_GRACE_TIME秒前的datapoint；如果整个timeseries都过时了，则该metric的List会从Redis中删除，同时metric name也会从set中删除。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">所有进程都退出后，Roomba线程继续循环，即将进行下一轮进程的创建。为了防止Redis中数据很少时，进程快速的创建和退出带来的性能消耗，每个进程在退出时都会判断运行的时间，如果小于30s，则休眠10s。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此，Roomba的工作其实就是保证Redis两个namespace下各个timeseries始终是“最近的”一段数据，其时间跨度由FULL_DURATION/MINI_DURATION（以及ROOMBA_GRACE_TIME）指定。FULL命名空间下的timeseries是Analyzer分析的对象，MINI下的并不会被分析，它的作用只在于在web UI中为用户提供某个metric最近一个小时间段（MINI_DURATION）内的概览。此外，MINI namespace还用于和Oculus配合工作，Oculus是Esty公司出品的另一个系统，我们这里忽略掉。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">Analyzer</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409639087710.png" name="fb060ac0-5f65-42dc-8899-2d05bb7bdedf" src="/assets/img/d0530f215b0ef90ab0087ffd5f72931f.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">经过Horizon的处理，Redis中已经保存了若干timeseries，Analyzer负责对其进行分析，同时提供了一系列算法判断timeseries是否异常的（anomalous）。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Analyzer</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Analyzer也是一个线程，它的工作方式和Roomba几乎一致，启动后创建ANALYZER_PROCESSES个进程，平均分配FULL_NAMESPACE下的所有timeseries，每个timeseries被送入Algorithms模块处理，判断是否异常并返回异常的datapoint、报告异常的算法。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">所有进程分析完毕后，Analyzer将异常metrics的相关信息dump到webapp的anomalies.json文件中，随后webapp将会通过JSONP请求该文件，得到异常信息并展示。此外，Analyzer还将根据配置的Email信息发送预警邮件。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最后，Analyzer线程判断整个分析过程耗时，如果&lt;5s，则休眠10s，醒后重新进入下一轮进程创建。这里和Roomba有点差别，Roomba的休眠由各个进程判断，而这里是由Analyzer线程进行。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Algorithms</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这里是判断异常的核心所在，Skyline内置了9个算法来判断一个datapoint序列是否异常，用户可以根据自己应用的特征配置要使用的算法（ALGORITHMS配置项），或者自定义自己的判定算法。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">run_selected_algorithm(timeseries)方法中，timeseries首先会经过一系列合法性验证：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;">datapoint数目太少（&lt; MIN_TOLERABLE_LENGTH）：TooShort异常</li>
+<li style="line-height: 1.6;">过时（最后一个datapoint在 STALE_PERIOD 秒前）：Stable异常</li>
+<li style="line-height: 1.6;">时间跨度太短（两端datapoint时间之差 &lt; FULL_DURATION）：Incomplete异常</li>
+<li style="line-height: 1.6;">重复数据太多（最后MAX_TOLERABLE_BOREDOM个datapoint都是一个值）：Boring异常</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">验证后将timeseries送入所选算法中进行异常判断。每个算法都会返回Boolean值，true表示异常，false表示正常。当有&gt;CONSENSUS个算法判断为异常时，该timeseries才会被认为是anomalous的。最终返回3个值：是否异常 | 判定为异常的算法集合 | 异常datapoint，异常datapoint目前统一为序列最后3个datapoint的平均值，这和判断异常的算法是相关的，关于Skyline内置的9个算法的分析参见这里。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">Webapp</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Webapp基于Flask框架提供异常metrics的图表展现，是一个比较简单的模块，就不展开了。基本原理是向后台轮询anomalies.json，得到异常的metrics名称及对应的异常datapoint，之后根据metrics name向后台请求Redis中的timeseries序列（包括FULL/MINI namespace），并用图表展示出来。借用官网的一张图：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409639146495.png" name="ab5b5a19-7738-4d52-b489-7b27c5bdea45" src="/assets/img/f45b6095218bcc1ffd34bc662c7d0404.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">需要一提的是，图中所示1 hour和24 hour下的图表，分别是从MINI和FULL NAMESPACE中取得的timeseries数据，它们的时间跨度分别由参数MINI_DURATION和FULL_DURATION决定，并非固定的1小时或24小时，只不过页面上是这么写死的。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">问题</h2>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">Roomba对同一timeseries两次trim的时间间隔在10s以上，Analyzer是5s以上，如果FULL_DURATION过短（比如几秒），则两次analysis之间的Roomba过程可能将第一次分析后加入的新datapoint删除，当两次analysis的间隔 &gt; FULL_DURATION时就有可能会发生这种情况。因此使用Skyline时不能将分析的单位时间跨度FULL_DURATION设置的过短；同时选择的算法不宜过多太复杂，否则一次analysis的耗时比FULLL_DURATION还高，就有可能出现上述问题。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">现在大部分的异常判定算法都是取timeseries的最后3个datapoint和整体序列进行比较，如果某些metrics的发送频率较快，在两次analysis的间隔（不考虑算法的运行时间的话5s-15s）内发送了多于3个的datapoint，这样，在第二次analysis时，就会忽略掉N-3个数据，假如异常刚好发生在倒数第4个datapoint处，则检测不到。因此metrics发送的频率（resolution）也不宜过高。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">我在Skyline的group里向作者提到了这两个疑问，<a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fgroups.google.com%2Fforum%2F%23%21topic%2Fskyline-dev%2FZMvrdh6UX4M" style="background: transparent; margin-top: 0px;" target="_blank">作者的回答</a>是：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;">第一种情况不太可能出现，因为实际中Analyzer的耗时大概在一两分钟，远低于通常设置的FULL_DURATION；</li>
+<li style="line-height: 1.6;">的确会有这样的情况，Analyzer需要重写以便分析这段时间内所有加入的datapoint，而不仅仅是最后3个。</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">总结</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">本文大致分析了Skyline的各个角色和工作原理，总的来说，Skyline是一个简单精巧的监控工具，但从代码来看有些地方的处理方式不太一致，在调试的过程中发现了一个比较明显的bug（不过作者的反应很快），给人的感觉不太严谨；其他的问题还有待于实际应用中发现。最后，Skyline的规模对Python的初学者是个很好的源码阅读教材～</p>
+</div>

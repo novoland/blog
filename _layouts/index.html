@@ -9,6 +9,8 @@
     <meta name="description" content="">
 
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
+
   </head>
   <body>
     <aside id="sidebar">
@@ -24,6 +26,7 @@
           <li id="js-label6" class="tags__li tags-btn">cache<span class="post_count"></span></li>
           <li id="js-label7" class="tags__li tags-btn">c和os<span class="post_count"></span></li>
           <li id="js-label8" class="tags__li tags-btn">网络<span class="post_count"></span></li>
+          <li id="js-label9" class="tags__li tags-btn">工作<span class="post_count"></span></li>
         </ul>
 
         <div id="tags__bottom">
@@ -51,16 +54,21 @@
       <div id="pjax">
         {{ content }}
       </div> <!-- end #pjax -->
-
+<!-- 
       <div id="post__toc-trigger">
         <div id="post__toc">
           <span id="post__toc-title">目录</span>
           <ul id="post__toc-ul"></ul>
         </div>
-      </div>
+      </div> -->
     </div> <!-- end #post -->
 
     <button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+    <button id="js-toc"><span id="icon-list" class="fa fa-list-ul"></span></button>
+    <div id="post__toc">
+      <span id="post__toc-title">目录</span>
+      <ul id="post__toc-ul"></ul>
+    </div>
 
     <script src="/assets/js/jquery-2.0.3.min.js"></script>
     <script src="/assets/js/jquery.pjax.js"></script>

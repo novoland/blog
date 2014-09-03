@@ -31,7 +31,7 @@ tree[<span style="color: #ae81ff;">6</span>] = raw[<span style="color: #ae81ff;"
 tree[<span style="color: #ae81ff;">4</span>] = raw[<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">4</span>] 之和
 </code></pre>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">无论原始数组是什么样子，二进制索引树的结构是不变的</strong>。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">节点在树中的位置，是由该节点在数组中下标的二进制形式决定的：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数组元素在树中的位置，由其下标的二进制形式决定：</p>
 <pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">            <span style="color: #ae81ff;">100</span>
            [+<span style="color: #ae81ff;">37</span>]
           /     \
@@ -52,18 +52,25 @@ tree[<span style="color: #ae81ff;">4</span>] = raw[<span style="color: #ae81ff;"
     <span style="color: #ae81ff;">00</span>   <span style="color: #ae81ff;">01</span>     <span style="color: #ae81ff;">10</span>   <span style="color: #ae81ff;">11</span>
   [+<span style="color: #ae81ff;">10</span>] [+<span style="color: #ae81ff;">15</span>] [+<span style="color: #ae81ff;">52</span>] [ +<span style="color: #ae81ff;">0</span>]
 </code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果把 0 定义为左，1定义为右，那么节点在数组的下标就代表着从根到自己的路径；因此，给定一个下标，就能推导出它到根的路径。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果把 0 定义为左，1定义为右，那么数组下标就代表着从根到该节点的路径；因此，给定一个下标，就能推导出它在树中的位置。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">注意，原始数组和树数组的下标都是从1开始的，通常位置0被废弃不用。</strong></p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">操作</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">二进制索引树支持以下操作：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">update(i)</code>：更新raw[i]</li>
-<li style="line-height: 1.6;">查询<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">sum(i)</code>： 查询raw[1..i]的和</li>
+<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 13px; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">update(i)</code>：更新raw[i]</li>
+<li style="line-height: 1.6;">查询<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 13px; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">sum(i)</code>： 查询raw[1..i]的和</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">两个操作的时间复杂度都是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">O(log2N)</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">两个操作的时间复杂度都是 <span style="display:inline-block;margin:0"><span></span><span style=""><span style="white-space: nowrap;"><span style="width: 5.522em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.169em; height: 0px; font-size: 132%;"><span style="position: absolute; clip: rect(1.734em 1000.003em 3.087em -0.43em); top: -2.649em; left: 0.003em;"><span><span style="font-family:MathJax_Math, serif; font-style: italic;">O</span><span style="font-family:MathJax_Main, serif;">(</span><span style="font-family:MathJax_Math, serif; font-style: italic;">l</span><span style="font-family:MathJax_Math, serif; font-style: italic;">o</span><span><span style="display: inline-block; position: relative; width: 0.977em; height: 0px;"><span style="position: absolute; clip: rect(1.897em 1000.003em 2.871em -0.484em); top: -2.486em; left: 0.003em;"><span style="font-family:MathJax_Math, serif; font-style: italic;">g<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span style="display: inline-block; width: 0px; height: 2.492em;"></span></span><span style="position: absolute; top: -2.054em; left: 0.544em;"><span><span><span style="font-size: 70.7%; font-family:MathJax_Main, serif;">2</span></span></span><span style="display: inline-block; width: 0px; height: 2.275em;"></span></span></span></span><span style="font-family:MathJax_Math, serif; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.111em;"></span></span><span style="font-family:MathJax_Main, serif;">)</span></span><span style="display: inline-block; width: 0px; height: 2.654em;"></span></span></span><span style="border-left-width: 0.004em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 1.432em; vertical-align: -0.425em;"></span></span></span></span></span>。</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">单点更新</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当更新数组 raw 中某个元素(下标为i)时，会影响 BIT 中哪些节点呢？</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">首先，显然会影响 tree[i] 的值；<br/>从该节点向根回溯，因为节点值包含了左子树之和，因此在回溯的过程中，只要碰到一根 <strong style="font-weight: bold;">左边</strong>（意味着 tree[i] 属于它的左子树），就要更新该边的目标节点（方向是向上走的）；<br/>最后，tree[i] 所有的孩子节点则不会受到影响。</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">首先，显然会影响 tree[i] 的值；</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">从该节点向根回溯，因为节点值包含了左子树之和，因此在回溯的过程中，只要碰到一根 <strong style="font-weight: bold;">左边</strong>（意味着 tree[i] 属于它的左子树），就要更新该边的目标节点（方向是向上走的）；</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最后，tree[i] 所有的孩子节点则不会受到影响。</p>
+</li>
+</ol>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如何找到这些节点呢？</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">观察可知，从 i 开始，<strong style="font-weight: bold;">不停地将 i 最后的 1 进位</strong>，直到超出数组长度，所得到的就是会被影响的点。如上面例子中，如果更新 1 处的值，需要更新的节点为 001--010--100；如果更新 5，则需要更新的节点为 101--110， 符合要求。</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">求 [1..i] 之和</h3>
