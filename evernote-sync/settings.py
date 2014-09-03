@@ -86,7 +86,13 @@ noteList = {
     	'https://www.evernote.com/shard/s133/sh/db5e50f9-6e95-482e-9fc1-0402258c7169/d93f8456e248c46ee54651948785b13f',
         # http 状态码
         'https://www.evernote.com/shard/s133/sh/a0a098e1-570a-42ce-aeda-e3baf2e9fc81/29d993ae1988bf7cc8b472aaa07867d4'
+    ],
+    '工作':[
+        # Skyline timeseries异常判定算法
+        'https://www.evernote.com/shard/s133/sh/e48b3f98-0360-4460-9423-e4b7bfcb3d8c/1ebbe14c822a78d2669c3712ad9cc6e2',
+        # Skyline监控系统工作原理分析
+        'https://www.evernote.com/shard/s133/sh/1bb42885-61d2-4d6f-a135-6ce41c4f30e1/6967a17731dbbc7ad79bc532dcfa7ba3'
     ]
 }
 
-expire = 100 * 24 * 3600 # seconds, 1 day
+expire = 1 * 24 * 3600 # seconds, 1 day
