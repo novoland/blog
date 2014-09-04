@@ -39,9 +39,9 @@ def sync():
             category = log[3]
             elapsed = (datetime.datetime.now() - lastSyncTime).total_seconds()
             if elapsed >= expire:
-                capture(url,category,False,file=file)
-            else:
-                pass
+                if not capture(url,category,False,file=file):
+                    c.execute('delete from log where file = ?',(file,))
+                    
         # 没抓取记录，说明这个文件是多余的，删除之
         else:
             # delete(file)
@@ -76,14 +76,19 @@ def log(info):
     print datetime.datetime.today().strftime('[%H:%M:%S]:'), info
 
 def capture(url,category, firstTime, file=None):
-    print ""
     log("sync note: %s, category: %s, firstTime: %s" % (url, category, firstTime))
 
     log("1. fetching page")
     html = requests.get(url,headers={'referer': url.split('?')[0]}).text
 
     soup = BeautifulSoup(html)
-    body = soup.find("div", class_="ennote").find('div')
+    body = soup.find("div", class_="ennote")
+    
+    if not body:
+        log('note not exist!')
+        return False
+
+    body = body.find('div')
 
     log("2. downloading images")
     # 将所有保存在 evernote 服务器上的图片抓到本地，其他图片不管
@@ -136,6 +141,7 @@ def capture(url,category, firstTime, file=None):
         c.execute('insert into log values(?,?,?,?)',(url, file, datetime.datetime.now(), category))
 
     log("sync done !")
+    return True
 
 def getNoteInfo(body):
     title = body.find('h1').extract().contents[0]

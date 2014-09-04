@@ -657,7 +657,7 @@ table th,table td {
   img {
     max-width: 100%;
     border: 2px solid $img-bd;
-    border-radius: 5px;
+    border-radius: 0;
   }
 }
 strong {
@@ -693,6 +693,16 @@ iframe {
   margin-top: 1.5em;
   @media screen and (max-width: $sidebar-width) {
     height: 260px;
+  }
+}
+pre{
+  word-wrap: initial !important;
+  overflow:auto !important;
+  background-color: #23241f !important;
+  border-radius:0 !important;
+
+  code{
+    white-space: pre !important;
   }
 }
 

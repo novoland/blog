@@ -482,7 +482,7 @@ table th, table td {
 #post__content img {
   max-width: 100%;
   border: 2px solid #e5e8ec;
-  border-radius: 5px; }
+  border-radius: 0; }
 
 strong {
   font-weight: bold; }
@@ -518,6 +518,14 @@ iframe {
   @media screen and (max-width: 585px) {
     iframe {
       height: 260px; } }
+
+pre {
+  word-wrap: initial !important;
+  overflow: auto !important;
+  background-color: #23241f !important;
+  border-radius: 0 !important; }
+  pre code {
+    white-space: pre !important; }
 
 #post__toc {
   width: 260px;
