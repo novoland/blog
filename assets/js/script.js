@@ -127,12 +127,12 @@ function afterPjax() {
 
   });
 
-  $('#icon-list').on('click',function(){
+  $('#icon-list').off('click').on('click',function(){
     $('#post__toc').toggle();
   });
 
   // Smooth scrolling
-  $('.js-anchor-link').on('click', function() {
+  $('.js-anchor-link').off('click').on('click', function() {
     var target = $(this.hash);
     container.animate({scrollTop: target.offset().top + container.scrollTop() - 70}, 500, function() {
       target.addClass('flash').delay(700).queue(function() {
