@@ -91,7 +91,9 @@ noteList = {
         # Skyline timeseries异常判定算法
         'https://www.evernote.com/shard/s133/sh/e48b3f98-0360-4460-9423-e4b7bfcb3d8c/1ebbe14c822a78d2669c3712ad9cc6e2',
         # Skyline监控系统工作原理分析
-        'https://www.evernote.com/shard/s133/sh/1bb42885-61d2-4d6f-a135-6ce41c4f30e1/6967a17731dbbc7ad79bc532dcfa7ba3'
+        'https://www.evernote.com/shard/s133/sh/1bb42885-61d2-4d6f-a135-6ce41c4f30e1/6967a17731dbbc7ad79bc532dcfa7ba3',
+        # Mapreduce algorithms
+        'https://www.evernote.com/shard/s133/sh/793a96a2-fe2b-4147-a054-ef60da105c8c/e09a91062c3a4cbc751a0b47383a2c0f'
     ]
 }
 
