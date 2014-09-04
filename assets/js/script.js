@@ -128,7 +128,7 @@ function afterPjax() {
   });
 
   $('#icon-list').on('click',function(){
-    $('#post__toc').show();
+    $('#post__toc').toggle();
   });
 
   // Smooth scrolling
