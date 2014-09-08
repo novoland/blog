@@ -67,18 +67,18 @@ category: "工作"
 
     <span style="color: #F92672;">return</span> abs(series.iget(-<span style="color: #ae81ff;">1</span>) - expAverage.iget(-<span style="color: #ae81ff;">1</span>)) &gt; <span style="color: #ae81ff;">3</span> * stdDev.iget(-<span style="color: #ae81ff;">1</span>)
 </code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法先求出最后一个datapoint处的EWMA（Exponentially-weighted moving average）mean/std deviation，然后用最近的datapoint和3-sigma理论与之进行比对。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">Moving Average</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法先求出最后一个datapoint处的EWMA（Exponentially-weighted moving average）mean/std deviation，然后用最后 3 个datapoint的平均值与之比对，看是否满足3-sigma理论。</p>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">关于 Moving Average</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">给定一个timeseries和subset长度（比如N天），则datapoint i 的N天 moving average = i之前N天（包括i）的平均值。不停地移动这个长度为N的“窗口”并计算平均值，就得到了一条moving average曲线。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Moving average常用来消除数据短期内的噪音，显示长期趋势；或者根据已有数据预测未来数据。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Simple Moving Average</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">Simple Moving Average</h4>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这是最简单的moving average，为“窗口”内datapoints的算数平均值（每个datapoint的weight一样）：</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">SMA(i) = [p(i) + p(i-1) + ... + p(i-n+1) ]/ n</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当计算i+1处的SMA时，一个新的值加入，“窗口”左端的值丢弃，因此可得到递推式：</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">SMA(i) = SMA(i-1) + p(i)/n – p(i-n+1)/n</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">实现起来也很容易，只要记录上次SMA和将要丢弃的datapoint即可(最开始的几个是没有SMA的)。Pandas中可用 pandas.stats.moments.rolling_mean 计算SMA。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">SMA由于过去的数据和现在的数据权重是一样的，因此它相对真实数据的走向存在延迟，不太适合预测，更适合观察长期趋势。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">Exponential moving average</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">Exponential moving average</h4>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">也称 Exponential-weighted moving average，它和SMA主要有两处不同：</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">计算SMA仅“窗口”内的n个datapoint参与计算，而EWMA则是之前所有point；<br style="margin-top: 0px;"/>EWMA计算average时每个datapoint的权重是不一样的，最近的datapoint拥有越高的权重，随时间呈指数递减。<br/>EWMA的递推公式是：</p>
 <pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;">EWMA(<span style="color: #ae81ff; margin-top: 0px;">1</span>) = p(<span style="color: #ae81ff;">1</span>)  <span style="color: #75715e;">// 有时也会取前若干值的平均值。α越小时EWMA(1)的取值越重要。</span>

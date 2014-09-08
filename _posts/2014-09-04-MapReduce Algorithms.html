@@ -7,7 +7,7 @@ category: "工作"
 <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">1. MapReduce 工作原理</h1>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一图胜千言：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409802041299.png" name="1a6b1e79-166a-4285-84f2-0128d87d409f" src="/assets/img/3b6dc283d85bb557aa3ad7b9974069fd.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409802041299.png" name="1a6b1e79-166a-4285-84f2-0128d87d409f" src="https://www.evernote.com/shard/s133/sh/793a96a2-fe2b-4147-a054-ef60da105c8c/e09a91062c3a4cbc751a0b47383a2c0f/res/1a6b1e79-166a-4285-84f2-0128d87d409f/1409802041299.png?resizeSmall&amp;width=832" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">Mapper</strong>:</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;">Mapper 主要做些信息抽取、过滤等工作</li>
@@ -139,7 +139,7 @@ Reducer:
 <li style="line-height: 1.6; margin-top: 0px;">Mapper 侧根本不过滤数据，所有数据，即使是那些无法 join 的记录，都会被传输到 Reducer 侧，再由 Reducer 过滤，这样性能很差；</li>
 <li style="line-height: 1.6;">Reducer 侧可能没有足够的内存装下一个 key 对应的所有记录。</li>
 </ol>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">join 优化</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">join 优化</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">考虑这样一个场景：有两个数据集，Customer 和 Order，要求对他们进行 join，但仅限于地区在上海的顾客。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">有几种可能的优化方式：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
@@ -150,7 +150,7 @@ Reducer:
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果过滤后的数据集依然很大，那么只能采用低效率的 Reduce join。优化 Reduce join 的主要策略是 <strong style="font-weight: bold; margin-top: 0px;">尽量将数据过滤动作放在 Mapper 进行</strong>（这也是一个通用准则），在上述例子中， Mapper 在处理某个 Order 时，如果知道其对应的 Customer 不在 Customer 集合中，或者不在上海地区，那么就可以跳过它而不用传输到 Reducer 侧。为了达到这一点，我们可以先对 Customer 过滤（就像1一样），将上海的顾客<strong style="font-weight: bold;">的 ID </strong>选出来，这样得到的文件比1得到的文件更小（因为它只有一个 ID），很有可能可以被装入内存。用 Distributed Cache 将该 ID 文件分发到所有 Mapper 节点，Mapper 在处理 Customer 或 Order 的记录时就可以根据这个集合过滤所有非上海的顾客了。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果过滤得到的 ID 文件依然很大，这时判重利器 <a href="http://novoland.github.io/%E7%AE%97%E6%B3%95/2014/07/28/BloomFilter.html" style="background: transparent; margin-top: 0px;" target="_blank"><strong style="font-weight: bold; margin-top: 0px;">BloomFilter</strong></a> 就派上用场了。我们可以建立一个 BloomFilter 表示过滤后的顾客 ID 集合，它的尺寸要远小于原始集合。BloomFilter 存在的误判率也不是问题，它只会把不存在的元素误判为存在，Reducer 处也会进行过滤，可以把误判的元素剔除掉。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">用 Mapreduce 思想建立 BloomFilter</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">基于 Mapreduce 为超大集合建立 BloomFilter 的方法：</strong></p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">每个 Mapper 对自己负责的 split 建立 BloomFilter，用一个 Reducer 接收它们并两两相“或”，即得到整体集合的 BloomFilter。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">这利用了 BloomFilter 的性质：</p>
 <pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: #fff; white-space: pre-wrap; border-radius: 3px; display: block; background: #23241f; margin-top: 0px;">filter1 | filter2 == 并集

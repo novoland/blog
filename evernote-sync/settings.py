@@ -16,6 +16,8 @@ noteList = {
     	'https://www.evernote.com/shard/s133/sh/032b4f82-0b1d-430a-8538-b266243bb4dd/b7fdad034f43d6b2b261024ca9ad614d',
     	# 定时器
     	'https://www.evernote.com/shard/s133/sh/d227e30b-0728-4599-9556-12c9cab77ab3/6a4d4d5c0608363acc46773d5aa27a76',
+        # ThreadLocal
+        'https://www.evernote.com/shard/s133/sh/26c45b50-3de4-4542-8cc9-fce1a7aab69c/5f9933ed31fc086c4de375ca24d68bf3'
     ],
     '算法' : [
     	# 贝叶斯

@@ -5,49 +5,155 @@ category: "数据库"
 ---
 
 <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">一. 事务隔离级别</h1>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">一. 事务</h1>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><a href="http://en.wikipedia.org/wiki/Isolation_%28database_systems%29" style="background: transparent; margin-top: 0px;" target="_blank">WIKI</a></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">规定事务间的可见性。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">0. 事务的 ACID</h2>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. read uncommited</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最弱，事务的所有动作对其他事务都是立即可见的。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">问题： <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">脏读</code> </strong><br/>即看到其他事务中间状态的数据。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. read commited</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只能读到其他事务已提交的数据，中间状态的数据则看不到，解决了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">脏读</code>。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">问题：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">non-repeatable read</code></strong><br/>同一事务内，对同一条记录，两次读取间如果有其他事务对其的更新提交了，则看到的数据不同。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. repeatable read</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">解决了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">non-repeatable read</code>的问题，保证在一个事务内，对同一条记录的重复读都是一致的。<em>是InnoDB的默认隔离级别。</em></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">问题：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">phantom read</code></strong><br/>对于某个范围的查询，两次查询间如果有其他事务在该范围内进行了删除或新增，则第二次查询会发现多/少了某些记录。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">对<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">phantom read</code>的解决方案：</strong><br/>引入<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">range lock</code>区间锁，读/写时，除了对满足条件的记录加锁，记录之间的区间也加锁，保证不会出现区间内的插入操作。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4. serial</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最高，所有事务都是串行的。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以通过锁实现不同事务间对资源访问的互斥，从而实现以上事务隔离级别。但在</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">事务并发会导致各类问题，SQL 标准预定义了4种事务隔离级别，以满足不同程度的并发。每种隔离级别都能保证解决若干并发问题。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 事务的 ACID</h2>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead style="margin-top: 0px;">
+<tr style="margin-top: 0px;">
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;"></th>
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">Explaination</th>
+</tr>
+</thead>
+<tbody>
+<tr style="margin-top: 0px;">
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">Atomic</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">原子，要么一起完成要么都不做</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">Consistency</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">事务开始前和结束后数据都是满足约束规则的，如外键约束</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">Isolation</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">隔离性，并发事务之间不会互相影响，就像串行执行一样</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">Duaration</td>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">持久性，事务造成的修改是持久的，故障也不会丢失</td>
+</tr>
+</tbody>
+</table>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 并发事务产生的问题</h2>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">第一类丢失更新 ( <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">回滚丢失</code>)。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在 A 进行期间，B 做了更新；A 如果回滚，B 的更新丢失。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">所有隔离级别都不会发生这种现象</p>
+</blockquote></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">脏读（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Dirty Read</code>）：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">A 看到 B 进行中更新的数据，并以此为根据继续执行相关的操作；B 回滚，导致 A 操作的是脏数据。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">不可重复读（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Non-repeatable Read</code>）：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">A 先查询一次数据，然后 B 更新之并提交，A 再次查询，得到和上一次不同的查询结果。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">幻读（<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Phantom Read</code>）：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">A 查询一批数据，B 插入或删除了某些记录并提交，A 再次查询，发现结果集中出现了上次没有的记录，或者上次有的记录消失了。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">第二类丢失更新 (<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">覆盖丢失</code>)：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">A 和 B 查询同样的记录，各自 <strong style="font-weight: bold; margin-top: 0px;">基于最初查询的结果</strong> 更新记录并提交，后提交的数据将覆盖先提交的，导致最终数据错误。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">并发进行自增 / 自减是发生覆盖丢失的一个典型场景：</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409971482166.png" name="4ab7a1fa-077a-4de4-bfb8-f54b5baae0ea" src="/assets/img/a532fd94ccd31a031bd3700865b231c9.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">其中一个事务的更新被另外一个覆盖了，最终导致 i 错误。</p>
+</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. 4个事务隔离级别</h2>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">read uncommited</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最弱，事务的所有动作对其他事务都是立即可见的。存在脏读、不可重复读、第二类丢失更新、幻读问题（全部并发问题都有）。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">read commited</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只能读到其他事务已提交的数据，中间状态的数据则看不到，解决了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">脏读</code>问题。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">repeatable read</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">InnoDB的默认隔离级别。</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">解决了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">不可重复读</code>的问题，保证在一个事务内，对同一条记录的重复读都是一致的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">依然存在幻读、第二类丢失更新问题。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">InnoDB 在 Repeatable Read 隔离级别下提供了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">phantom read</code>的解决方案：</p>
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">引入<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">range lock</code>区间锁，读/写时，除了对满足条件的记录加锁，记录之间的区间也加锁，保证不会出现区间内的插入操作。</p>
+</blockquote></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">serial</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最高，所有事务都是串行的。啥并发问题都没有。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">总结：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead style="margin-top: 0px;">
+<tr style="margin-top: 0px;">
+<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;"></th>
+<th style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">dirty read</th>
+<th style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">non-repeatable read</th>
+<th style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">phantom read</th>
+<th style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">第二类丢失更新</th>
+</tr>
+</thead>
+<tbody>
+<tr style="margin-top: 0px;">
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">read uncommited</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">read commited</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">repeatable read</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;">√</td>
+</tr>
+<tr>
+<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">serial</td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">X</code></td>
+</tr>
+</tbody>
+</table>
 <hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">二. 并发</h1>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 锁优化1：拆分，读写锁</h2>
+<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">二. 并发控制</h1>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据库通常通过锁来实现上述隔离级别。数据库能够根据设置的隔离级别自动管理事务内的锁，不需要开发人员关心；不过数据库也支持显式加锁，对于当前隔离级别无法解决的并发问题，我们需要在事务中自己控制记录的锁定和解锁。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">InnoDB 在锁的基础上还搭配了 MVCC 作为优化，实现以上事务隔离级别。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 锁</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">锁优化1：拆分，读写锁</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">读锁 -- 共享锁 -- shared<br style="margin-top: 0px;"/>写锁 -- 排他锁 -- exclusive</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 锁优化2：降低粒度</h2>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">锁优化2：降低粒度，表锁 &amp; 行锁</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><em style="margin-top: 0px;">表锁由 mysql服务器 实现，行锁由 存储引擎 实现。</em></p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">表锁</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">表锁</h4>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">显式的表锁：<br style="margin-top: 0px;"/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">lock table xxx read/write;</code></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MyISAM几乎完全依赖MySQL服务器提供的表锁机制。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">使用MyISAM时对锁的优化：</h4>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">使用MyISAM时注意对表锁的优化：</h4>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;">缩短锁定时间：拆分query / 索引</li>
 <li style="line-height: 1.6;">打开concurrent insert(在尾部并发insert)</li>
 <li style="line-height: 1.6;">根据需要设置读写的优先级。默认写大于读</li>
 </ol>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">行锁</h3>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">行锁</h4>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">InnoDB实现了行锁，基于索引的 index-row locking，<strong style="font-weight: bold; margin-top: 0px;">如果锁了次级索引中的记录，则对应主索引中的记录也会被锁住</strong>。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">update/delete/insert会加x锁</p>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">查询锁的争用情况</h4>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;">表锁<br style="margin-top: 0px;"/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">show status like 'table%'</code><br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">Table_locks_immediate</code>:立即获得表锁的次数<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">Table_locks_waited</code>:需要等待获得表锁的次数</li>
+<li style="line-height: 1.6;">innodb的行锁<br style="margin-top: 0px;"/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">show status like 'innodb_row_lock'</code><br/>current_waits:<br/>waits:<br/>time:<br/>time_avg:<br/>time_max:</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">update/delete/insert 动作会自动加x锁。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">查询时也可以设置显式加锁：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">select... lock in shared mode</code>: s lock</li>
 <li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">select... for update</code>: x lock</li>
 </ol>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">two-phase locking protocol</code>：事务内部获得的锁在提交时一起释放</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. MVCC</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">InnoDB 在行锁的基础上还支持MVCC。行锁可以实现各个数据库事务隔离级别，MVCC 则是基于行锁的并发控制的一个优化，简单的说，MVCC为某条记录创建多个snapshot，不同事务读取各自的snapshot，互不影响，它的作用主要在于：</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. MVCC</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">InnoDB 并不仅仅使用上述的锁机制控制并发，它还搭配了另外一种用于提高并发度的被称为 “Multi-Version Concurrency Control 多版本并发控制” 机制一起使用。简单的说，MVCC为某条记录创建多个snapshot，不同事务读取各自的snapshot，互不影响，它可以认为是对锁机制的一种优化，它在很多情况下避免了锁的使用：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;">使普通的select避免加锁，提高并发</li>
 <li style="line-height: 1.6;">不用锁也能实现 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">read commited</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">repeatable read</code> 事务隔离级别的语义</li>
@@ -78,8 +184,8 @@ category: "数据库"
 <li style="line-height: 1.6;">DML（insert/delete/update）也属于 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">lock read</code></li>
 </ol>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-locking-reads.html" style="background: transparent; margin-top: 0px;" target="_blank">SELECT ... FOR UPDATE and SELECT ... LOCK IN SHARE MODE Locking Reads</a></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该模式的一个作用是 <strong style="font-weight: bold; margin-top: 0px;">在RR隔离级别上</strong> 解决了<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">phantom read</code>的问题，这是通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">gap lock</code>实现的。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">4. gap lock &amp; phantom read</h3>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在 <strong style="font-weight: bold; margin-top: 0px;">在RR隔离级别上</strong> ，lock read 除了会加记录锁，还会为记录之间的间隙加上<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">gap lock</code>，从而解决<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">phantom read</code>问题。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. gap lock &amp; phantom read</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">repeatable read</code>级别上, <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">lock read</code> 时使用了 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">gap-key lock</code> 解决 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">phathom read</code> 问题: 不仅锁找到的记录，还锁区间，保证区间内的值无法被插入。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">注意，无法使用索引时会走主索引实现全表扫描，此时会给所有的记录加上record lock，并对其所有的区间加gap lock，表完全锁死，此时只能进行 snapshot read，极大地降低并发，这就是为何update/delete尽量要走索引的原因。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">注意：</p>
@@ -97,12 +203,7 @@ category: "数据库"
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">针对当前读，RR隔离级别保证对读取到的记录加锁 (记录锁)，同时保证对读取的范围加锁，新的满足查询条件的记录不能够插入 (间隙锁)，不存在幻读现象。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Serializable<br style="margin-top: 0px;"/>从MVCC并发控制退化为基于锁的并发控制。不区别快照读与当前读，所有的读操作均为当前读，读加读锁 (S锁)，写加写锁 (X锁)。</p>
 <p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Serializable隔离级别下，读写冲突，因此并发度急剧下降，在MySQL/InnoDB下不建议使用。</p>
-</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5. 查询锁的争用情况</h2>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">表锁<br style="margin-top: 0px;"/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">show status like 'table%'</code><br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">Table_locks_immediate</code>:立即获得表锁的次数<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">Table_locks_waited</code>:需要等待获得表锁的次数</li>
-<li style="line-height: 1.6;">innodb的行锁<br style="margin-top: 0px;"/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">show status like 'innodb_row_lock'</code><br/>current_waits:<br/>waits:<br/>time:<br/>time_avg:<br/>time_max:</li>
-</ol>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
+</blockquote><hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">三. 优化query (粗略)</h1>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">定位瓶颈</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">IO or CPU?</p>
@@ -168,7 +269,7 @@ category: "数据库"
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">范围查询 使用索引的方式，是先确定起点，再根据叶子节点组成的链表顺序扫描，直到终点。</p>
 <p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">等值查询 则是从上到下搜索树。</p>
 </blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">假如有索引<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">&lt;a,b,c,d&gt;</code>：</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">a) 最左前缀的等值查suoyin询</h3>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">a) 最左前缀的等值查询</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一旦出现空洞，后面的列就不能使用索引了，但空洞可以用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">in所有值</code>填充</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">b) 范围查询</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只有第一个范围查询及前面的列可以使用索引，后面的即使构成最左前缀也不会走索引。</p>
