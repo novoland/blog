@@ -99,4 +99,4 @@ noteList = {
     ]
 }
 
-expire = 1 * 24 * 3600 # seconds, 1 day
+expire = 0 * 24 * 3600 # seconds, 1 day

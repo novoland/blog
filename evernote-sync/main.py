@@ -93,7 +93,6 @@ def capture(url,category, firstTime, file=None):
     log("2. downloading images")
     # 将所有保存在 evernote 服务器上的图片抓到本地，其他图片不管
     for img in body.find_all('img'):
-
         if not re.search('www\.evernote\.com',img['src']):
             continue
 
@@ -107,16 +106,16 @@ def capture(url,category, firstTime, file=None):
         if suffix != '':
             imgName = imgName + '.' + suffix
 
-        # 如果本地有图片，不重新抓取
-        files = [ f for f in os.listdir(imgDir) if os.path.isfile(os.path.join(imgDir,f)) and f == imgName]
-        if len(files) > 0:
-            continue
-
-        # download the image
-        urllib.urlretrieve(src, "%s/%s" % (imgDir,imgName))
-
         # update img src
         img['src'] = "/assets/img/%s" % imgName
+
+        files = [ f for f in os.listdir(imgDir) if os.path.isfile(os.path.join(imgDir,f)) and f == imgName]
+        # 如果本地有图片，不重新抓取
+        if len(files) > 0:
+            continue
+        else:
+            # download the image
+            urllib.urlretrieve(src, "%s/%s" % (imgDir,imgName))
     
     info = getNoteInfo(body)
     if not file:
