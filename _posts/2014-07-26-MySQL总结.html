@@ -122,7 +122,7 @@ category: "数据库"
 </table>
 <hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">二. 并发控制</h1>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据库通常通过锁来实现上述隔离级别。数据库能够根据设置的隔离级别自动管理事务内的锁，不需要开发人员关心；不过数据库也支持显式加锁，对于当前隔离级别无法解决的并发问题，我们需要在事务中自己控制记录的锁定和解锁。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据库通常通过锁来实现上述隔离级别。数据库能够根据设置的隔离级别自动管理事务内的锁，不需要开发人员关心；不过数据库也支持显式加锁，对于当前隔离级别无法解决的并发问题，我们需要在事务中自己控制记录的锁定和解锁（悲观锁），或在程序中使用（基于版本或更新时间的）乐观锁。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">InnoDB 在锁的基础上还搭配了 MVCC 作为优化，实现以上事务隔离级别。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 锁</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">锁优化1：拆分，读写锁</h3>
@@ -229,25 +229,32 @@ category: "数据库"
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MyISAM 和 InnoDB 的索引，采用的数据结构都是B+树。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. B树和B+树</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">B树</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">B树的结构类似二叉查找树，只不过节点的度远远大于2，查找的复杂度为树的高度，O(logdN)：<br style="margin-top: 0px;"/><img alt="Alt text" class="en-media" longdesc="./1402812459074.png" name="6110437c-cb5b-4148-9a0d-9cbea5a7d5fd" src="https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca/res/6110437c-cb5b-4148-9a0d-9cbea5a7d5fd/1402812459074.png?resizeSmall&amp;width=832" style="border: 0; max-width: 100%;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通常会将根据硬盘上一个page的大小来调整节点的度，原因是在基于外存的查找数据结构中，性能的瓶颈在于IO，这样的处理一可以让一个节点一次IO即可读入，二可以显著降低树的高度，查找时只需几次page的IO即可定位到目标。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">B树的结构类似二叉查找树，只不过节点的度远远大于2，查找的复杂度为树的高度，O(logdN)：<br style="margin-top: 0px;"/><img alt="Alt text" class="en-media" longdesc="./1402812459074.png" name="6110437c-cb5b-4148-9a0d-9cbea5a7d5fd" src="/assets/img/81bb92fa7c27d9aef499efc82c4aaa73.png" style="border: 0; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通常会将根据硬盘上一个page的大小来调整节点的度，原因是：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;">基于外存的查找数据结构中，性能的瓶颈在于IO，这样的处理一可以让一个节点只需要一次IO</li>
+<li style="line-height: 1.6;">二可以显著降低树的高度，查找时只需几次page的IO即可定位到目标。</li>
+</ol>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">B+树</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">B+树是对B树的优化：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">只有叶子节点存data，内节点只存key；<br style="margin-top: 0px;"/> 好处：提高内节点的度，降低高度</li>
-<li style="line-height: 1.6;">叶子节点加上了next指针，形成一个链表<br style="margin-top: 0px;"/> 好处：快速范围查找，只需确定起点和终点，顺序扫描即可。</li>
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">只有叶子节点存data，内节点只存key；<br style="margin-top: 0px;"/>好处：<strong style="font-weight: bold;"> 提高内节点的度，降低高度 </strong></p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">叶子节点加上了next指针，形成一个链表<br style="margin-top: 0px;"/>好处：<strong style="font-weight: bold;"> 快速范围查找，只需确定起点和终点，顺序扫描即可 </strong></p>
+</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813534888.png" name="f3392b7b-c733-4b80-ba43-d51f8cc1cf8c" src="https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca/res/f3392b7b-c733-4b80-ba43-d51f8cc1cf8c/1402813534888.png?resizeSmall&amp;width=832" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813534888.png" name="f3392b7b-c733-4b80-ba43-d51f8cc1cf8c" src="/assets/img/9467b1f6665fb48464f4699db1a4bec2.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. MyISAM的索引</h2>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">索引和数据分离，数据文件：堆表(按插入有序)</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">主键索引和非主键索引结构一致，叶子节点存储的是行的物理位置信息（row number）</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813593672.png" name="a8cab548-fa57-4191-90c6-5ff93e80c322" src="https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca/res/a8cab548-fa57-4191-90c6-5ff93e80c322/1402813593672.png?resizeSmall&amp;width=832" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1402813593672.png" name="a8cab548-fa57-4191-90c6-5ff93e80c322" src="/assets/img/10b0700762cf9c5bfd97396ccfb7c8b3.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. InnoDB的索引</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">primary index（主键索引）</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据文件就是主键索引文件，叶子节点存真实数据，这种方式称为 聚集索引。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据文件就是主键索引文件，叶子节点存真实数据，这种方式称为 <strong style="font-weight: bold; margin-top: 0px;">聚集索引</strong>。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果没有主键，InnoDB会试着使用一个Unique Nonnullable index代替；如果没有这种索引，会定义隐藏的主键。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1410230989377.png" name="69e914e7-8cfa-4a69-a08e-4483af84d5e5" src="/assets/img/f83dae9c2efa594efdea1adc45fb31d7.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">secondary index</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">非主键上的索引称为次级索引，叶子节点存主键，此时需要查找两次。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">非主键上的索引称为次级索引，叶子节点存 <strong style="font-weight: bold; margin-top: 0px;">主键</strong>，此时需要查找两次。</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">优缺点</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优点： 将相关数据保存在一起，减少IO；MyISAM访问每个行都得访问数据文件</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">缺点：</p>
@@ -258,28 +265,30 @@ category: "数据库"
 <li style="line-height: 1.6;">split时会给整个索引加x锁，不可访问</li>
 </ul>
 </li>
-<li style="line-height: 1.6;">按主键顺序插入最快；乱序插入慢(频繁分裂)，因此 <strong style="font-weight: bold; margin-top: 0px;">更适合用自增主键</strong></li>
-<li style="line-height: 1.6;">secondary index包含了主键，体积可能很大，因此 <strong style="font-weight: bold; margin-top: 0px;">不适合用过长字段当主键</strong></li>
+<li style="line-height: 1.6;">按主键顺序插入最快，因为记录被顺序插到索引的最末，节点 split 的开销很小；乱序插入慢，因为新记录很大机会被插入到已满的叶子节点，引起频繁分裂，因此 InnoDB <strong style="font-weight: bold; margin-top: 0px;">更适合用自增主键</strong>；</li>
+<li style="line-height: 1.6;">secondary index包含了主键，体积可能很大，因此 <strong style="font-weight: bold; margin-top: 0px;">不适合用过长字段当主键</strong>；</li>
 <li style="line-height: 1.6;">在secondary index上可能需要查找两次，一次查自己，一次查主索引。</li>
 </ol>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4. 什么样的查询条件会走索引?</h2>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">区分<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">范围查询</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px;">等值查询</code></p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">in</code>是多个等值查询，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px;">between</code>二者都有可能。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">范围查询 使用索引的方式，是先确定起点，再根据叶子节点组成的链表顺序扫描，直到终点。</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">等值查询 则是从上到下搜索树。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">范围查询</strong> 使用索引的方式，是先确定起点，再根据叶子节点组成的链表顺序扫描，直到终点。</p>
+<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">等值查询</strong> 则是从上到下搜索树。</p>
 </blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">假如有索引<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">&lt;a,b,c,d&gt;</code>：</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">a) 最左前缀的等值查询</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一旦出现空洞，后面的列就不能使用索引了，但空洞可以用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">in所有值</code>填充</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">b) 范围查询</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只有第一个范围查询及前面的列可以使用索引，后面的即使构成最左前缀也不会走索引。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">只有第一个出现的范围查询及其前面的列（前提是要构成最左前缀）可以使用索引，后面的即使构成最左前缀也不会走索引。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此，较常进行范围查询的列要放在索引的后面。</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">c) 字符串<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">%</code>如果放在开头则无法走索引</h3>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">5. 建立索引时的优化</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">a) 不适合创建索引的情况</h3>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">唯一性太差的列<br style="margin-top: 0px;"/> 引擎根据统计信息会做优化，可能建了也不走</li>
-<li style="line-height: 1.6;">频繁更新的列<br style="margin-top: 0px;"/> 需要同时维护索引和数据    </li>
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">唯一性太差的列</strong><br/>引擎根据统计信息会做优化，可能建了也不走</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">频繁更新的列</strong><br/>需要同时维护索引和数据    </p>
+</li>
 </ol>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">b) 前缀索引 和 selectivity（选择性）</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">问题：列太长，太消耗空间；解决方案：用前缀建立索引<br style="margin-top: 0px;"/>但是又要保证良好的selectivity<br/>selectivity = (distinct values) / all records</p>
@@ -292,14 +301,20 @@ category: "数据库"
 </ol>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">6. 查询优化</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">a) 查询条件中不要对列做运算，否则无法使用索引；</h3>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">b) 使用覆盖索引</h3>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">b) 使用“覆盖索引”技巧</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Covering index: 覆盖了查询的所有列，避免访问数据文件/聚集索引<br style="margin-top: 0px;"/>发起的查询被索引覆盖时，会在Extra出现Using Index</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">c) 优化join</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MySQL只支持nested loop join，没有hash join或者sort merge join。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">nested loop join</code><br/>两层循环</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">hash join</code><br/>驱动表先构造hash table，扫描另一张表，并查找hash table看是否有对应记录</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">sort merge join</code><br/>两张表先排序，然后交替扫描进行join。这个过程类似归并排序的归并阶段</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">数据库 join 类型：</p>
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">nested-loop join</code><br/>两层循环，分驱动表（外层，小）和被驱动表（内层）。MySQL 只有这种 join 方式。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">sort-merge join</code><br/>两边都先 sort（有索引就不用了），用两个指针指向两边的第一个元素，依次找相同值。<br/>和 nested-loop join 类似，但利用了排序的性质，内层循环从上次停止的地方开始就可以，不要从头开始找起。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">hash join</code><br/>一边构造一个哈希表（或布隆过滤器），另一边依次判断记录是否在其中</p>
+</li>
+</ol>
 </blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当join无法使用索引（type是all/index/range/index_merge，用到是ref）时会用到join buffer，缓存中间的结果集</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优化：</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
@@ -311,7 +326,7 @@ category: "数据库"
 </li>
 <li style="line-height: 1.6;">减小最外层循环次数，即用小结果集驱动join（优化器会帮你挑选较小的表做驱动表）</li>
 <li style="line-height: 1.6;">保证被驱动表上的join字段被索引</li>
-<li style="line-height: 1.6;">只group by或order by驱动表上的列，这样可以在join前排序</li>
+<li style="line-height: 1.6;">只 group by 或 order by 驱动表上的列，这样可以在 join 前排序</li>
 <li style="line-height: 1.6;">被驱动表无法走索引时，保证join buffer足够大</li>
 </ol>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">d) 优化 order by</h3>
@@ -331,7 +346,7 @@ category: "数据库"
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">尽量走索引</strong><ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;">order by时必须要能使用索引的最左前缀(order by+where条件中的常量组成最左前缀也可以)，且order by的方向都相同</li>
-<li style="line-height: 1.6;">join时，order by的列必须引用第一个表（驱动表）</li>
+<li style="line-height: 1.6;">join时，order by的列如果引用第一个表（驱动表），可以在 join 前先排好序</li>
 </ul>
 </li>
 <li style="line-height: 1.6;"><strong style="font-weight: bold; margin-top: 0px;">优化filesort</strong><ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
@@ -350,15 +365,17 @@ category: "数据库"
 <h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">1. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">loose index scan</code>（MySQL不支持）</h5>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">当前对 <strong style="font-weight: bold; margin-top: 0px;">范围查询</strong> 的处理方式(range scan)是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px;">走叶子节点链表扫描</code>，当后续有其他列上的过滤条件时，不支持在 <strong style="font-weight: bold;">从上往下搜索的时候，对一个范围内的所有子树，利用后续列的其他条件进行查找并合并结果集</strong> 的工作方式。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">举个例子，idx(a,b,c)，where a = 1 and b &lt; 3 and c = 1，不用loose index scan时的range scan方式：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">找到b=3的最右侧叶子节点，往前扫描，再用c=1在链表上过滤，这种方式在搜索的时候实际上只用到了ab两列;</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">但是显然有一种更好的方式，即在树上从上往下搜索到b&lt;3的所有区间后，对每个子树用c=1的条件过滤，并合并结果。这就是所谓的loose index scan。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">首先定位到 a=1 的节点，然后在这个子树中搜索 b=3 的最右侧叶子节点，接着往前扫描，并用 c=1 在链表上过滤，这种方式在搜索的时候实际上只用到了ab两列;</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">但是显然有一种更好的方式，即在树上从上往下搜索到b&lt;3的所有区间后，对每个子树用c=1的条件去扫描，并合并结果。这就是所谓的loose index scan。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">这就是 idx(a,b,c)少了只有a/c当查询条件是只能用到a列；ab都有范围查询只能用到a列 的根本原因。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Mysql的B+索引只支持等值查询，in实际上是和其他条件进行笛卡尔积后的多个等值查询，因此在查询b/c列时，如果用a in ('男','女')补上这个空洞时，又是可以走索引的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Mysql的B+索引只支持等值查询，<strong style="font-weight: bold; margin-top: 0px;">in实际上是和其他条件进行笛卡尔积后的多个等值查询</strong>，因此在查询b/c列时，如果用a in ('男','女')补上这个空洞时，又是可以走索引的。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">可以使用下面两种方式加速分组</strong>：</p>
 <h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">2. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">伪loose index scan</code>:</h5>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">group by在有些情况下可以使用这种方式加速查询。<br style="margin-top: 0px;"/>idx(a,b,c)，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px;">select max(c) where ... group by a,b</code>时对每个a+b的唯一组合的区间，找到该子树的最左（右）节点，然后合并结果即可。<br/>这种工作方式和真正的loose scan类似，都是合并子树的搜索结果，但仅需要访问子树的部分节点。它的局限在于仅适用某些聚合函数如min/max，且查询字段必须在group by字段后面，二者一起组成最左前缀。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">group by在有些情况下可以使用这种方式加速查询。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">idx(a,b,c)，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">select max(c) where ... group by a,b</code>时对每个 a 及 b 的组合，从该节点出发找到该子树的最左（右）节点，就能知道这个 group 中 c 的最大值了；最后合并结果即可。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">这种工作方式和真正的 loose scan 类似，都是合并子树的搜索结果，而且仅需扫描子树的部分节点。它的局限在于仅适用某些聚合函数如min/max，且查询字段必须在 group by 字段后面，二者一起组成最左前缀。</p>
 <h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">3. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">Tight index scan</code>:</h5>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">伪loose index scan</code>类似，但需要访问整个子树，对其所有节点做分组/聚合，不能直接拿到结果。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">其实就是利用索引的有序性，工作方式和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #fff; white-space: nowrap; border-radius: 3px; margin-top: 0px;">伪loose index scan</code>类似，但需要扫描满足条件的组合所对应子树中的所有节点，再进行分组/聚合，而不能直接拿到结果。</p>
 <p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><a href="http://docs.oracle.com/cd/E16655_01/server.121/e15858/tgsql_optop.htm#TGSQL95163" style="background: transparent; margin-top: 0px;" target="_blank">B+树索引访问方式</a></p>
 </blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;"> 2. 不能用索引时，mysql必须先将数据放入临时表，然后filesort。</strong></p>
 <h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">distinct：</h4>
@@ -369,12 +386,27 @@ category: "数据库"
 <li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">filesort</code>，但distinct不需要排序</li>
 </ol>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">f) count</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">count(<em style="margin-top: 0px;">): 统计结果集的行<br style="margin-top: 0px;"/>count(列/表达式): 统计值的个数，排除null<br/>MyISAM维护了表的总行数，所有没有where条件的count(</em>)很快<br/>工作方式：扫描符合条件的记录，统计<br/>一个sql语句统计不同值的count：<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">SELECT COUNT(color = 'blue' OR NULL) AS blue, COUNT(color = 'red' OR NULL) AS red FROM items</code><br/>很难优化，覆盖索引？</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">注意区分以下两种 count ：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">count(*)</code><br/>统计结果集的行</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">count(列/表达式)</code><br/>统计值的个数，排除null</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MyISAM维护了表的总行数，所以没有where条件的 count(*) 很快。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">工作方式：扫描符合条件的记录，统计。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个sql语句统计不同值的count：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;">SELECT</span> <span style="color: #F92672;">COUNT</span>(color = <span style="color: #e6db74;">'blue'</span> <span style="color: #F92672;">OR</span> <span style="color: #F92672;">NULL</span>) <span style="color: #F92672;">AS</span> blue, <span style="color: #F92672;">COUNT</span>(color = <span style="color: #e6db74;">'red'</span> <span style="color: #F92672;">OR</span> <span style="color: #F92672;">NULL</span>) <span style="color: #F92672;">AS</span> red <span style="color: #F92672;">FROM</span> items</span>
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">优化</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">用 “covering index” 技巧让 count 利用索引就能完成，不要访问数据文件。</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">g) limit &amp; offset</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一般瓶颈在于扫描的数据太多，limit 10000,20会扫描10020行数据，再丢弃前10000行.</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优化：利用covering index在索引上偏移，而不是全表上偏移 --  可以先在索引上偏移再join原表获取其他列。<br style="margin-top: 0px;"/>(没别的办法了？？)</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优化：利用covering index在索引上偏移，而不是全表上偏移 --  可以先在索引上偏移再join原表获取其他列。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">(没别的办法了？？)</p>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">h) union</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MySQL总是用temp table实现union<br style="margin-top: 0px;"/>使用union all而不是union，后者会对temp table做distinct操作，开销很大</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">MySQL总是用temp table实现union</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">union all</code>而不是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">union</code>，后者会对temp table做distinct操作，开销很大</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;"> 附：数据访问方式，出现在explain的type列里 </strong> </p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;">(all)        Full table scan          全表扫描</li>

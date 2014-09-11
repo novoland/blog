@@ -1,0 +1,85 @@
+---
+layout: post
+title: "ThreadLocal 分析"
+category: "并发"
+---
+
+<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">从功能上来说，它类似一个全局的Map，key是线程。不同线程get时拿到的都是专属于自己的那个对象，互相隔离，完全不存在并发问题。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">典型的使用方式</h2>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #75715e; margin-top: 0px;">// 摘自 j.u.c.ThreadLocalRandom</span>
+<span style="color: #F92672;">private</span> <span style="color: #F92672;">static</span> final ThreadLocal&lt;ThreadLocalRandom&gt; localRandom =  <span style="color: #75715e;">// ThreadLocal对象都是static的，全局共享</span>
+    <span style="color: #F92672;">new</span> ThreadLocal&lt;ThreadLocalRandom&gt;() {      <span style="color: #75715e;">// 初始值</span>
+        <span style="color: #F92672;">protected</span> ThreadLocalRandom <span style="color: #a6e22e;">initialValue</span>() {
+            <span style="color: #F92672;">return</span> <span style="color: #F92672;">new</span> ThreadLocalRandom();
+        }
+};
+
+localRandom.<span style="color: #F92672;">get</span>();      <span style="color: #75715e;">// 拿当前线程对应的对象</span>
+localRandom.put(...);   <span style="color: #75715e;">// put</span>
+</code></pre>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">典型使用场景</h2>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;">用空间换并发度；</li>
+<li style="line-height: 1.6;">在线程范围内传参，如 hibernate 的 session；</li>
+</ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">实现</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个非常自然想法是用一个线程安全的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Map&lt;Thread,Object&gt;</code> 实现：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;">class ThreadLocal { 
+  <span style="color: #F92672; margin-top: 0px;">private</span> Map values = Collections.synchronizedMap(<span style="color: #F92672;">new</span> HashMap());
+
+  <span style="color: #F92672;">public</span> Object <span style="color: #a6e22e;">get</span>() {
+    Thread curThread = Thread.currentThread();
+    Object o = values.<span style="color: #F92672;">get</span>(curThread);
+    <span style="color: #F92672;">if</span> (o == <span style="color: #F92672;">null</span> &amp;&amp; !values.containsKey(curThread)) {
+      o = initialValue();
+      values.put(curThread, o);
+    }
+    <span style="color: #F92672;">return</span> o;
+  }
+
+  <span style="color: #F92672;">public</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">set</span>(Object newValue) {
+    values.put(Thread.currentThread(), newValue);
+  }
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">但这是非常naive的：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocal</code>本意是避免并发，用一个全局Map显然违背了这一初衷；</li>
+<li style="line-height: 1.6;">用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Thread</code>当key，除非手动调用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">remove</code>，否则即使线程退出了 1)该<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">Thread</code>对象无法回收； 2)该线程在所有<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code>中对应的value也无法回收。</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">JDK 的实现刚好是反过来的：<br style="margin-top: 0px;"/><img alt="Alt text" class="en-media" longdesc="./1404916039768.png" name="7adc9cbf-24e8-4274-887c-45862c1925c5" src="/assets/img/3603e633a6095f8aaf63273ed133a2e8.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">每个Thread对象内都存在一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocal.ThreadLocalMap</code>对象，保存着该线程所有用到的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code>及其value。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocalMap</code>是定义在<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code>类内部的私有类，它是采用“开放定址法”解决冲突的hashmap。key是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code>对象。当调用某个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code>对象的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">get</code>或<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">put</code>方法时，首先会从当前线程中取出ThreadLocalMap，然后查找对应的value：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;">public</span> T <span style="color: #a6e22e;">get</span>() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);     <span style="color: #75715e;">//拿到当前线程的ThreadLocalMap</span>
+    <span style="color: #F92672;">if</span> (map != <span style="color: #F92672;">null</span>) {
+        ThreadLocalMap.Entry e = map.getEntry(<span style="color: #F92672;">this</span>);    <span style="color: #75715e;">// 以该ThreadLocal对象为key取value</span>
+        <span style="color: #F92672;">if</span> (e != <span style="color: #F92672;">null</span>)
+            <span style="color: #F92672;">return</span> (T)e.<span style="color: #F92672;">value</span>;
+    }
+    <span style="color: #F92672;">return</span> setInitialValue();
+}
+ThreadLocalMap getMap(Thread t) {
+    <span style="color: #F92672;">return</span> t.threadLocals;
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在来看看它的哈希策略。所有<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocal</code>对象共享一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">AtomicInteger</code>对象<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">nextHashCode</code>用于计算hashcode，一个新对象产生时它的hashcode就确定了，算法是从0开始，以<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">HASH_INCREMENT = 0x61c88647</code>为间隔递增，这是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code>唯一需要同步的地方。根据hashcode定位桶的算法是将其与数组长度-1进行与操作：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">key.threadLocalHashCode &amp; (table.length - 1)</code>。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">0x61c88647</code>这个魔数是怎么确定的呢？</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocalMap</code>的初始长度为16，每次扩容都增长为原来的2倍，即它的长度始终是2的n次方，上述算法中使用<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">0x61c88647</code>可以让hash的结果在2的n次方内尽可能均匀分布，减少冲突的概率。具体原因我也不知道，不过这是一个好的参考。</p>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">内存管理</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocalMap.Entry</code>继承自<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">WeakReference</code>，是 key（ThreadLocal 对象） 和 value 的容器：</p>
+<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;">static</span> <span><span style="color: #66d9ef; margin-top: 0px;">class</span> <span style="color: #f8f8f2;">Entry</span> <span style="color: #F92672;">extends</span> <span style="color: #f8f8f2;">WeakReference</span>&lt;<span style="color: #a6e22e; font-style: italic;">ThreadLocal</span>&gt; </span>{
+    <span style="color: #75715e;">/** The value associated with this ThreadLocal. */</span>
+    Object value;
+
+    Entry(ThreadLocal k, Object v) {
+        super(k);
+        value = v;
+    }
+}
+</code></pre>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一旦某个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocal</code>对象没有强引用了，它在所有线程内部的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocalMap</code>中的key都将被GC掉（此时value还未回收），在map后续的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">get/set</code>中会探测到key被回收的entry，将其 value 设置为 null 以帮助GC，因此 value 在 key 被 GC 后可能还会存活一段时间，但最终也会被回收。这个过程和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">java.util.WeakHashMap</code>的实现几乎是一样的。</p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因此<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">ThreadLocal</code>本身是没有内存泄露问题的，通常由它引发的内存泄露问题都是线程只 put 而忘了 remove 导致的，从上面分析可知，即使线程退出了，只要 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">ThreadLocal</code> 还有强引用，该线程曾经 put 过的东西是不会被回收掉的（如果是 naive 的那种实现方式倒可以实现）。</p>
+</div>

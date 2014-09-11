@@ -44,7 +44,10 @@ def sync():
                     
         # 没抓取记录，说明这个文件是多余的，删除之
         else:
-            # delete(file)
+            # 以下文件不删除：
+            # 1. gc.html
+            if not re.search('gc\.html',file):
+                delete(file)
             pass
 
     # 对配置的每条笔记

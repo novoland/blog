@@ -7,7 +7,7 @@ category: "工作"
 <div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
 <h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">1. MapReduce 工作原理</h1>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一图胜千言：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409802041299.png" name="1a6b1e79-166a-4285-84f2-0128d87d409f" src="https://www.evernote.com/shard/s133/sh/793a96a2-fe2b-4147-a054-ef60da105c8c/e09a91062c3a4cbc751a0b47383a2c0f/res/1a6b1e79-166a-4285-84f2-0128d87d409f/1409802041299.png?resizeSmall&amp;width=832" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409802041299.png" name="1a6b1e79-166a-4285-84f2-0128d87d409f" src="/assets/img/3b6dc283d85bb557aa3ad7b9974069fd.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">Mapper</strong>:</p>
 <ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
 <li style="line-height: 1.6; margin-top: 0px;">Mapper 主要做些信息抽取、过滤等工作</li>
@@ -120,6 +120,15 @@ Reducer:
 <li style="line-height: 1.6; margin-top: 0px;">如果 k 大于每个 split 内包含的记录数，算法失效；</li>
 <li style="line-height: 1.6;">Reducer 可能没有足够的内存容纳输入</li>
 </ol>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2.6.1 出现次数 top k 的元素</h2>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">比上面的 top k 问题多了一个步骤，<strong style="font-weight: bold; margin-top: 0px;">要求出每个元素的出现次数</strong>。如果数据量比较小，可以用下面方法：</p>
+<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
+<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">bitmap（如果不是数字的话则用 hashmap）+ 堆 / 快排的分割</strong><br/>bitmap / hashmap 用来统计元素的出现次数，堆用来保存当前 top k，只需一次遍历即可。    用快排的分割的话，要先统计出次数再分割，不只一次遍历。</p>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">不要求精确的话，可以用 <strong style="font-weight: bold; margin-top: 0px;">计数版本的 BloomFilter + 堆</strong><br/>BloomFilter 只保存了元素的次数，没有保存元素，因此只能边统计边记录 top k，一次遍历。</p>
+</li>
+</ol>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果是大数据量就需要<strong style="font-weight: bold; margin-top: 0px;">先用一个 hadoop 任务来分割</strong>，保证同一个元素的记录被分配到同一个 reducer，这样可以求出每个元素的出现次数；以这个任务的输出为输入，用上面提到的 top k 算法求出每个 split 的 top k；最后用一个 reducer 进行 merge，求出 top k 的 top k。</p>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2.7 join</h2>
 <h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">问题</h3>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">join！</p>
@@ -146,8 +155,8 @@ Reducer:
 <li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">预先过滤一个集合，使用 Replicated Join</strong></p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">利用“地区为上海”这个约束过滤 Customer，如果过滤后的数据集足够小，则可以采用 Replicated Join；</p>
 </li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">用半连接(semi join)优化 Reduce Join：在 Mapper 处过滤数据后再在 Reducer 处 Join</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果过滤后的数据集依然很大，那么只能采用低效率的 Reduce join。优化 Reduce join 的主要策略是 <strong style="font-weight: bold; margin-top: 0px;">尽量将数据过滤动作放在 Mapper 进行</strong>（这也是一个通用准则），在上述例子中， Mapper 在处理某个 Order 时，如果知道其对应的 Customer 不在 Customer 集合中，或者不在上海地区，那么就可以跳过它而不用传输到 Reducer 侧。为了达到这一点，我们可以先对 Customer 过滤（就像1一样），将上海的顾客<strong style="font-weight: bold;">的 ID </strong>选出来，这样得到的文件比1得到的文件更小（因为它只有一个 ID），很有可能可以被装入内存。用 Distributed Cache 将该 ID 文件分发到所有 Mapper 节点，Mapper 在处理 Customer 或 Order 的记录时就可以根据这个集合过滤所有非上海的顾客了。</p>
+<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">用半连接(semi join)优化 Reduce Join：先过滤集合 A ，再用得到的结果在 Mapper 处过滤集合 B，最后在 Reducer 处 Join</strong></p>
+<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果过滤后的数据集依然很大，那么只能采用低效率的 Reduce join。优化 Reduce join 的主要策略是 <strong style="font-weight: bold; margin-top: 0px;">尽量将数据过滤动作放在 Mapper 进行</strong>（这也是一个通用准则），在上述例子中， Mapper 在处理某个 Order 时，如果知道其对应的 Customer 不在 Customer 集合中，或者不在上海地区，那么就可以跳过它而不用传输到 Reducer 侧。为了达到这一点，我们可以先对 Customer 过滤（就像1一样），将上海的顾客的<strong style="font-weight: bold;"> ID </strong>选出来，这样得到的文件比1得到的文件更小（因为它只有一个 ID），很有可能可以被装入内存。用 Distributed Cache 将该 ID 文件分发到所有 Mapper 节点，Mapper 在处理 Customer 或 Order 的记录时就可以根据这个集合过滤所有非上海的顾客了。</p>
 <p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果过滤得到的 ID 文件依然很大，这时判重利器 <a href="http://novoland.github.io/%E7%AE%97%E6%B3%95/2014/07/28/BloomFilter.html" style="background: transparent; margin-top: 0px;" target="_blank"><strong style="font-weight: bold; margin-top: 0px;">BloomFilter</strong></a> 就派上用场了。我们可以建立一个 BloomFilter 表示过滤后的顾客 ID 集合，它的尺寸要远小于原始集合。BloomFilter 存在的误判率也不是问题，它只会把不存在的元素误判为存在，Reducer 处也会进行过滤，可以把误判的元素剔除掉。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
 <p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">基于 Mapreduce 为超大集合建立 BloomFilter 的方法：</strong></p>
