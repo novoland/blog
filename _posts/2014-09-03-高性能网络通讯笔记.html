@@ -4,103 +4,90 @@ title: "高性能网络通讯笔记"
 category: "网络"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">前几天看了下阿里巴巴 RPC 框架 Dubbo 作者的内部分享，这里记下笔记。</p>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">传统rpc的问题</h1>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">java序列化，性能低</li>
-<li style="line-height: 1.6;">每连接每线程，BIO有性能问题</li>
-<li style="line-height: 1.6;">jdk代理性能低</li>
-</ol>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">数据协议</h1>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">应用层协议</li>
-<li style="line-height: 1.6;">header字段：<ul style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">magic high</li>
-<li style="line-height: 1.6;">magic low  --- 端口复用，多协议支持；兼容其他协议。</li>
-<li style="line-height: 1.6;">序列化方式</li>
-<li style="line-height: 1.6;">event</li>
-<li style="line-height: 1.6;">是否双向</li>
-<li style="line-height: 1.6;">请求还是响应</li>
-<li style="line-height: 1.6;">status</li>
-<li style="line-height: 1.6;">id  -- futureMap保存所有发送的请求，响应中携带请求id，实现一一对应<ul style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">使用int id替换long，实现id轮转+超时（？？）</li>
-<li style="line-height: 1.6;">剩下来的位数可以用来扩展，存储服务器状态</li>
-<li style="line-height: 1.6;">使用future机制把客户端的同步调用转成异步的</li>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">高性能网络通讯笔记</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">传统rpc的问题</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">数据协议</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">IO模型</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">线程模型</a></li>
 </ul>
-</li>
-<li style="line-height: 1.6;">data length</li>
-</ul>
-</li>
-<li style="line-height: 1.6;">序列化协议<ul style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">web应用cpu负载低，网络负载高。数据包大小比压缩时间更重要。网络传输的时间远远大于cpu压缩时间，过于追求低压缩时间没有意义。</li>
-<li style="line-height: 1.6;">发送前压缩数据包。</li>
-<li style="line-height: 1.6;">另一个考虑的因素：工具使用的方便程度、适用场景是否广泛。protobuf用起来麻烦、hession/fastjson有些情况会序列化失败、java serialize最安全和普适。如果这里不是一个明显的瓶颈，可以直接使用java内置的序列化方式。</li>
-</ul>
-</li>
-<li style="line-height: 1.6;">序列化策略<ul style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">chunk stream</li>
-<li style="line-height: 1.6;">一个连接上承载多个请求发送。如果一个请求过大发送时间过长会造成其他请求不能及时得到处理，容易出现超时。--- 将这些大的数据包拆分成多片，穿插发送。server端自己拼装。</li>
-</ul>
-</li>
-</ol>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">IO模型</h1>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">Unix的5种IO模型</li>
-<li style="line-height: 1.6;">IO的两个阶段</li>
-<li style="line-height: 1.6;">是否阻塞 -- 异步、同步</li>
-<li style="line-height: 1.6;">Blocking IO、Non-Blocking IO（non-blocking的意义：当需要睡眠当前线程时才能完成请求时，不睡眠，只做部分操作并返回；从内核拷贝数据到用户空间时依然会阻塞）、IO multiplexing（事件驱动，一般和non blocking IO搭配使用）、Signal-Driven IO</li>
-<li style="line-height: 1.6;">Asynchronous IO</li>
-<li style="line-height: 1.6;">NIO的优势<ul style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">避免多线程</li>
-<li style="line-height: 1.6;">基于block的传输比基于流的传输更高效</li>
-<li style="line-height: 1.6;">基于mmap的zero-copy</li>
-</ul>
-</li>
-<li style="line-height: 1.6;">TCP的调优<ul style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">正确设置socket缓冲区，接收/发送缓冲区大小应该至少 = Bandwidth Delay Product = 带宽 * 往返时间，这样才能把两端之间的通信链路填满数据，充分利用带宽。<ol style="margin-top: 0px; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">减少进程读写缓冲区的系统调用；</li>
-<li style="line-height: 1.6;">充分利用带宽</li>
-</ol>
-</li>
-<li style="line-height: 1.6;">关闭nagle算法，RPC 调用不允许延迟</li>
-<li style="line-height: 1.6;">在应用层做心跳检测，关闭tcp的keep-alive（这是全局设置）</li>
-<li style="line-height: 1.6;">网卡中断负载均衡</li>
-</ul>
-</li>
-</ol>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">线程模型</h1>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">MainReactor <em style="margin-top: 0px;"> 1负责接受连接 + SubReactor </em> N (thread pool，“IO线程”, 负责监听读写事件. 一个线程负责多个连接)的方式，和Netty一样。</li>
-<li style="line-height: 1.6;">业务处理时也引入线程池</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">codec（数据收集/拼装）/serialize（序列化/反序列化）在什么线程里做</p>
-<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">Netty中codec直接在IO线程中做，dubbo也一样；</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">Serialize/deserialize 分开了，在业务线程（池）中做；<br style="margin-top: 0px;"/>原因原文没说，猜测：</p>
-<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">serialize是比较耗时的，所有耗时的操作都应该放在业务线程中做，IO线程必须快速返回以便处理下一个连接，否则容易造成后续连接过很久才能得到处理，易超时；</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">codec为什么不放在业务线程中做？一是职责分离，业务线程的输入是有意义的完整数据包；二是在数据包不完整时，业务线程基本上会快速退出继续阻塞，这会导致业务线程池的不稳定和频繁的线程切换。</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">任务的合理切分。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">在NIO的客户端，接受数据的事件将会写得很轻量级，但是接受到数据然后分析数据还原成业务对象，之后则会通过线程池的方式来分别处理。就好比监听连接到来，和实际的去建立连接分成了两个阶段的任务，让事件型的任务单纯，快速执行，让与业务相关的部分通过多线程并行的方式提高处理效率。总的来说就是把任务划分成为 <strong style="font-weight: bold; margin-top: 0px;">系统性的任务</strong> 和 <strong style="font-weight: bold;">业务性的任务</strong>，前者消耗时间少，设计尽量简单高效，采用单线程处理即可，后者通常情况下在处理流程和资源上不冲突的情况可以通过多线程并行提高效率。（后者IO bound时多线程可以提高效率[依赖]，CPU bound时均分计算资源，要慢一起慢，不会出现一个任务耗时导致别的任务超时，此时处理总时间由于线程切换的开销反而会更大）</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">--- 放翁 《优化杂谈》</p>
-</blockquote></li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">多线程的目的: 1. 阻塞时可以利用CPU;  2. 均分计算资源, 让多个任务都得以推进</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">业务线程池应该多大？<br style="margin-top: 0px;"/>这一部分来自淘宝的《前台系统性能调优》</p>
-<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">根据业务的CPU/IO类型不同，充分利用IO阻塞与CPU执行的overlapping（交错执行）</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">公式 --- 从CPU角度：</p>
-<div style="margin: 20px 0; text-align: center;"><span style="margin-top: 0px;"></span><span><div style="white-space: nowrap; margin-top: 0px;"><span style="width: 23.158em; display: inline-block; margin-top: 0px;"><span style="display: inline-block; position: relative; width: 19.289em; height: 0px; font-size: 120%; margin-top: 0px;"><span style="position: absolute; clip: rect(0.896em 1000.003em 3.753em -0.473em); top: -2.557em; left: 0.003em; margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral-Italic, serif; margin-top: 0px;">t<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">h</span><span style="font-family:STIXGeneral-Italic, serif;">r<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">e</span><span style="font-family:STIXGeneral-Italic, serif;">a</span><span style="font-family:STIXGeneral-Italic, serif;">d<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">s</span><span style="font-family:STIXGeneral-Regular, serif; padding-left: 0.301em;">=</span><span style="padding-left: 0.301em;"><span style="margin-top: 0px;"><span style="padding-left: 0.122em; padding-right: 0.122em; margin-top: 0px;"><span style="display: inline-block; position: relative; width: 10.003em; height: 0px; margin-top: 0px;"><span style="position: absolute; clip: rect(1.61em 1000.003em 2.92em -0.473em); top: -3.271em; left: 50%; margin-left: -4.938em; margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral-Italic, serif; margin-top: 0px;">C<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">P</span><span style="font-family:STIXGeneral-Italic, serif;">U<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.063em; margin-top: 0px;"></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">时</span></span></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">间</span></span></span></span><span style="font-family:STIXGeneral-Regular, serif; padding-left: 0.241em;">+</span><span style="font-family:STIXGeneral-Italic, serif; padding-left: 0.241em;">I<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.063em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">O</span><span style="font-family:STIXGeneral-Italic, serif;">b</span><span style="font-family:STIXGeneral-Italic, serif;">l<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">o</span><span style="font-family:STIXGeneral-Italic, serif;">c</span><span style="font-family:STIXGeneral-Italic, serif;">k<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">时</span></span></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">间</span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.562em;"></span></span><span style="position: absolute; clip: rect(1.61em 1000.003em 2.92em -0.473em); top: -1.783em; left: 50%; margin-left: -1.842em;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral-Italic, serif; margin-top: 0px;">C<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">P</span><span style="font-family:STIXGeneral-Italic, serif;">U<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.063em; margin-top: 0px;"></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">时</span></span></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">间</span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.562em;"></span></span><span style="position: absolute; clip: rect(0.836em 1000.003em 1.253em -0.533em); top: -1.307em; left: 0.003em;"><span style="border-left-width: 10.003em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 1.25px; vertical-align: 0.003em; margin-top: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.074em;"></span></span></span></span></span></span><span style="font-family:STIXGeneral-Regular, serif; padding-left: 0.241em;">∗</span><span style="font-family:STIXGeneral-Italic, serif; padding-left: 0.241em;">C<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em; margin-top: 0px;"></span></span><span style="font-family:STIXGeneral-Italic, serif;">P</span><span style="font-family:STIXGeneral-Italic, serif;">U<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.063em; margin-top: 0px;"></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">核</span></span></span></span><span><span style="margin-top: 0px;"><span style="margin-top: 0px;"><span style="font-family: STIXGeneral, Arial Unicode MS, serif, serif; font-size: 83%; font-style: normal; font-weight: normal; margin-top: 0px;">数</span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.562em;"></span></span></span><span style="border-left-width: 0.004em; border-left-style: solid; display: inline-block; overflow: hidden; width: 0px; height: 3.146em; vertical-align: -1.282em;"></span></span></div></span></div>
-</li>
-</ul>
-<ul style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">鸵鸟策略：设置多线程数，保证能充分利用CPU；线程切换开销假装没有，的确是瓶颈时再调。</li>
-</ul>
-</li>
-</ol>
 </div>
+</div>
+</div>
+<p style="margin: 0 0 1.1em;">前几天看了下阿里巴巴 RPC 框架 Dubbo 作者的内部分享，这里记下笔记。</p></div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">传统rpc的问题</h1>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>java序列化，性能低</li>
+<li>每连接每线程，BIO有性能问题</li>
+<li>jdk代理性能低</li>
+</ol></div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">数据协议</h1>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>应用层协议</li>
+<li>header字段： <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>magic high</li>
+<li>magic low  — 端口复用，多协议支持；兼容其他协议。</li>
+<li>序列化方式</li>
+<li>event</li>
+<li>是否双向</li>
+<li>请求还是响应</li>
+<li>status</li>
+<li>id  – futureMap保存所有发送的请求，响应中携带请求id，实现一一对应 <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>使用int id替换long，实现id轮转+超时（？？）</li>
+<li>剩下来的位数可以用来扩展，存储服务器状态</li>
+<li>使用future机制把客户端的同步调用转成异步的</li></ul></li>
+<li>data length</li></ul></li>
+<li>序列化协议 <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>web应用cpu负载低，网络负载高。数据包大小比压缩时间更重要。网络传输的时间远远大于cpu压缩时间，过于追求低压缩时间没有意义。</li>
+<li>发送前压缩数据包。</li>
+<li>另一个考虑的因素：工具使用的方便程度、适用场景是否广泛。protobuf用起来麻烦、hession/fastjson有些情况会序列化失败、java serialize最安全和普适。如果这里不是一个明显的瓶颈，可以直接使用java内置的序列化方式。</li></ul></li>
+<li>序列化策略 <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>chunk stream</li>
+<li>一个连接上承载多个请求发送。如果一个请求过大发送时间过长会造成其他请求不能及时得到处理，容易出现超时。— 将这些大的数据包拆分成多片，穿插发送。server端自己拼装。</li></ul></li>
+</ol></div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">IO模型</h1>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>Unix的5种IO模型</li>
+<li>IO的两个阶段</li>
+<li>是否阻塞 – 异步、同步</li>
+<li>Blocking IO、Non-Blocking IO（non-blocking的意义：当需要睡眠当前线程时才能完成请求时，不睡眠，只做部分操作并返回；从内核拷贝数据到用户空间时依然会阻塞）、IO multiplexing（事件驱动，一般和non blocking IO搭配使用）、Signal-Driven IO</li>
+<li>Asynchronous IO</li>
+<li>NIO的优势 <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>避免多线程</li>
+<li>基于block的传输比基于流的传输更高效</li>
+<li>基于mmap的zero-copy</li></ul></li>
+<li>TCP的调优 <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>正确设置socket缓冲区，接收/发送缓冲区大小应该至少 = Bandwidth Delay Product = 带宽 * 往返时间，这样才能把两端之间的通信链路填满数据，充分利用带宽。 <br/>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>减少进程读写缓冲区的系统调用；</li>
+<li>充分利用带宽</li></ol></li>
+<li>关闭nagle算法，RPC 调用不允许延迟</li>
+<li>在应用层做心跳检测，关闭tcp的keep-alive（这是全局设置）</li>
+<li>网卡中断负载均衡</li></ul></li>
+</ol>
+</div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">线程模型</h1>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>MainReactor * 1负责接受连接 + SubReactor * N (thread pool，“IO线程”, 负责监听读写事件. 一个线程负责多个连接)的方式，和Netty一样。</li>
+<li>业务处理时也引入线程池</li>
+<li><p style="margin: 0 0 1.1em;">codec（数据收集/拼装）/serialize（序列化/反序列化）在什么线程里做</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>Netty中codec直接在IO线程中做，dubbo也一样；</li>
+<li><p style="margin: 0 0 1.1em;">Serialize/deserialize 分开了，在业务线程（池）中做； <br/>
+原因原文没说，猜测：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>serialize是比较耗时的，所有耗时的操作都应该放在业务线程中做，IO线程必须快速返回以便处理下一个连接，否则容易造成后续连接过很久才能得到处理，易超时；</li>
+<li>codec为什么不放在业务线程中做？一是职责分离，业务线程的输入是有意义的完整数据包；二是在数据包不完整时，业务线程基本上会快速退出继续阻塞，这会导致业务线程池的不稳定和频繁的线程切换。</li></ul>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">任务的合理切分。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">在NIO的客户端，接受数据的事件将会写得很轻量级，但是接受到数据然后分析数据还原成业务对象，之后则会通过线程池的方式来分别处理。就好比监听连接到来，和实际的去建立连接分成了两个阶段的任务，让事件型的任务单纯，快速执行，让与业务相关的部分通过多线程并行的方式提高处理效率。总的来说就是把任务划分成为 <strong style="font-weight: bold;">系统性的任务</strong> 和 <strong style="font-weight: bold;">业务性的任务</strong>，前者消耗时间少，设计尽量简单高效，采用单线程处理即可，后者通常情况下在处理流程和资源上不冲突的情况可以通过多线程并行提高效率。（后者IO bound时多线程可以提高效率[依赖]，CPU bound时均分计算资源，要慢一起慢，不会出现一个任务耗时导致别的任务超时，此时处理总时间由于线程切换的开销反而会更大）</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">— 放翁 《优化杂谈》</p>
+</blockquote>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>多线程的目的: 1. 阻塞时可以利用CPU;  2. 均分计算资源, 让多个任务都得以推进</li></ul></li></ul></li>
+<li><p style="margin: 0 0 1.1em;">业务线程池应该多大？ <br/>
+这一部分来自淘宝的《前台系统性能调优》</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>根据业务的CPU/IO类型不同，充分利用IO阻塞与CPU执行的overlapping（交错执行）</li>
+<li>公式 — 从CPU角度：</li></ul>
+<p style="margin: 0 0 1.1em;"></p><div><div style="text-align: center; margin: 1em 0; position: relative; display: block; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%;"><span style="font-size: 100%; display: inline-block; font-style: normal; font-weight: normal; line-height: normal; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0; vertical-align: middle;"><span><img class="en-media" height="50.75" longdesc="__SVG__e04b5f594afd4ffe12b30403d1037c41" name="71b3d9e9-98d2-4c60-8f6a-296830144545" src="/assets/img/76e68b55e19152a546c83e36f045453f" style="margin-top: 0; margin-bottom: 0; border: 0; vertical-align: middle; max-width: 100%;" width="324.625"/></span></span></div></div><p style="margin: 0 0 1.1em;"></p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>鸵鸟策略：设置多线程数，保证能充分利用CPU；线程切换开销假装没有，的确是瓶颈时再调。</li></ul></li>
+</ol></div><div></div></div>

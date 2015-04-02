@@ -4,183 +4,225 @@ title: "Skyline timeseries异常判定算法"
 category: "工作"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Skyline内部提供了9个预定义的算法，这些算法要解决这样一个问题：</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">input：一个timeseries<br style="margin-top: 0px;"/>output：是否异常</p>
-</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3-sigma</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个很直接的异常判定思路是，拿最新3个datapoint的平均值（tail_avg方法）和整个序列比较，看是否偏离总体平均水平太多。怎样算“太多”呢，因为standard deviation表示集合中元素到mean的平均偏移距离，因此最简单就是和它进行比较。这里涉及到3-sigma理论：</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">In statistics, the 68–95–99.7 rule, also known as the three-sigma rule or empirical rule, states that nearly all values lie within 3 standard deviations of the mean in a normal distribution.</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">About 68.27% of the values lie within 1 standard deviation of the mean. Similarly, about 95.45% of the values lie within 2 standard deviations of the mean. Nearly all (99.73%) of the values lie within 3 standard deviations of the mean.</p>
-</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409640582929.png" name="3ce62d68-9a4d-4626-9c82-0d6345a5fd46" src="/assets/img/14112089f9338deb39688c3e27bfddc1.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">简单来说就是：在normal distribution（正态分布）中，99.73%的数据都在偏离mean 3个σ (standard deviation 标准差) 的范围内。如果某些datapoint到mean的距离超过这个范围，则认为是异常的。Skyline初始内置的7个算法几乎都是基于该理论的：</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">stddev_from_average</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">stddev_from_average</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Skyline timeseries异常判定算法</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3-sigma</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">stddev_from_average</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">first_hour_average</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">stddev_from_moving_average</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">关于 Moving Average</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Simple Moving Average</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Exponential moving average</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">mean_subtraction_cumulation</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">least_squares</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">小结</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">grubbs</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">histogram_bins</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">ks_test</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">median_absolute_deviation</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<p style="margin: 0 0 1.1em;">Skyline内部提供了9个预定义的算法，这些算法要解决这样一个问题：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">input：一个timeseries <br/>
+  output：是否异常</p>
+</blockquote></div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">3-sigma</h2>
+<p style="margin: 0 0 1.1em;">一个很直接的异常判定思路是，拿最新3个datapoint的平均值（tail_avg方法）和整个序列比较，看是否偏离总体平均水平太多。怎样算“太多”呢，因为standard deviation表示集合中元素到mean的平均偏移距离，因此最简单就是和它进行比较。这里涉及到3-sigma理论：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">In statistics, the 68–95–99.7 rule, also known as the three-sigma rule or empirical rule, states that nearly all values lie within 3 standard deviations of the mean in a normal distribution.</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">About 68.27% of the values lie within 1 standard deviation of the mean. Similarly, about 95.45% of the values lie within 2 standard deviations of the mean. Nearly all (99.73%) of the values lie within 3 standard deviations of the mean.</p>
+</blockquote>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1409640582929.png" name="3ce62d68-9a4d-4626-9c82-0d6345a5fd46" src="/assets/img/14112089f9338deb39688c3e27bfddc1.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">简单来说就是：在normal distribution（正态分布）中，99.73%的数据都在偏离mean 3个σ (standard deviation 标准差) 的范围内。如果某些datapoint到mean的距离超过这个范围，则认为是异常的。Skyline初始内置的7个算法几乎都是基于该理论的：</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">stddev_from_average</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">stddev_from_average</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the absolute value of the average of the latest
     three datapoint minus the moving average is greater than one standard
     deviation of the average. This does not exponentially weight the MA and so
     is better for detecting anomalies with respect to the entire series.
     """</span>
-    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries])
+    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries])
     mean = series.mean()
     stdDev = series.std()
     t = tail_avg(timeseries)
 
-    <span style="color: #F92672;">return</span> abs(t - mean) &gt; <span style="color: #ae81ff;">3</span> * stdDev
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法如下：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">求timeseries的mean</li>
-<li style="line-height: 1.6;">求timeseries的standard deviation</li>
-<li style="line-height: 1.6;">求tail_avg到mean的距离，大于3倍的标准差则异常。</li>
+    <span style="color: #f92672;">return</span> abs(t - mean) &gt; <span style="color: #ae81ff;">3</span> * stdDev</code></pre>
+<p style="margin: 0 0 1.1em;">该算法如下：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>求timeseries的mean</li>
+<li>求timeseries的standard deviation</li>
+<li>求tail_avg到mean的距离，大于3倍的标准差则异常。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法的特点是可以有效屏蔽 “在一个点上突变到很大的异常值但在下一个点回落到正常水平” 的情况，即屏蔽单点毛刺：因为它使用的是末3个点的均值（有效缓和突变），和整个序列比较（均值可能被异常值拉大），导致判断正常。对于需要忽略 “毛刺” 数据的场景而言，该算法比后续的EWMA/mean_subtraction_cumulation等算法更适用（当然也可以改造这些算法，用tail_avg代替last datapoint）。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">first_hour_average</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">first_hour_average</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+<p style="margin: 0 0 1.1em;">该算法的特点是可以有效屏蔽 “在一个点上突变到很大的异常值但在下一个点回落到正常水平” 的情况，即屏蔽单点毛刺：因为它使用的是末3个点的均值（有效缓和突变），和整个序列比较（均值可能被异常值拉大），导致判断正常。对于需要忽略 “毛刺” 数据的场景而言，该算法比后续的EWMA/mean_subtraction_cumulation等算法更适用（当然也可以改造这些算法，用tail_avg代替last datapoint）。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">first_hour_average</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">first_hour_average</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     Calcuate the simple average over one hour, FULL_DURATION seconds ago.
     A timeseries is anomalous if the average of the last three datapoints
     are outside of three standard deviations of this value.
     """</span>
     last_hour_threshold = time() - (FULL_DURATION - <span style="color: #ae81ff;">3600</span>)
-    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries <span style="color: #F92672;">if</span> x[<span style="color: #ae81ff;">0</span>] &lt; last_hour_threshold])
+    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries <span style="color: #f92672;">if</span> x[<span style="color: #ae81ff;">0</span>] &lt; last_hour_threshold])
     mean = (series).mean()
     stdDev = (series).std()
     t = tail_avg(timeseries)
 
-    <span style="color: #F92672;">return</span> abs(t - mean) &gt; <span style="color: #ae81ff;">3</span> * stdDev
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">和上述算法几乎一致，但是不同的是，比对的对象是 最近FULL_DURATION时间段内开始的1小时内 的数据，求出这段datapoint的mean和standard deviation后再用tail_avg进行比较。当FULL_DURATION小于1小时(86400)时，该算法和上一个算法一致。对于那些在一段较长时间内匀速递增/减的metrics，该算法可能会误报。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">stddev_from_moving_average</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">stddev_from_moving_average</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+    <span style="color: #f92672;">return</span> abs(t - mean) &gt; <span style="color: #ae81ff;">3</span> * stdDev</code></pre>
+<p style="margin: 0 0 1.1em;">和上述算法几乎一致，但是不同的是，比对的对象是 最近FULL_DURATION时间段内开始的1小时内 的数据，求出这段datapoint的mean和standard deviation后再用tail_avg进行比较。当FULL_DURATION小于1小时(86400)时，该算法和上一个算法一致。对于那些在一段较长时间内匀速递增/减的metrics，该算法可能会误报。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">stddev_from_moving_average</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">stddev_from_moving_average</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the absolute value of the average of the latest
     three datapoint minus the moving average is greater than one standard
     deviation of the moving average. This is better for finding anomalies with
     respect to the short term trends.
     """</span>
-    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries])
+    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries])
     expAverage = pandas.stats.moments.ewma(series, com=<span style="color: #ae81ff;">50</span>)
     stdDev = pandas.stats.moments.ewmstd(series, com=<span style="color: #ae81ff;">50</span>)
 
-    <span style="color: #F92672;">return</span> abs(series.iget(-<span style="color: #ae81ff;">1</span>) - expAverage.iget(-<span style="color: #ae81ff;">1</span>)) &gt; <span style="color: #ae81ff;">3</span> * stdDev.iget(-<span style="color: #ae81ff;">1</span>)
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法先求出最后一个datapoint处的EWMA（Exponentially-weighted moving average）mean/std deviation，然后用最后 3 个datapoint的平均值与之比对，看是否满足3-sigma理论。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">关于 Moving Average</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">给定一个timeseries和subset长度（比如N天），则datapoint i 的N天 moving average = i之前N天（包括i）的平均值。不停地移动这个长度为N的“窗口”并计算平均值，就得到了一条moving average曲线。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Moving average常用来消除数据短期内的噪音，显示长期趋势；或者根据已有数据预测未来数据。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">Simple Moving Average</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这是最简单的moving average，为“窗口”内datapoints的算数平均值（每个datapoint的weight一样）：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">SMA(i) = [p(i) + p(i-1) + ... + p(i-n+1) ]/ n</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当计算i+1处的SMA时，一个新的值加入，“窗口”左端的值丢弃，因此可得到递推式：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">SMA(i) = SMA(i-1) + p(i)/n – p(i-n+1)/n</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">实现起来也很容易，只要记录上次SMA和将要丢弃的datapoint即可(最开始的几个是没有SMA的)。Pandas中可用 pandas.stats.moments.rolling_mean 计算SMA。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">SMA由于过去的数据和现在的数据权重是一样的，因此它相对真实数据的走向存在延迟，不太适合预测，更适合观察长期趋势。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">Exponential moving average</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">也称 Exponential-weighted moving average，它和SMA主要有两处不同：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">计算SMA仅“窗口”内的n个datapoint参与计算，而EWMA则是之前所有point；<br style="margin-top: 0px;"/>EWMA计算average时每个datapoint的权重是不一样的，最近的datapoint拥有越高的权重，随时间呈指数递减。<br/>EWMA的递推公式是：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;">EWMA(<span style="color: #ae81ff; margin-top: 0px;">1</span>) = p(<span style="color: #ae81ff;">1</span>)  <span style="color: #75715e;">// 有时也会取前若干值的平均值。α越小时EWMA(1)的取值越重要。</span>
-EWMA(i) = α * p(i) + (<span style="color: #ae81ff;">1</span>-α) * EWMA(i – <span style="color: #ae81ff;">1</span>) <span style="color: #75715e;">// α是一个0-1间的小数，称为smoothing factor.</span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到比SMA更容易实现，只要维护上次EWMA即可。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">EWMA 的本质其实是，越老的数据在预测时占的比例越低。扩展以上公式可以看到，从i往前的datapoint，权重依次为α, α(1-α), α(1-α)^2….., α(1-α)^n，呈指数递减，权重的和的极限等于1。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">smoothing factor决定了EWMA的 <strong style="font-weight: bold; margin-top: 0px;">时效性</strong> 和 <strong style="font-weight: bold;">稳定性</strong>。α越大时效性越好，越能反映出最近数据状态；α越小越平滑，越能吸收瞬时波动，反映出长期趋势。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">EWMA由于其时效性被广泛应用在“根据已有时间序列预测未来数据”的场景中，（在计算机领域）比较典型的应用是在TCP中估计RTT，即从已有的RTT数据计算未来RTT，以确定超时时间。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">虽然EWMA中参与计算的是全部datapoint，但它也有类似SMA “N天EWMA”的概念，此时α由N决定：α = 2/(N+1)，关于这个公式的由来参见<a href="http://www.mcoscillator.com/learning_center/kb/market_data/exponential_versus_simple_moving_averages/" style="background: transparent; margin-top: 0px;" target="_blank">这里</a>。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">回到Skyline，这里并不是用EWMA来预测未来datapoint，而是类似之前的算法求出整体序列的mean和stdDev，只不过计算时加入了时间的权重（EWMA），越近的数据对结果影响越大，即判断的参照物是最近某段时间而非全序列; 再用last datapoint与之比较。因此它的优势在于:</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">可以检测到一个异常较短时间后发生的另一个(不太高的突变型)异常，其他算法很有可能会忽略，因为第一个异常把整体的平均水平和标准差都拉高了</li>
-<li style="line-height: 1.6;">比其他算法更快对异常作出反应，因为它更多的是参考突变之前的点（低水平），而非总体水平（有可能被某个异常或者出现较多次的较高的统计数据拉高）</li>
+    <span style="color: #f92672;">return</span> abs(series.iget(-<span style="color: #ae81ff;">1</span>) - expAverage.iget(-<span style="color: #ae81ff;">1</span>)) &gt; <span style="color: #ae81ff;">3</span> * stdDev.iget(-<span style="color: #ae81ff;">1</span>)</code></pre>
+<p style="margin: 0 0 1.1em;">该算法先求出最后一个datapoint处的EWMA（Exponentially-weighted moving average）mean/std deviation，然后用最后 3 个datapoint的平均值与之比对，看是否满足3-sigma理论。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">关于 Moving Average</h3>
+<p style="margin: 0 0 1.1em;">给定一个timeseries和subset长度（比如N天），则datapoint i 的N天 moving average = i之前N天（包括i）的平均值。不停地移动这个长度为N的“窗口”并计算平均值，就得到了一条moving average曲线。</p>
+<p style="margin: 0 0 1.1em;">Moving average常用来消除数据短期内的噪音，显示长期趋势；或者根据已有数据预测未来数据。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">Simple Moving Average</h4>
+<p style="margin: 0 0 1.1em;">这是最简单的moving average，为“窗口”内datapoints的算数平均值（每个datapoint的weight一样）：</p>
+<p style="margin: 0 0 1.1em;">SMA(i) = [p(i) + p(i-1) + … + p(i-n+1) ]/ n</p>
+<p style="margin: 0 0 1.1em;">当计算i+1处的SMA时，一个新的值加入，“窗口”左端的值丢弃，因此可得到递推式：</p>
+<p style="margin: 0 0 1.1em;">SMA(i) = SMA(i-1) + p(i)/n – p(i-n+1)/n</p>
+<p style="margin: 0 0 1.1em;">实现起来也很容易，只要记录上次SMA和将要丢弃的datapoint即可(最开始的几个是没有SMA的)。Pandas中可用 pandas.stats.moments.rolling_mean 计算SMA。</p>
+<p style="margin: 0 0 1.1em;">SMA由于过去的数据和现在的数据权重是一样的，因此它相对真实数据的走向存在延迟，不太适合预测，更适合观察长期趋势。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">Exponential moving average</h4>
+<p style="margin: 0 0 1.1em;">也称 Exponential-weighted moving average，它和SMA主要有两处不同：</p>
+<p style="margin: 0 0 1.1em;">计算SMA仅“窗口”内的n个datapoint参与计算，而EWMA则是之前所有point； <br/>
+EWMA计算average时每个datapoint的权重是不一样的，最近的datapoint拥有越高的权重，随时间呈指数递减。 <br/>
+EWMA的递推公式是：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">EWMA<span style="color: #75715e;">(1)</span> = p<span style="color: #75715e;">(1)</span>  <span style="color: #75715e;">// 有时也会取前若干值的平均值。α越小时EWMA(1)的取值越重要。</span>
+EWMA<span style="color: #75715e;">(i)</span> = α * p<span style="color: #75715e;">(i)</span> + <span style="color: #75715e;">(1-α)</span> * EWMA<span style="color: #75715e;">(i – 1)</span> <span style="color: #75715e;">// α是一个0-1间的小数，称为smoothing factor.</span></code></pre>
+<p style="margin: 0 0 1.1em;">可以看到比SMA更容易实现，只要维护上次EWMA即可。</p>
+<p style="margin: 0 0 1.1em;">EWMA 的本质其实是，越老的数据在预测时占的比例越低。扩展以上公式可以看到，从i往前的datapoint，权重依次为α, α(1-α), α(1-α)^2….., α(1-α)^n，呈指数递减，权重的和的极限等于1。</p>
+<p style="margin: 0 0 1.1em;">smoothing factor决定了EWMA的 <strong style="font-weight: bold;">时效性</strong> 和 <strong style="font-weight: bold;">稳定性</strong>。α越大时效性越好，越能反映出最近数据状态；α越小越平滑，越能吸收瞬时波动，反映出长期趋势。</p>
+<p style="margin: 0 0 1.1em;">EWMA由于其时效性被广泛应用在“根据已有时间序列预测未来数据”的场景中，（在计算机领域）比较典型的应用是在TCP中估计RTT，即从已有的RTT数据计算未来RTT，以确定超时时间。</p>
+<p style="margin: 0 0 1.1em;">虽然EWMA中参与计算的是全部datapoint，但它也有类似SMA “N天EWMA”的概念，此时α由N决定：α = 2/(N+1)，关于这个公式的由来参见<a href="http://www.mcoscillator.com/learning_center/kb/market_data/exponential_versus_simple_moving_averages/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">这里</a>。</p>
+<p style="margin: 0 0 1.1em;">回到Skyline，这里并不是用EWMA来预测未来datapoint，而是类似之前的算法求出整体序列的mean和stdDev，只不过计算时加入了时间的权重（EWMA），越近的数据对结果影响越大，即判断的参照物是最近某段时间而非全序列; 再用last datapoint与之比较。因此它的优势在于:</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>可以检测到一个异常较短时间后发生的另一个(不太高的突变型)异常，其他算法很有可能会忽略，因为第一个异常把整体的平均水平和标准差都拉高了</li>
+<li>比其他算法更快对异常作出反应，因为它更多的是参考突变之前的点（低水平），而非总体水平（有可能被某个异常或者出现较多次的较高的统计数据拉高）</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">而劣势则是</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">对渐进型而非突发型的异常检测能力较弱</li>
-<li style="line-height: 1.6;">异常持续一段时间后可能被判定为正常</li>
+<p style="margin: 0 0 1.1em;">而劣势则是</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>对渐进型而非突发型的异常检测能力较弱</li>
+<li>异常持续一段时间后可能被判定为正常</li>
 </ol>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">mean_subtraction_cumulation</h3>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">mean_subtraction_cumulation</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">mean_subtraction_cumulation</h3>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">mean_subtraction_cumulation</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the value of the next datapoint in the
     series is farther than a standard deviation out in cumulative terms
     after subtracting the mean from each data point.
     """</span>
 
-    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">if</span> x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">else</span> <span style="color: #ae81ff;">0</span> <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries])
+    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">if</span> x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">else</span> <span style="color: #ae81ff;">0</span> <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries])
     series = series - series[<span style="color: #ae81ff;">0</span>:len(series) - <span style="color: #ae81ff;">1</span>].mean()
     stdDev = series[<span style="color: #ae81ff;">0</span>:len(series) - <span style="color: #ae81ff;">1</span>].std()
     expAverage = pandas.stats.moments.ewma(series, com=<span style="color: #ae81ff;">15</span>)
 
-    <span style="color: #F92672;">return</span> abs(series.iget(-<span style="color: #ae81ff;">1</span>)) &gt; <span style="color: #ae81ff;">3</span> * stdDev
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">算法如下：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">排除全序列（暂称为all）最后一个值（last datapoint），求剩余序列（暂称为rest，0..length-2）的mean；</li>
-<li style="line-height: 1.6;">rest序列中每个元素减去rest的mean，再求standard deviation；</li>
-<li style="line-height: 1.6;">求last datapoint到rest mean的距离，即 abs(last datapoint – rest mean)；</li>
-<li style="line-height: 1.6;">判断上述距离是否超过rest序列std. dev.的3倍。</li>
+    <span style="color: #f92672;">return</span> abs(series.iget(-<span style="color: #ae81ff;">1</span>)) &gt; <span style="color: #ae81ff;">3</span> * stdDev</code></pre>
+<p style="margin: 0 0 1.1em;">算法如下：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>排除全序列（暂称为all）最后一个值（last datapoint），求剩余序列（暂称为rest，0..length-2）的mean；</li>
+<li>rest序列中每个元素减去rest的mean，再求standard deviation；</li>
+<li>求last datapoint到rest mean的距离，即 abs(last datapoint – rest mean)；</li>
+<li>判断上述距离是否超过rest序列std. dev.的3倍。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">简单地说，就是用最后一个datapoint和剩余序列比较，比较的过程依然遵循3-sigma。这个算法有2个地方很可疑：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">求剩余序列的std. dev.时先减去mean再求，这一步是多余的，对结果没影响；</li>
-<li style="line-height: 1.6;">虽然用tail_avg已经很不科学了，这个算法更进一步，只判断最后一个datapoint是否异常，这要求在两次analysis间隔中最多只有一个datapoint被加入，否则就会丢失数据。关于这个问题的讨论，见<a href="http://jiroujuan.wordpress.com/2013/10/08/skyline%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" style="background: transparent; margin-top: 0px;" target="_blank">这篇文章</a>最末。</li>
+<p style="margin: 0 0 1.1em;">简单地说，就是用最后一个datapoint和剩余序列比较，比较的过程依然遵循3-sigma。这个算法有2个地方很可疑：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>求剩余序列的std. dev.时先减去mean再求，这一步是多余的，对结果没影响；</li>
+<li>虽然用tail_avg已经很不科学了，这个算法更进一步，只判断最后一个datapoint是否异常，这要求在两次analysis间隔中最多只有一个datapoint被加入，否则就会丢失数据。关于这个问题的讨论，见<a href="http://jiroujuan.wordpress.com/2013/10/08/skyline%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">这篇文章</a>最末。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">和stddev_from_average相比，该算法对于 “毛刺” 判断为异常的概率远大于后者。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">least_squares</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">least_squares</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+<p style="margin: 0 0 1.1em;">和stddev_from_average相比，该算法对于 “毛刺” 判断为异常的概率远大于后者。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">least_squares</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">least_squares</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the average of the last three datapoints
     on a projected least squares model is greater than three sigma.
     """</span>
 
-    x = np.array([t[<span style="color: #ae81ff;">0</span>] <span style="color: #F92672;">for</span> t <span style="color: #F92672;">in</span> timeseries])
-    y = np.array([t[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> t <span style="color: #F92672;">in</span> timeseries])
+    x = np.array([t[<span style="color: #ae81ff;">0</span>] <span style="color: #f92672;">for</span> t <span style="color: #f92672;">in</span> timeseries])
+    y = np.array([t[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> t <span style="color: #f92672;">in</span> timeseries])
     A = np.vstack([x, np.ones(len(x))]).T
     results = np.linalg.lstsq(A, y)
     residual = results[<span style="color: #ae81ff;">1</span>]
     m, c = np.linalg.lstsq(A, y)[<span style="color: #ae81ff;">0</span>]
     errors = []
-    <span style="color: #F92672;">for</span> i, value <span style="color: #F92672;">in</span> enumerate(y):
+    <span style="color: #f92672;">for</span> i, value <span style="color: #f92672;">in</span> enumerate(y):
         projected = m * x[i] + c
         error = value - projected
         errors.append(error)
 
-    <span style="color: #F92672;">if</span> len(errors) &lt; <span style="color: #ae81ff;">3</span>:
-        <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+    <span style="color: #f92672;">if</span> len(errors) &lt; <span style="color: #ae81ff;">3</span>:
+        <span style="color: #f92672;">return</span> <span style="color: #f92672;">False</span>
 
     std_dev = scipy.std(errors)
     t = (errors[-<span style="color: #ae81ff;">1</span>] + errors[-<span style="color: #ae81ff;">2</span>] + errors[-<span style="color: #ae81ff;">3</span>]) / <span style="color: #ae81ff;">3</span>
 
-    <span style="color: #F92672;">return</span> abs(t) &gt; std_dev * <span style="color: #ae81ff;">3</span> <span style="color: #F92672;">and</span> round(std_dev) != <span style="color: #ae81ff;">0</span> <span style="color: #F92672;">and</span> round(t) != <span style="color: #ae81ff;">0</span>
-</code></pre>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">用最小二乘法得到一条拟合现有datapoint value的直线；</li>
-<li style="line-height: 1.6;">用实际value和拟合value的差值组成一个新的序列error；</li>
-<li style="line-height: 1.6;">求该序列的stdDev，判断序列error的tail_avg是否&gt;3倍的stdDev</li>
+    <span style="color: #f92672;">return</span> abs(t) &gt; std_dev * <span style="color: #ae81ff;">3</span> <span style="color: #f92672;">and</span> round(std_dev) != <span style="color: #ae81ff;">0</span> <span style="color: #f92672;">and</span> round(t) != <span style="color: #ae81ff;">0</span></code></pre>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>用最小二乘法得到一条拟合现有datapoint value的直线；</li>
+<li>用实际value和拟合value的差值组成一个新的序列error；</li>
+<li>求该序列的stdDev，判断序列error的tail_avg是否&gt;3倍的stdDev</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">因为最小二乘法的关系，该算法对直线形的metrics比较适用。该算法也有一个问题，在最后判定的时候，不是用tail_avg到error序列的mean的距离，而是直接使用tail_avg的值，这无形中缩小了异常判定范围，也不符合3-sigma。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">小结</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">可以看到上述算法都是类似的思路：用最近的若干datapoint做样本，和一个总体序列进行比对，不同的只是比对的对象：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">stddev_from_average</strong><br/> tail_avg  ———  整个序列</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">first_hour_average</strong><br/> tail_avg  ———-  FULL_DURATION开始的一个小时</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">stddev_from_moving_average</strong><br/> last datapoint ———–  整个序列的EW mean和EW std dev</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">mean_subtraction_cumulation</strong><br/> last datapoint ———  剩余序列</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">least_squares</strong><br/> last datapoint ——– 真实数据和拟合直线间的差值序列</p>
-</li>
+<p style="margin: 0 0 1.1em;">因为最小二乘法的关系，该算法对直线形的metrics比较适用。该算法也有一个问题，在最后判定的时候，不是用tail_avg到error序列的mean的距离，而是直接使用tail_avg的值，这无形中缩小了异常判定范围，也不符合3-sigma。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">小结</h2>
+<p style="margin: 0 0 1.1em;">可以看到上述算法都是类似的思路：用最近的若干datapoint做样本，和一个总体序列进行比对，不同的只是比对的对象：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">stddev_from_average</strong> <br/>
+tail_avg  ———  整个序列</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">first_hour_average</strong> <br/>
+tail_avg  ———-  FULL_DURATION开始的一个小时</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">stddev_from_moving_average</strong> <br/>
+last datapoint ———–  整个序列的EW mean和EW std dev</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">mean_subtraction_cumulation</strong> <br/>
+last datapoint ———  剩余序列</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">least_squares</strong> <br/>
+last datapoint ——– 真实数据和拟合直线间的差值序列</p></li>
 </ol>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">grubbs</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">grubbs</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">grubbs</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">grubbs</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the Z score is greater than the Grubb's score.
     """</span>
 
-    series = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries])
+    series = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries])
     stdDev = scipy.std(series)
     mean = np.mean(series)
     tail_average = tail_avg(timeseries)
@@ -190,24 +232,26 @@ EWMA(i) = α * p(i) + (<span style="color: #ae81ff;">1</span>-α) * EWMA(i – <
     threshold_squared = threshold * threshold
     grubbs_score = ((len_series - <span style="color: #ae81ff;">1</span>) / np.sqrt(len_series)) * np.sqrt(threshold_squared / (len_series - <span style="color: #ae81ff;">2</span> + threshold_squared))
 
-    <span style="color: #F92672;">return</span> z_score &gt; grubbs_score
+    <span style="color: #f92672;">return</span> z_score &gt; grubbs_score
 </code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Grubbs测试是一种从样本中找出outlier的方法，所谓outlier，是指样本中偏离平均值过远的数据，他们有可能是极端情况下的正常数据，也有可能是测量过程中的错误数据。使用Grubbs测试需要总体是正态分布的。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Grubbs测试步骤如下：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">样本从小到大排序；</li>
-<li style="line-height: 1.6;">求样本的mean和std.dev.；</li>
-<li style="line-height: 1.6;">计算min/max与mean的差距，更大的那个为可疑值；</li>
-<li style="line-height: 1.6;">求可疑值的z-score (standard score)，如果大于Grubbs临界值，那么就是outlier；</li>
-<li style="line-height: 1.6;">Grubbs临界值可以查表得到，它由两个值决定：检出水平α（越严格越小），样本数量n</li>
-<li style="line-height: 1.6;">排除outlier，对剩余序列循环做 1-5 步骤。</li>
+<p style="margin: 0 0 1.1em;">Grubbs测试是一种从样本中找出outlier的方法，所谓outlier，是指样本中偏离平均值过远的数据，他们有可能是极端情况下的正常数据，也有可能是测量过程中的错误数据。使用Grubbs测试需要总体是正态分布的。</p>
+<p style="margin: 0 0 1.1em;">Grubbs测试步骤如下：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>样本从小到大排序；</li>
+<li>求样本的mean和std.dev.；</li>
+<li>计算min/max与mean的差距，更大的那个为可疑值；</li>
+<li>求可疑值的z-score (standard score)，如果大于Grubbs临界值，那么就是outlier；</li>
+<li>Grubbs临界值可以查表得到，它由两个值决定：检出水平α（越严格越小），样本数量n</li>
+<li>排除outlier，对剩余序列循环做 1-5 步骤。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">由于这里需要的是异常判定，只需要判断tail_avg是否outlier即可。代码中还有求Grubbs临界值的过程，看不懂。</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">Z-score (standard score)</strong></p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">标准分，一个个体到集合mean的偏离，以标准差为单位，表达个体距mean相对“平均偏离水平（std dev表达）”的偏离程度，常用来比对来自不同集合的数据。</p>
-</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">histogram_bins</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">histogram_bins</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+<p style="margin: 0 0 1.1em;">由于这里需要的是异常判定，只需要判断tail_avg是否outlier即可。代码中还有求Grubbs临界值的过程，看不懂。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">Z-score (standard score)</strong></p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">标准分，一个个体到集合mean的偏离，以标准差为单位，表达个体距mean相对“平均偏离水平（std dev表达）”的偏离程度，常用来比对来自不同集合的数据。</p>
+</blockquote>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">histogram_bins</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">histogram_bins</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the average of the last three datapoints falls
     into a histogram bin with less than 20 other datapoints (you'll need to tweak
@@ -217,26 +261,27 @@ EWMA(i) = α * p(i) + (<span style="color: #ae81ff;">1</span>-α) * EWMA(i – <
     means more anomalous.
     """</span>
 
-    series = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries])
+    series = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries])
     t = tail_avg(timeseries)
     h = np.histogram(series, bins=<span style="color: #ae81ff;">15</span>)
     bins = h[<span style="color: #ae81ff;">1</span>]
-    <span style="color: #F92672;">for</span> index, bin_size <span style="color: #F92672;">in</span> enumerate(h[<span style="color: #ae81ff;">0</span>]):
-        <span style="color: #F92672;">if</span> bin_size &lt;= <span style="color: #ae81ff;">20</span>:
+    <span style="color: #f92672;">for</span> index, bin_size <span style="color: #f92672;">in</span> enumerate(h[<span style="color: #ae81ff;">0</span>]):
+        <span style="color: #f92672;">if</span> bin_size &lt;= <span style="color: #ae81ff;">20</span>:
             <span style="color: #75715e;"># Is it in the first bin?</span>
-            <span style="color: #F92672;">if</span> index == <span style="color: #ae81ff;">0</span>:
-                <span style="color: #F92672;">if</span> t &lt;= bins[<span style="color: #ae81ff;">0</span>]:
-                    <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+            <span style="color: #f92672;">if</span> index == <span style="color: #ae81ff;">0</span>:
+                <span style="color: #f92672;">if</span> t &lt;= bins[<span style="color: #ae81ff;">0</span>]:
+                    <span style="color: #f92672;">return</span> <span style="color: #f92672;">True</span>
             <span style="color: #75715e;"># Is it in the current bin?</span>
-            <span style="color: #F92672;">elif</span> t &gt;= bins[index] <span style="color: #F92672;">and</span> t &lt; bins[index + <span style="color: #ae81ff;">1</span>]:
-                    <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+            <span style="color: #f92672;">elif</span> t &gt;= bins[index] <span style="color: #f92672;">and</span> t &lt; bins[index + <span style="color: #ae81ff;">1</span>]:
+                    <span style="color: #f92672;">return</span> <span style="color: #f92672;">True</span>
 
-    <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法和以上都不同，它首先将timeseries划分成15个宽度相等的直方，然后判断tail_avg所在直方内的元素是否&lt;=20，如果是，则异常。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">直方的个数和元素个数判定需要根据自己的metrics调整，不然在数据量小的时候很容易就异常了。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">ks_test</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">ks_test</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+    <span style="color: #f92672;">return</span> <span style="color: #f92672;">False</span></code></pre>
+<p style="margin: 0 0 1.1em;">该算法和以上都不同，它首先将timeseries划分成15个宽度相等的直方，然后判断tail_avg所在直方内的元素是否&lt;=20，如果是，则异常。</p>
+<p style="margin: 0 0 1.1em;">直方的个数和元素个数判定需要根据自己的metrics调整，不然在数据量小的时候很容易就异常了。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">ks_test</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">ks_test</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if 2 sample Kolmogorov-Smirnov test indicates
     that data distribution for last 10 minutes is different from last hour.
@@ -246,73 +291,77 @@ EWMA(i) = α * p(i) + (<span style="color: #ae81ff;">1</span>-α) * EWMA(i – <
 
     hour_ago = time() - <span style="color: #ae81ff;">3600</span>
     ten_minutes_ago = time() - <span style="color: #ae81ff;">600</span>
-    reference = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries <span style="color: #F92672;">if</span> x[<span style="color: #ae81ff;">0</span>] &gt;= hour_ago <span style="color: #F92672;">and</span> x[<span style="color: #ae81ff;">0</span>] &lt; ten_minutes_ago])
-    probe = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries <span style="color: #F92672;">if</span> x[<span style="color: #ae81ff;">0</span>] &gt;= ten_minutes_ago])
+    reference = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries <span style="color: #f92672;">if</span> x[<span style="color: #ae81ff;">0</span>] &gt;= hour_ago <span style="color: #f92672;">and</span> x[<span style="color: #ae81ff;">0</span>] &lt; ten_minutes_ago])
+    probe = scipy.array([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries <span style="color: #f92672;">if</span> x[<span style="color: #ae81ff;">0</span>] &gt;= ten_minutes_ago])
 
-    <span style="color: #F92672;">if</span> reference.size &lt; <span style="color: #ae81ff;">20</span> <span style="color: #F92672;">or</span> probe.size &lt; <span style="color: #ae81ff;">20</span>:
-        <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+    <span style="color: #f92672;">if</span> reference.size &lt; <span style="color: #ae81ff;">20</span> <span style="color: #f92672;">or</span> probe.size &lt; <span style="color: #ae81ff;">20</span>:
+        <span style="color: #f92672;">return</span> <span style="color: #f92672;">False</span>
 
     ks_d,ks_p_value = scipy.stats.ks_2samp(reference, probe)
 
-    <span style="color: #F92672;">if</span> ks_p_value &lt; <span style="color: #ae81ff;">0.05</span> <span style="color: #F92672;">and</span> ks_d &gt; <span style="color: #ae81ff;">0.5</span>:
+    <span style="color: #f92672;">if</span> ks_p_value &lt; <span style="color: #ae81ff;">0.05</span> <span style="color: #f92672;">and</span> ks_d &gt; <span style="color: #ae81ff;">0.5</span>:
         adf = sm.tsa.stattools.adfuller(reference, <span style="color: #ae81ff;">10</span>)
-        <span style="color: #F92672;">if</span>  adf[<span style="color: #ae81ff;">1</span>] &lt; <span style="color: #ae81ff;">0.05</span>:
-            <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+        <span style="color: #f92672;">if</span>  adf[<span style="color: #ae81ff;">1</span>] &lt; <span style="color: #ae81ff;">0.05</span>:
+            <span style="color: #f92672;">return</span> <span style="color: #f92672;">True</span>
 
-    <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这个算法比较高深，它将timeseries分成两段：最近10min（probe），1 hour前 -&gt; 10 min前这50分钟内（reference），两个样本通过Kolmogorov-Smirnov测试后判断差异是否较大。如果相差较大，则对refercence这段样本进行 Augmented Dickey-Fuller 检验（ADF检验），查看其平稳性，如果是平稳的，说明存在从平稳状态（50分钟）到另一个差异较大状态（10分钟）的突变，序列认为是异常的。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">关于这两个检验过于学术了，以上只是我粗浅的理解。</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">Kolmogorov-Smirnov test</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">KS-test有两个典型应用：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">判断某个样本是否满足某个已知的理论分布，如正态/指数/均匀/泊松分布；<br style="margin-top: 0px;"/>判断两个样本背后的总体是否可能有相同的分布，or 两个样本间是否可能来自同一总体， or 两个样本是否有显著差异。<br/>检验返回两个值：D，p-value，不太明白他们的具体含义，Skyline里当 p-value &lt; 0.05 &amp;&amp; D &gt; 0.5 时，认为差异显著。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">Augmented Dickey-Fuller test (ADF test)</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">用于检测时间序列的平稳性，当返回的p-value小于给定的显著性水平时，序列认为是平稳的，Skyline取的临界值是0.05。</p>
-</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">median_absolute_deviation</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f; margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;"><span style="color: #66d9ef; margin-top: 0px;">def</span> <span style="color: #a6e22e;">median_absolute_deviation</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
+    <span style="color: #f92672;">return</span> <span style="color: #f92672;">False</span></code></pre>
+<p style="margin: 0 0 1.1em;">这个算法比较高深，它将timeseries分成两段：最近10min（probe），1 hour前 -&gt; 10 min前这50分钟内（reference），两个样本通过Kolmogorov-Smirnov测试后判断差异是否较大。如果相差较大，则对refercence这段样本进行 Augmented Dickey-Fuller 检验（ADF检验），查看其平稳性，如果是平稳的，说明存在从平稳状态（50分钟）到另一个差异较大状态（10分钟）的突变，序列认为是异常的。</p>
+<p style="margin: 0 0 1.1em;">关于这两个检验过于学术了，以上只是我粗浅的理解。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Kolmogorov-Smirnov test</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">KS-test有两个典型应用：</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">判断某个样本是否满足某个已知的理论分布，如正态/指数/均匀/泊松分布； <br/>
+  判断两个样本背后的总体是否可能有相同的分布，or 两个样本间是否可能来自同一总体， or 两个样本是否有显著差异。 <br/>
+  检验返回两个值：D，p-value，不太明白他们的具体含义，Skyline里当 p-value &lt; 0.05 &amp;&amp; D &gt; 0.5 时，认为差异显著。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Augmented Dickey-Fuller test (ADF test)</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">用于检测时间序列的平稳性，当返回的p-value小于给定的显著性水平时，序列认为是平稳的，Skyline取的临界值是0.05。</p>
+</blockquote>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">median_absolute_deviation</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">median_absolute_deviation</span><span style="color: #f8f8f2;">(timeseries)</span>:</span>
     <span style="color: #e6db74;">"""
     A timeseries is anomalous if the deviation of its latest datapoint with
     respect to the median is X times larger than the median of deviations.
     """</span>
 
-    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> timeseries])
+    series = pandas.Series([x[<span style="color: #ae81ff;">1</span>] <span style="color: #f92672;">for</span> x <span style="color: #f92672;">in</span> timeseries])
     median = series.median()
     demedianed = np.abs(series - median)
     median_deviation = demedianed.median()
 
     <span style="color: #75715e;"># The test statistic is infinite when the median is zero,</span>
     <span style="color: #75715e;"># so it becomes super sensitive. We play it safe and skip when this happens.</span>
-    <span style="color: #F92672;">if</span> median_deviation == <span style="color: #ae81ff;">0</span>:
-        <span style="color: #F92672;">return</span> <span style="color: #F92672;">False</span>
+    <span style="color: #f92672;">if</span> median_deviation == <span style="color: #ae81ff;">0</span>:
+        <span style="color: #f92672;">return</span> <span style="color: #f92672;">False</span>
 
     test_statistic = demedianed.iget(-<span style="color: #ae81ff;">1</span>) / median_deviation
 
     <span style="color: #75715e;"># Completely arbitary...triggers if the median deviation is</span>
     <span style="color: #75715e;"># 6 times bigger than the median</span>
-    <span style="color: #F92672;">if</span> test_statistic &gt; <span style="color: #ae81ff;">6</span>:
-        <span style="color: #F92672;">return</span> <span style="color: #F92672;">True</span>
+    <span style="color: #f92672;">if</span> test_statistic &gt; <span style="color: #ae81ff;">6</span>:
+        <span style="color: #f92672;">return</span> <span style="color: #f92672;">True</span>
 </code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法不是基于mean/ standard deviation的，而是基于median / median of deviations (MAD)。</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">Median</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">大部分情况下我们用mean来表达一个集合的平均水平（average），但是在某些情况下存在少数极大或极小的outlier，拉高或拉低了（skew）整体的mean，造成估计的不准确。此时可以用median（中位数）代替mean描述平均水平。Median的求法很简单，集合排序中间位置即是，如果集合总数为偶数，则取中间二者的平均值。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">Median of deviation（MAD）</strong></p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">同mean一样，对于median我们也需要类似standard deviation这样的指标来表达数据的<strong style="font-weight: bold; margin-top: 0px;">紧凑/分散程度</strong>，即偏离average的平均距离，这就是MAD。MAD顾名思义，是deviation的median，而此时的deviation = abs( 个体 – median )，避免了少量outlier对结果的影响，更robust。</p>
-</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在算法很好理解了：求出序列的MAD，看最后datapoint与MAD的距离是否 &gt; 6个MAD。同样的，这里用最后一个datapoint判定，依然存在之前提到的问题；其次，6 是个“magic number”，需要根据自己metrics数据特点调整。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该算法的优势在于对异常更加敏感：假设metric突然变很高并保持一段时间，基于标准差的算法可能在异常出现较短时间后即判断为正常，因为少量outlier对标准差的计算是有影响的；而计算MAD时，若异常datapoint较少会直接忽略，因此感知异常的时间会更长。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">但正如Median的局限性，该算法对于由多个cluster组成的数据集，即数据分布在几个差距较大的区间内，效果很差，很容易误判。比如下图：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1409641576810.png" name="6cf349c1-221b-4238-90bc-3dcf26e03b6e" src="/assets/img/5feab8dcfcc970bb9a568cccc928fe69.png" style="border: 0; margin-top: 0px; max-width: 100%;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该曲线在两个区间内来回震荡，此时median为58，如红线所示。MAD计算则为9，很明显均不能准确描述数据集，最后节点的deviation=55，此时误判了。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">参考资料</h2>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">各种Wiki</li>
-<li style="line-height: 1.6;">各种API文档</li>
-<li style="line-height: 1.6;"><a href="http://chenlinux.com/2013/06/19/skyline-algorithms-intro/" style="background: transparent; margin-top: 0px;" target="_blank">前辈的总结：【Etsy 的 Kale 系统】skyline 的过滤算法</a></li>
-<li style="line-height: 1.6;"><a href="http://www.investopedia.com/university/movingaverage/movingaverages1.asp" style="background: transparent; margin-top: 0px;" target="_blank">Moving Averages: What Are They?</a></li>
-<li style="line-height: 1.6;"><a href="http://wenku.baidu.com/view/ccfa573a3968011ca30091d6.html" style="background: transparent; margin-top: 0px;" target="_blank">Kolmogorov-Smirnov检验</a></li>
-<li style="line-height: 1.6;"><a href="http://wenku.baidu.com/view/84695b4e852458fb770b56bb.html" style="background: transparent; margin-top: 0px;" target="_blank">Grubbs检验法</a></li>
-<li style="line-height: 1.6;"><a href="http://blog.csdn.net/tianguokaka/article/details/7741812" style="background: transparent; margin-top: 0px;" target="_blank">Median absolute deviation</a></li>
-<li style="line-height: 1.6;">《Head first statistics》</li>
-</ul>
-</div>
+<p style="margin: 0 0 1.1em;">该算法不是基于mean/ standard deviation的，而是基于median / median of deviations (MAD)。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">Median</strong></p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">大部分情况下我们用mean来表达一个集合的平均水平（average），但是在某些情况下存在少数极大或极小的outlier，拉高或拉低了（skew）整体的mean，造成估计的不准确。此时可以用median（中位数）代替mean描述平均水平。Median的求法很简单，集合排序中间位置即是，如果集合总数为偶数，则取中间二者的平均值。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">Median of deviation（MAD）</strong></p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">同mean一样，对于median我们也需要类似standard deviation这样的指标来表达数据的<strong style="font-weight: bold;">紧凑/分散程度</strong>，即偏离average的平均距离，这就是MAD。MAD顾名思义，是deviation的median，而此时的deviation = abs( 个体 – median )，避免了少量outlier对结果的影响，更robust。</p>
+</blockquote>
+<p style="margin: 0 0 1.1em;">现在算法很好理解了：求出序列的MAD，看最后datapoint与MAD的距离是否 &gt; 6个MAD。同样的，这里用最后一个datapoint判定，依然存在之前提到的问题；其次，6 是个“magic number”，需要根据自己metrics数据特点调整。</p>
+<p style="margin: 0 0 1.1em;">该算法的优势在于对异常更加敏感：假设metric突然变很高并保持一段时间，基于标准差的算法可能在异常出现较短时间后即判断为正常，因为少量outlier对标准差的计算是有影响的；而计算MAD时，若异常datapoint较少会直接忽略，因此感知异常的时间会更长。</p>
+<p style="margin: 0 0 1.1em;">但正如Median的局限性，该算法对于由多个cluster组成的数据集，即数据分布在几个差距较大的区间内，效果很差，很容易误判。比如下图：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1409641576810.png" name="6cf349c1-221b-4238-90bc-3dcf26e03b6e" src="/assets/img/5feab8dcfcc970bb9a568cccc928fe69.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">该曲线在两个区间内来回震荡，此时median为58，如红线所示。MAD计算则为9，很明显均不能准确描述数据集，最后节点的deviation=55，此时误判了。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">参考资料</h2>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>各种Wiki</li>
+<li>各种API文档</li>
+<li><a href="http://chenlinux.com/2013/06/19/skyline-algorithms-intro/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">前辈的总结：【Etsy 的 Kale 系统】skyline 的过滤算法</a></li>
+<li><a href="http://www.investopedia.com/university/movingaverage/movingaverages1.asp" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Moving Averages: What Are They?</a></li>
+<li><a href="http://wenku.baidu.com/view/ccfa573a3968011ca30091d6.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Kolmogorov-Smirnov检验</a></li>
+<li><a href="http://wenku.baidu.com/view/84695b4e852458fb770b56bb.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Grubbs检验法</a></li>
+<li><a href="http://blog.csdn.net/tianguokaka/article/details/7741812" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Median absolute deviation</a></li>
+<li>《Head first statistics》</li>
+</ul></div><div></div></div>

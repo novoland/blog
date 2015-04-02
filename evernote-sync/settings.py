@@ -96,6 +96,10 @@ noteList = {
         'https://www.evernote.com/shard/s133/sh/1bb42885-61d2-4d6f-a135-6ce41c4f30e1/6967a17731dbbc7ad79bc532dcfa7ba3',
         # Mapreduce algorithms
         'https://www.evernote.com/shard/s133/sh/793a96a2-fe2b-4147-a054-ef60da105c8c/e09a91062c3a4cbc751a0b47383a2c0f'
+    ],
+    '设计':[
+        # 常见设计模式总结
+        'https://www.evernote.com/shard/s133/sh/edfa1774-6329-4c94-9cbc-b3afe951ca9b/7ce87045640b9ba2'
     ]
 }
 

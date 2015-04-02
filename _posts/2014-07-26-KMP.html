@@ -4,140 +4,153 @@ title: "KMP"
 category: "算法"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">问题：在字符串txt（长为m）中匹配pattern（长为n）字符串。</p>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">1. KMP原理</h1>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">暴力求解时使用两个指针i和j，匹配失败时，i回溯至该次匹配起始点+1的位置，j回溯至0，然后继续同时移动匹配，复杂度为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">O(m*n)</code>。KMP的精髓在于，当匹配失败时能够利用已经匹配成功的j个字符的性质回溯j指针，不需要回溯i，从而将遍历txt的时间缩短为<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">O(m)</code>。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">举例说明，假设txt="abababaabab"，pattern="ababacb"，初始i=j=0，开始同时往右移动进行匹配，第一次匹配失败时的情况如下所示：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378544180.png" name="72dc6e9d-576c-4bf3-ba13-8c9001daadae" src="/assets/img/8a833b8f5c21f2620786ac37d1f50899.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">方框表示的是当前Pattern正和Txt中哪部分子串进行比对。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此时，注意到 从i往前回溯3个字符 和 pattern开始的3个字符 是一样的，如图中下划线所示，都是“aba”，我们可以利用这个特点，不回溯i，直接回退j到“aba”的后面，i、j再次同时右移进行比较，如下图所示：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378738286.png" name="ed5e416e-c871-499b-8a3f-e4cee8125211" src="/assets/img/dbd14cc5f28783239a47fef7c7a89769.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">回溯j时，我们充分利用了已经匹配成功的部分子串的“对称性”，即从匹配失败的i处开始往前，总有一小部分字符是和Pattern的前几个字符相同的，在刚刚的例子里是“aba”（姑且称之为“对称子串”）。因此，在下次匹配时可以将j回退到该对称子串的右侧，直接跳过这些字符，再同i匹配；如果没有对称子串，j只能回溯到0，这种情况的处理下面会提到。不管是哪种情况，都不需要回溯i指针。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">ok，此时i和j指向的元素恰好相同，于是继续同时右移，下一次匹配失败发生在两步之后：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378752269.png" name="979dd5a7-1f79-4792-98c0-f5a2ee982743" src="/assets/img/017d25875cd70849e5c4b33d866753d1.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">同样的，找到失败时的 已匹配子串“ababa”的对称子串“aba”（如图中下划线所示），将j回退到该子串的右侧继续和i同时右移比对，于是便成了：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378766750.png" name="41467fa1-63bf-4984-84e0-86f0e572b101" src="/assets/img/44e562f72205507db5e6ea675c417461.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">i和j继续比对，这次立马就失败了，于是继续回溯j到对称子串“a”的右侧：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378809582.png" name="e4d8d185-1dea-4910-8d67-64d1312ac173" src="/assets/img/18951d766fd6183b97d0beab5a067429.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">继续比对，但这次还是失败，j只能回溯到0。当j==0时，固定j，i向右移动直到txt[i] == pattern[0]：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378836401.png" name="27afa2e7-a104-4aa3-93ca-1210027b69be" src="/assets/img/ea8213c6f0bce32f52101789f11833ea.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">重复以上的过程，当j指向pattern最后一个元素且i、j对应的字符相等时，匹配成功。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">问题来了，当回溯j时如何知道要回溯到哪个位置？根据前文的描述，当匹配失败时，j需要回溯到前j-1个字符的“对称子串”的右侧（没有则回溯到0），而对称子串仅与pattern本身的性质（对称性）有关，因此，我们完全可以预处理pattern，对每个位置j，计算出当在j处匹配失败时 j需要回退的位置，存放这些信息的数组我们称之为next数组。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">总结一下利用next数组进行匹配的过程：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;">i=j=0；</li>
-<li style="line-height: 1.6;">j和i同时往右走进行比对，相等时若j指向pattern最末则匹配成功，失败时j根据next[j]回退并继续比对；</li>
-<li style="line-height: 1.6;">每次回退后判断j是否==0，j==0时固定j，i向后遍历直到txt[i] == pattern[0]，此时跳转到2。<br/>将上述逻辑“直译”成代码则如下所示：</li>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">KMP</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. KMP原理</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. Next数组</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 复杂度</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 测试</a></li>
+</ul>
+</div>
+</div>
+</div>
+<p style="margin: 0 0 1.1em;">问题：在字符串txt（长为m）中匹配pattern（长为n）字符串。</p></div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">1. KMP原理</h1>
+<p style="margin: 0 0 1.1em;">暴力求解时使用两个指针i和j，匹配失败时，i回溯至该次匹配起始点+1的位置，j回溯至0，然后继续同时移动匹配，复杂度为<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">O(m*n)</code>。KMP的精髓在于，当匹配失败时能够利用已经匹配成功的j个字符的性质回溯j指针，不需要回溯i，从而将遍历txt的时间缩短为<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">O(m)</code>。</p>
+<p style="margin: 0 0 1.1em;">举例说明，假设txt=”abababaabab”，pattern=”ababacb”，初始i=j=0，开始同时往右移动进行匹配，第一次匹配失败时的情况如下所示：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378544180.png" name="72dc6e9d-576c-4bf3-ba13-8c9001daadae" src="/assets/img/8a833b8f5c21f2620786ac37d1f50899.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">方框表示的是当前Pattern正和Txt中哪部分子串进行比对。</p>
+<p style="margin: 0 0 1.1em;">此时，注意到 从i往前回溯3个字符 和 pattern开始的3个字符 是一样的，如图中下划线所示，都是“aba”，我们可以利用这个特点，不回溯i，直接回退j到“aba”的后面，i、j再次同时右移进行比较，如下图所示：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378738286.png" name="ed5e416e-c871-499b-8a3f-e4cee8125211" src="/assets/img/dbd14cc5f28783239a47fef7c7a89769.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">回溯j时，我们充分利用了已经匹配成功的部分子串的“对称性”，即从匹配失败的i处开始往前，总有一小部分字符是和Pattern的前几个字符相同的，在刚刚的例子里是“aba”（姑且称之为“对称子串”）。因此，在下次匹配时可以将j回退到该对称子串的右侧，直接跳过这些字符，再同i匹配；如果没有对称子串，j只能回溯到0，这种情况的处理下面会提到。不管是哪种情况，都不需要回溯i指针。</p>
+<p style="margin: 0 0 1.1em;">ok，此时i和j指向的元素恰好相同，于是继续同时右移，下一次匹配失败发生在两步之后：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378752269.png" name="979dd5a7-1f79-4792-98c0-f5a2ee982743" src="/assets/img/017d25875cd70849e5c4b33d866753d1.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">同样的，找到失败时的 已匹配子串“ababa”的对称子串“aba”（如图中下划线所示），将j回退到该子串的右侧继续和i同时右移比对，于是便成了：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378766750.png" name="41467fa1-63bf-4984-84e0-86f0e572b101" src="/assets/img/44e562f72205507db5e6ea675c417461.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">i和j继续比对，这次立马就失败了，于是继续回溯j到对称子串“a”的右侧：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378809582.png" name="e4d8d185-1dea-4910-8d67-64d1312ac173" src="/assets/img/18951d766fd6183b97d0beab5a067429.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">继续比对，但这次还是失败，j只能回溯到0。当j==0时，固定j，i向右移动直到txt[i] == pattern[0]：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378836401.png" name="27afa2e7-a104-4aa3-93ca-1210027b69be" src="/assets/img/ea8213c6f0bce32f52101789f11833ea.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">重复以上的过程，当j指向pattern最后一个元素且i、j对应的字符相等时，匹配成功。</p>
+<p style="margin: 0 0 1.1em;">问题来了，当回溯j时如何知道要回溯到哪个位置？根据前文的描述，当匹配失败时，j需要回溯到前j-1个字符的“对称子串”的右侧（没有则回溯到0），而对称子串仅与pattern本身的性质（对称性）有关，因此，我们完全可以预处理pattern，对每个位置j，计算出当在j处匹配失败时 j需要回退的位置，存放这些信息的数组我们称之为next数组。</p>
+<p style="margin: 0 0 1.1em;">总结一下利用next数组进行匹配的过程：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>i=j=0；</li>
+<li>j和i同时往右走进行比对，相等时若j指向pattern最末则匹配成功，失败时j根据next[j]回退并继续比对；</li>
+<li>每次回退后判断j是否==0，j==0时固定j，i向后遍历直到txt[i] == pattern[0]，此时跳转到2。 <br/>
+将上述逻辑“直译”成代码则如下所示：</li>
 </ol>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">int</span> <span style="color: #a6e22e;">search</span>(String txt) {
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">public</span> <span style="color: #f92672;"><span style="color: #66d9ef;">int</span> <span style="color: #a6e22e;">search</span><span style="color: #f8f8f2;">(String txt)</span> </span>{
 
-    <span style="color: #F92672;">int</span> i = <span style="color: #ae81ff;">0</span>, j = <span style="color: #ae81ff;">0</span>;
-    <span style="color: #F92672;">int</span> txtLen = txt.length();
-    <span style="color: #F92672;">int</span> patternLen = pattern.length();
+    <span style="color: #f92672;">int</span> i = <span style="color: #ae81ff;">0</span>, j = <span style="color: #ae81ff;">0</span>;
+    <span style="color: #f92672;">int</span> txtLen = txt.length();
+    <span style="color: #f92672;">int</span> patternLen = pattern.length();
 
-    <span style="color: #F92672;">while</span> (i &lt; txtLen) {
+    <span style="color: #f92672;">while</span> (i &lt; txtLen) {
         <span style="color: #75715e;">// i/j同时右移匹配</span>
-        <span style="color: #F92672;">for</span> (; txt.charAt(i) == pattern.charAt(j); i++, j++) {
+        <span style="color: #f92672;">for</span> (; txt.charAt(i) == pattern.charAt(j); i++, j++) {
             <span style="color: #75715e;">//j指向pattern最末时，匹配成功</span>
-            <span style="color: #F92672;">if</span> (j == patternLen - <span style="color: #ae81ff;">1</span>)
-                <span style="color: #F92672;">return</span> i - j;
+            <span style="color: #f92672;">if</span> (j == patternLen - <span style="color: #ae81ff;">1</span>)
+                <span style="color: #f92672;">return</span> i - j;
         }
 
         <span style="color: #75715e;">// 匹配失败，j回溯</span>
         j = next[j];
 
         <span style="color: #75715e;">// j回溯至0时，i向后遍历直到txt[i]和pattern[0]相等</span>
-        <span style="color: #F92672;">if</span> (j == <span style="color: #ae81ff;">0</span>) {
-            <span style="color: #F92672;">while</span> (i &lt; txtLen &amp;&amp; txt.charAt(i) != pattern.charAt(<span style="color: #ae81ff;">0</span>))
+        <span style="color: #f92672;">if</span> (j == <span style="color: #ae81ff;">0</span>) {
+            <span style="color: #f92672;">while</span> (i &lt; txtLen &amp;&amp; txt.charAt(i) != pattern.charAt(<span style="color: #ae81ff;">0</span>))
                 i++;
         }
     }
 
-    <span style="color: #F92672;">return</span> -<span style="color: #ae81ff;">1</span>;
-}
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">代码可以更精简，但目前这样更方便我自己记忆和理解整个逻辑。</p>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">2. Next数组</h1>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在考虑怎么求next数组，我们知道，next[j]有两重含义：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378870297.png" name="91c56644-05dd-4cd7-9207-c1309de9877a" src="/assets/img/5cab704bbfca26fd636690b5ba94a2ca.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pattern[0 ... j-1]</code>的（最大）对称子串长度 = <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j]</code>：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 即<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pattern[0 ... j-1]</code>的前next[j]个字符和后<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j]</code>个字符是相同的；</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">在j处匹配失败时，j指针需要回退的位置：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 即<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pattern[0 ... j-1]</code>的对称子串的右侧；不存在对称子串时next[j]=0，表示j必须回退到第一个元素。</p>
-</li>
+    <span style="color: #f92672;">return</span> -<span style="color: #ae81ff;">1</span>;
+}</code></pre>
+<p style="margin: 0 0 1.1em;">代码可以更精简，但目前这样更方便我自己记忆和理解整个逻辑。</p>
+</div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">2. Next数组</h1>
+<p style="margin: 0 0 1.1em;">现在考虑怎么求next数组，我们知道，next[j]有两重含义：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378870297.png" name="91c56644-05dd-4cd7-9207-c1309de9877a" src="/assets/img/5cab704bbfca26fd636690b5ba94a2ca.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Pattern[0 ... j-1]</code>的（最大）对称子串长度 = <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j]</code>：</p>
+<p style="margin: 0 0 1.1em;">即<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Pattern[0 ... j-1]</code>的前next[j]个字符和后<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j]</code>个字符是相同的；</p></li>
+<li><p style="margin: 0 0 1.1em;">在j处匹配失败时，j指针需要回退的位置：</p>
+<p style="margin: 0 0 1.1em;">即<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Pattern[0 ... j-1]</code>的对称子串的右侧；不存在对称子串时next[j]=0，表示j必须回退到第一个元素。</p></li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">最简单的求法是用两个指针在0 ... j-1段一个往后一个往前探测，但每求一个位置的next[j]都要这个过程，显然重复了很多计算工作。实际上，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j+1]</code>可以由已经求的的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[0]</code> ... <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j]</code>计算得到。先看 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j]</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j+1]</code> 的关系，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j]</code>的含义是 0...j-1 的最大对称子串长度，此时只需查看 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">pattern[ next[j] ]</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">pattern[j]</code> （如下图黑色箭头所指），如果二者相等，那么<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j+1] = next[j] + 1</code>，如下图所示：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378880664.png" name="eb2c68e2-e66f-4b93-8115-051c347920a5" src="/assets/img/5d93ab8992ed919dd576ae7408ad3a73.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果运气没那么好，这两个元素不等，该怎么办？我们可以继续考察0...j-1的最大对称子串的对称性，即上图中的绿色区域的对称性，如下所示：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406378894114.png" name="90927dea-15f0-44d0-b98a-9f5eee59287f" src="/assets/img/6f8e8d8e71b83e642df69a7624b7b99b.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">此时我们要拿 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[ next[j] ]</code> 指向的元素（上图第一个箭头）和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">pattern[j]</code>（上图第二个箭头）比较，如果相等则<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j+1] = next[ next[j] ] + 1</code>；如果不等则循环这个过程。可以想象成不停地缩小查找的对称区域，一开始是查看j左侧所有元素的对称子串，接下来是该对称子串（绿色部分）的对称子串（蓝色部分），不满足条件就接着查看对称子串的对称子串的对称子串。。。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当遇到0时循环结束，说明查找完所有可能的对称子串都不满足要求，此时我们只能查看<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">pattern[0]</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">pattern[j]</code>，如果相等，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">next[j+1]=1</code>，说明<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">0 ... j</code>的最大对称子串长度为1；否则=0，说明<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">0 ... j</code>内不具有对称性。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">将上面这个过程翻译过来，代码如下：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">private <span style="color: #F92672;">int</span>[] <span style="color: #F92672;">next</span>;
-private String pattern;
-public KMP(String pattern) {
-    this.pattern = pattern;
-    <span style="color: #F92672;">next</span> = new <span style="color: #F92672;">int</span>[pattern.<span style="color: #F92672;">length</span>()];
-    <span style="color: #ae81ff;">//</span> 初始化<span style="color: #F92672;">next</span>[<span style="color: #ae81ff;">0</span>]和<span style="color: #F92672;">next</span>[<span style="color: #ae81ff;">1</span>]，均为<span style="color: #ae81ff;">0</span>
-    <span style="color: #F92672;">next</span>[<span style="color: #ae81ff;">0</span>] = <span style="color: #ae81ff;">0</span>;
-    <span style="color: #F92672;">if</span> (pattern.<span style="color: #F92672;">length</span>() &lt;= <span style="color: #ae81ff;">1</span>)
-        <span style="color: #F92672;">return</span>;
-    <span style="color: #F92672;">next</span>[<span style="color: #ae81ff;">1</span>] = <span style="color: #ae81ff;">0</span>;
+<p style="margin: 0 0 1.1em;">最简单的求法是用两个指针在0 … j-1段一个往后一个往前探测，但每求一个位置的next[j]都要这个过程，显然重复了很多计算工作。实际上，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j+1]</code>可以由已经求的的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[0]</code> … <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j]</code>计算得到。先看 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j]</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j+1]</code> 的关系，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j]</code>的含义是 0…j-1 的最大对称子串长度，此时只需查看 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">pattern[ next[j] ]</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">pattern[j]</code> （如下图黑色箭头所指），如果二者相等，那么<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j+1] = next[j] + 1</code>，如下图所示：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378880664.png" name="eb2c68e2-e66f-4b93-8115-051c347920a5" src="/assets/img/5d93ab8992ed919dd576ae7408ad3a73.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">如果运气没那么好，这两个元素不等，该怎么办？我们可以继续考察0…j-1的最大对称子串的对称性，即上图中的绿色区域的对称性，如下所示：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406378894114.png" name="90927dea-15f0-44d0-b98a-9f5eee59287f" src="/assets/img/6f8e8d8e71b83e642df69a7624b7b99b.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">此时我们要拿 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[ next[j] ]</code> 指向的元素（上图第一个箭头）和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">pattern[j]</code>（上图第二个箭头）比较，如果相等则<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j+1] = next[ next[j] ] + 1</code>；如果不等则循环这个过程。可以想象成不停地缩小查找的对称区域，一开始是查看j左侧所有元素的对称子串，接下来是该对称子串（绿色部分）的对称子串（蓝色部分），不满足条件就接着查看对称子串的对称子串的对称子串。。。</p>
+<p style="margin: 0 0 1.1em;">当遇到0时循环结束，说明查找完所有可能的对称子串都不满足要求，此时我们只能查看<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">pattern[0]</code>和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">pattern[j]</code>，如果相等，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">next[j+1]=1</code>，说明<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">0 ... j</code>的最大对称子串长度为1；否则=0，说明<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">0 ... j</code>内不具有对称性。</p>
+<p style="margin: 0 0 1.1em;">将上面这个过程翻译过来，代码如下：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">private</span> <span style="color: #f92672;">int</span>[] <span style="color: #f92672;">next</span>;
+<span style="color: #f92672;">private</span> String pattern;
+<span style="color: #f92672;">public</span> KMP(String pattern) {
+    <span style="color: #f92672;">this</span>.pattern = pattern;
+    <span style="color: #f92672;">next</span> = <span style="color: #f92672;">new</span> <span style="color: #f92672;">int</span>[pattern.length()];
+    <span style="color: #75715e;">// 初始化next[0]和next[1]，均为0</span>
+    <span style="color: #f92672;">next</span>[<span style="color: #ae81ff;">0</span>] = <span style="color: #ae81ff;">0</span>;
+    <span style="color: #f92672;">if</span> (pattern.length() &lt;= <span style="color: #ae81ff;">1</span>)
+        <span style="color: #f92672;">return</span>;
+    <span style="color: #f92672;">next</span>[<span style="color: #ae81ff;">1</span>] = <span style="color: #ae81ff;">0</span>;
 
-    loop: <span style="color: #F92672;">for</span> (<span style="color: #F92672;">int</span> j = <span style="color: #ae81ff;">2</span>; j &lt; pattern.<span style="color: #F92672;">length</span>(); j++) {
-        <span style="color: #F92672;">int</span> pre = j - <span style="color: #ae81ff;">1</span>;    <span style="color: #ae81ff;">//</span> j前一个元素，在寻找过程中要和它做比较
+    loop: <span style="color: #f92672;">for</span> (<span style="color: #f92672;">int</span> j = <span style="color: #ae81ff;">2</span>; j &lt; pattern.length(); j++) {
+        <span style="color: #f92672;">int</span> pre = j - <span style="color: #ae81ff;">1</span>;    <span style="color: #75715e;">// j前一个元素，在寻找过程中要和它做比较</span>
 
-        <span style="color: #F92672;">int</span> k = <span style="color: #F92672;">next</span>[pre];
-        <span style="color: #F92672;">while</span> (k != <span style="color: #ae81ff;">0</span>) {
-            <span style="color: #ae81ff;">//</span> 查找成功，进行下次循环，求<span style="color: #F92672;">next</span>[j+<span style="color: #ae81ff;">1</span>]
-            <span style="color: #F92672;">if</span> (pattern.charAt(pre) == pattern.charAt(k)) {
-                <span style="color: #F92672;">next</span>[j] = k + <span style="color: #ae81ff;">1</span>;
-                <span style="color: #F92672;">continue</span> loop;
+        <span style="color: #f92672;">int</span> k = <span style="color: #f92672;">next</span>[pre];
+        <span style="color: #f92672;">while</span> (k != <span style="color: #ae81ff;">0</span>) {
+            <span style="color: #75715e;">// 查找成功，进行下次循环，求next[j+1]</span>
+            <span style="color: #f92672;">if</span> (pattern.charAt(pre) == pattern.charAt(k)) {
+                <span style="color: #f92672;">next</span>[j] = k + <span style="color: #ae81ff;">1</span>;
+                <span style="color: #f92672;">continue</span> loop;
             }
-            // 否则继续查找内部对称子串
-            k = <span style="color: #F92672;">next</span>[k];
+            <span style="color: #75715e;">// 否则继续查找内部对称子串</span>
+            k = <span style="color: #f92672;">next</span>[k];
         }
 
-        // k == <span style="color: #ae81ff;">0</span>，说明没有满足要求的对称子串，只能查看pattern[<span style="color: #ae81ff;">0</span>] 和 pattern[pre]是否相等
-        <span style="color: #F92672;">next</span>[j] = pattern.charAt(pre) == pattern.charAt(<span style="color: #ae81ff;">0</span>) ? <span style="color: #ae81ff;">1</span> : <span style="color: #ae81ff;">0</span>;
+        <span style="color: #75715e;">// k == 0，说明没有满足要求的对称子串，只能查看pattern[0] 和 pattern[pre]是否相等</span>
+        <span style="color: #f92672;">next</span>[j] = pattern.charAt(pre) == pattern.charAt(<span style="color: #ae81ff;">0</span>) ? <span style="color: #ae81ff;">1</span> : <span style="color: #ae81ff;">0</span>;
     }
-}
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">同样的，代码也不是最精简的，但是和之前描述的逻辑是一致的，更容易看懂和理解。</p>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">3. 复杂度</h1>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;">时间复杂度：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">O(m+n)</code> //遍历txt+生成next数组</li>
-<li style="line-height: 1.6;">空间复杂度：<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">O(n)</code> //next数组</li>
-<li style="line-height: 1.6;">时间复杂度的分析要用到“摊还分析”，看了很久还没太理解，暂且按下不表。</li>
+}</code></pre>
+<p style="margin: 0 0 1.1em;">同样的，代码也不是最精简的，但是和之前描述的逻辑是一致的，更容易看懂和理解。</p>
+</div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">3. 复杂度</h1>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>时间复杂度：<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">O(m+n)</code> //遍历txt+生成next数组</li>
+<li>空间复杂度：<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">O(n)</code> //next数组</li>
+<li>时间复杂度的分析要用到“摊还分析”，看了很久还没太理解，暂且按下不表。</li>
 </ol>
-<h1 style="font-size: 36px; margin: 0.67em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px;">4. 测试</h1>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">static</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">main</span>(String[] args) {
-    String pattern = <span style="color: #e6db74;">"PARTICIPATEINPARACHUTE"</span>;
-    KMP rk = <span style="color: #F92672;">new</span> KMP(pattern);
-    String txt = <span style="color: #e6db74;">"fdjkajjjfppPPPPPPPPPARTICIPATEINPARACHUTE"</span>;
-    System.<span style="color: #F92672;">out</span>.println(txt);
-    <span style="color: #F92672;">int</span> index = rk.search(txt);
-    <span style="color: #F92672;">if</span> (index &gt;= <span style="color: #ae81ff;">0</span>) {
-        <span style="color: #F92672;">for</span> (<span style="color: #F92672;">int</span> i = <span style="color: #ae81ff;">0</span>; i &lt; index; i++) {
-            System.<span style="color: #F92672;">out</span>.print(<span style="color: #e6db74;">" "</span>);
+</div><div>
+<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">4. 测试</h1>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">public</span> <span style="color: #f92672;">static</span> <span style="color: #f92672;">void</span> main(<span style="color: #f92672;">String</span>[] args) {
+    <span style="color: #f92672;">String</span> pattern = <span style="color: #e6db74;">"PARTICIPATEINPARACHUTE"</span>;
+    KMP rk = <span style="color: #f92672;">new</span> KMP(pattern);
+    <span style="color: #f92672;">String</span> txt = <span style="color: #e6db74;">"fdjkajjjfppPPPPPPPPPARTICIPATEINPARACHUTE"</span>;
+    System.out.<span style="color: #e6db74;">println</span>(txt);
+    <span style="color: #e6db74;">int</span> index = rk.search(txt);
+    <span style="color: #f92672;">if</span> (index &gt;= <span style="color: #ae81ff;">0</span>) {
+        <span style="color: #f92672;">for</span> (<span style="color: #e6db74;">int</span> i = <span style="color: #ae81ff;">0</span>; i &lt; index; i++) {
+            System.out.<span style="color: #e6db74;">print</span>(<span style="color: #e6db74;">" "</span>);
         }
-        System.<span style="color: #F92672;">out</span>.print(pattern);
+        System.out.<span style="color: #e6db74;">print</span>(pattern);
     }
-}
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">输出</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">fdjkajjjfppPPPPPPPPPARTICIPATEINPARACHUTE</span>
-                   PARTICIPATEINPARACHUTE
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">next数组为：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;">[<span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">2</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">2</span>, <span style="color: #ae81ff;">3</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>]
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考资料</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><a href="http://chaoswork.com/blog/2011/06/14/kmp%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/" style="background: transparent;" target="_blank">KMP算法小结</a></li>
-<li style="line-height: 1.6;"><a href="http://www.matrix67.com/blog/archives/115" style="background: transparent;" target="_blank">KMP算法详解 @Matrix67</a></li>
-</ol>
-</div>
+}</code></pre>
+<p style="margin: 0 0 1.1em;">输出</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">fdjkajjjfppPPPPPPPPPARTICIPATEINPARACHUTE</span>
+                   PARTICIPATEINPARACHUTE</code></pre>
+<p style="margin: 0 0 1.1em;">next数组为：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">[<span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">2</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">1</span>, <span style="color: #ae81ff;">2</span>, <span style="color: #ae81ff;">3</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>, <span style="color: #ae81ff;">0</span>]</code></pre>
+<p style="margin: 0 0 1.1em;">参考资料</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><a href="http://chaoswork.com/blog/2011/06/14/kmp%E7%AE%97%E6%B3%95%E5%B0%8F%E7%BB%93/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">KMP算法小结</a></li>
+<li><a href="http://www.matrix67.com/blog/archives/115" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">KMP算法详解 @Matrix67</a></li>
+</ol></div><div></div></div>

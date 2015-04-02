@@ -4,166 +4,195 @@ title: "定时器（Timer）的实现"
 category: "并发"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">适用场景： </p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;">定时任务（5分钟后执行xx任务/每隔1天执行一次）</li>
-<li style="line-height: 1.6;">超时控制（xx分钟没有动作就断开连接）</li>
-<li style="line-height: 1.6;">频率限制（最快只能每5s调用一次API/ 对同一个站点下页面的抓取最低要间隔5s）</li>
-</ol>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. Timer 是什么</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个Timer本质上是这样的一个数据结构：deadline越近的任务拥有越高优先级，提供以下3种基本操作：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">schedule</code> 新增</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cancel</code> 删除</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code> 执行到期的任务  </li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">updateDeadline</code> 更新到期时间 (可选)</li>
-</ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code>通常有两种工作方式：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">轮询</code><br/>每隔一个时间片就去查找哪些任务已经到期；</p>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">定时器（Timer）的实现</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. Timer 是什么</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 数据结构的选择</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.1 有序链表</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.2 堆heap</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.3 Hash Wheel Timer</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.4 分级的Hash Time Wheeler</a></li>
+</ul>
 </li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">睡眠/唤醒</code></p>
-<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6;">不停地查找deadline最近的任务，如到期则执行；否则sleep直到其到期。</li>
-<li style="line-height: 1.6;">在sleep期间，如果有任务被cancel或schedule，则deadline最近的任务有可能改变，线程会被唤醒并重新进行1的逻辑。</li>
-</ol>
+</ul>
 </li>
+</ul>
+</div>
+</div>
+<p style="margin: 0 0 1.1em;">适用场景： </p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>定时任务（5分钟后执行xx任务/每隔1天执行一次）</li>
+<li>超时控制（xx分钟没有动作就断开连接）</li>
+<li>频率限制（最快只能每5s调用一次API/ 对同一个站点下页面的抓取最低要间隔5s）</li>
 </ol>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 数据结构的选择</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">具体实现的数据结构可以有很多选择：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><em>假设任务持有自己在总体任务集合中对应的节点，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cancel</code>时不需要查找的过程。</em></p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 有序链表</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">schedule</code>: O(n)<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cancel</code>: O(1)      // 双向链表的节点删除<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code>: O(1)      // 不停地查看第一个就可以了</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 堆<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">heap</code></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Timer由于按deadline排列任务的性质，用堆来实现最直观不过了。<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">schedule</code>: O(log2N)    // 调整heap<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cancel</code> : O(log2N)     // 调整heap<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code>: O(1)</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">JDK中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">DelayQueue</code>用的就是这种实现方式，它在内部用一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">PriorityQueue</code>保存所有的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Delayed</code>对象，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Delayed</code>接口中只有一个方法<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">long getDelay(TimeUnit unit);</code>，返回该任务的deadline距离当前时间还有多久，堆顶保存了最快到期的任务。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">DelayQueue#take()</code>方法如下：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> E <span style="color: #a6e22e;">take</span>() <span style="color: #F92672;">throws</span> InterruptedException {
-    <span style="color: #F92672;">final</span> ReentrantLock lock = <span style="color: #F92672;">this</span>.lock;
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/></div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. Timer 是什么</h2>
+<p style="margin: 0 0 1.1em;">一个Timer本质上是这样的一个数据结构：deadline越近的任务拥有越高优先级，提供以下3种基本操作：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">schedule</code> 新增</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cancel</code> 删除</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code> 执行到期的任务  </li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">updateDeadline</code> 更新到期时间 (可选)</li>
+</ol>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code>通常有两种工作方式：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">轮询</code> <br/>
+每隔一个时间片就去查找哪些任务已经到期；</p></li>
+<li><p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">睡眠/唤醒</code></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>不停地查找deadline最近的任务，如到期则执行；否则sleep直到其到期。</li>
+<li>在sleep期间，如果有任务被cancel或schedule，则deadline最近的任务有可能改变，线程会被唤醒并重新进行1的逻辑。</li></ol></li>
+</ol>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. 数据结构的选择</h2>
+<p style="margin: 0 0 1.1em;">具体实现的数据结构可以有很多选择：</p>
+<p style="margin: 0 0 1.1em;"><em>假设任务持有自己在总体任务集合中对应的节点，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cancel</code>时不需要查找的过程。</em></p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.1 有序链表</h3>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">schedule</code>: O(n)  <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cancel</code>: O(1)      // 双向链表的节点删除 <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code>: O(1)      // 不停地查看第一个就可以了</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.2 堆<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">heap</code></h3>
+<p style="margin: 0 0 1.1em;">Timer由于按deadline排列任务的性质，用堆来实现最直观不过了。 <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">schedule</code>: O(log2N)    // 调整heap <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cancel</code> : O(log2N)     // 调整heap <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code>: O(1)</p>
+<p style="margin: 0 0 1.1em;">JDK中的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">DelayQueue</code>用的就是这种实现方式，它在内部用一个<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PriorityQueue</code>保存所有的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Delayed</code>对象，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Delayed</code>接口中只有一个方法<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">long getDelay(TimeUnit unit);</code>，返回该任务的deadline距离当前时间还有多久，堆顶保存了最快到期的任务。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">DelayQueue#take()</code>方法如下：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">public</span> E <span style="color: #a6e22e;">take</span><span style="color: #f8f8f2;">()</span> <span style="color: #66d9ef;">throws</span> InterruptedException </span>{
+    <span style="color: #f92672;">final</span> ReentrantLock lock = <span style="color: #f92672;">this</span>.lock;
     lock.lockInterruptibly();
-    <span style="color: #F92672;">try</span> {
-        <span style="color: #F92672;">for</span> (;;) {
+    <span style="color: #f92672;">try</span> {
+        <span style="color: #f92672;">for</span> (;;) {
             <span style="color: #75715e;">// 找最快到期的</span>
             E first = q.peek();
-            <span style="color: #F92672;">if</span> (first == <span style="color: #F92672;">null</span>)
+            <span style="color: #f92672;">if</span> (first == <span style="color: #f92672;">null</span>)
                 available.await();
-            <span style="color: #F92672;">else</span> {
-                <span style="color: #F92672;">long</span> delay = first.getDelay(TimeUnit.NANOSECONDS);
+            <span style="color: #f92672;">else</span> {
+                <span style="color: #f92672;">long</span> delay = first.getDelay(TimeUnit.NANOSECONDS);
                 <span style="color: #75715e;">// 到期了，返回该任务</span>
-                <span style="color: #F92672;">if</span> (delay &lt;= <span style="color: #ae81ff;">0</span>)
-                    <span style="color: #F92672;">return</span> q.poll();
-                <span style="color: #F92672;">else</span> <span style="color: #F92672;">if</span> (leader != <span style="color: #F92672;">null</span>)
-                    available.await();
-                <span style="color: #F92672;">else</span> {
+                <span style="color: #f92672;">if</span> (delay &lt;= <span style="color: #ae81ff;">0</span>)
+                    <span style="color: #f92672;">return</span> q.poll();
+                <span style="color: #f92672;"><span style="color: #66d9ef;">else</span> <span style="color: #a6e22e;">if</span> <span style="color: #f8f8f2;">(leader != <span style="color: #66d9ef;">null</span>)</span>
+                    available.<span style="color: #a6e22e;">await</span><span style="color: #f8f8f2;">()</span></span>;
+                <span style="color: #f92672;">else</span> {
                     <span style="color: #75715e;">// 让当前线程sleep，时间为first的延迟时间</span>
                     Thread thisThread = Thread.currentThread();
                     leader = thisThread;
-                    <span style="color: #F92672;">try</span> {
+                    <span style="color: #f92672;">try</span> {
                         available.awaitNanos(delay);
                         <span style="color: #75715e;">// 其他线程插入新任务/取消任务会引起堆的调整，并中断take()线程，</span>
                         <span style="color: #75715e;">// 醒来后进入下一次判断。这就是整个逻辑为什么要在一个循环内的原因。</span>
-                    } <span style="color: #F92672;">finally</span> {
-                        <span style="color: #F92672;">if</span> (leader == thisThread)
-                            leader = <span style="color: #F92672;">null</span>;
+                    } <span style="color: #f92672;">finally</span> {
+                        <span style="color: #f92672;">if</span> (leader == thisThread)
+                            leader = <span style="color: #f92672;">null</span>;
                     }
                 }
             }
         }
-    } <span style="color: #F92672;">finally</span> {
-        <span style="color: #F92672;">if</span> (leader == <span style="color: #F92672;">null</span> &amp;&amp; q.peek() != <span style="color: #F92672;">null</span>)
+    } <span style="color: #f92672;">finally</span> {
+        <span style="color: #f92672;">if</span> (leader == <span style="color: #f92672;">null</span> &amp;&amp; q.peek() != <span style="color: #f92672;">null</span>)
             available.signal();
         lock.unlock();
     }
-}
-</code></pre>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.3 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Hash Wheel Timer</code></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1398239875544.png" name="73a16481-438c-47e2-8321-a2697a192b9d" src="/assets/img/95bce62c66d14de55ef5acdd75988d7e.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Hash Wheel Timer</code>是一个环形结构，可以想象成时钟，分为很多格子，一个格子代表一段时间（越短Timer精度越高），并用一个List保存在该格子上到期的所有任务，同时一个指针随着时间流逝一格一格转动，并执行对应List中所有到期的任务。任务通过<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">取模</code>决定应该放入哪个格子。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以上图为例，假设一个格子是1秒，则整个wheel能表示的时间段为8s，假如当前指针指向2，此时需要调度一个3s后执行的任务，显然应该加入到(2+3=5)的方格中，指针再走3次就可以执行了；如果任务要在10s后执行，应该等指针走完一个round零2格再执行，因此应放入4，同时将round（1）保存到任务中。检查到期任务时应当只执行round为0的，格子上其他任务的round应减1。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">schedule</code>: O(1)<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cancel</code> : O(1)<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code> : 最坏情况O(n)，平均O(1)   // 显然格子越多每个格子对应的List就越短，越接近O(1)；最坏情况下所有的任务都在一个格子中，O(n)。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Netty3中的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">HashedWheelTimer</code>类是对该算法的一个实现，用于IO事件的超时管理。里面提到了两个概念：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Tick Duration</code>：即一个格子代表的时间，默认为100ms，因为IO事件不需要那么精确；</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Ticks per Wheel (Wheel Size)</code>：一个Wheel含有多少个格子，默认为512个，如果任务较多可以增大这个参数。</li>
+}</code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.3 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Hash Wheel Timer</code></h3>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1398239875544.png" name="73a16481-438c-47e2-8321-a2697a192b9d" src="/assets/img/95bce62c66d14de55ef5acdd75988d7e.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">一个<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Hash Wheel Timer</code>是一个环形结构，可以想象成时钟，分为很多格子，一个格子代表一段时间（越短Timer精度越高），并用一个List保存在该格子上到期的所有任务，同时一个指针随着时间流逝一格一格转动，并执行对应List中所有到期的任务。任务通过<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">取模</code>决定应该放入哪个格子。</p>
+<p style="margin: 0 0 1.1em;">以上图为例，假设一个格子是1秒，则整个wheel能表示的时间段为8s，假如当前指针指向2，此时需要调度一个3s后执行的任务，显然应该加入到(2+3=5)的方格中，指针再走3次就可以执行了；如果任务要在10s后执行，应该等指针走完一个round零2格再执行，因此应放入4，同时将round（1）保存到任务中。检查到期任务时应当只执行round为0的，格子上其他任务的round应减1。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">schedule</code>: O(1) <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cancel</code> : O(1) <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code> : 最坏情况O(n)，平均O(1)   // 显然格子越多每个格子对应的List就越短，越接近O(1)；最坏情况下所有的任务都在一个格子中，O(n)。</p>
+<p style="margin: 0 0 1.1em;">Netty3中的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HashedWheelTimer</code>类是对该算法的一个实现，用于IO事件的超时管理。里面提到了两个概念：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Tick Duration</code>：即一个格子代表的时间，默认为100ms，因为IO事件不需要那么精确；</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Ticks per Wheel (Wheel Size)</code>：一个Wheel含有多少个格子，默认为512个，如果任务较多可以增大这个参数。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">内部主要的状态：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">// 转动指针的线程</span>
-<span style="color: #F92672;">private</span> <span style="color: #F92672;">final</span> Worker worker = <span style="color: #F92672;">new</span> Worker();
-<span style="color: #F92672;">final</span> Thread workerThread;
+<p style="margin: 0 0 1.1em;">内部主要的状态：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #75715e;">// 转动指针的线程</span>
+<span style="color: #f92672;">private</span> <span style="color: #f92672;">final</span> Worker worker = <span style="color: #f92672;">new</span> Worker();
+<span style="color: #f92672;">final</span> Thread workerThread;
 
 <span style="color: #75715e;">// wheel，一个数组，每个格子上的任务列表用一个Set保存（背后是一个ConcurrentIdentityHashMap，</span>
 <span style="color: #75715e;">// 这是为了快速找到任务对象删除，个人觉得用一个双向链表也可以）。</span>
-<span style="color: #F92672;">final</span> Set&lt;HashedWheelTimeout&gt;[] wheel;      
+<span style="color: #f92672;">final</span> Set&lt;HashedWheelTimeout&gt;[] wheel;      
 
 <span style="color: #75715e;">// 所有任务列表的iterator</span>
-<span style="color: #F92672;">final</span> ReusableIterator&lt;HashedWheelTimeout&gt;[] iterators;
+<span style="color: #f92672;">final</span> ReusableIterator&lt;HashedWheelTimeout&gt;[] iterators;
 
 <span style="color: #75715e;">// 指针位置</span>
-<span style="color: #F92672;">volatile</span> <span style="color: #F92672;">int</span> wheelCursor;
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在来看看该Timer是如何支持前面提到的3个动作的：<br/><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">schedule</code>：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> Timeout <span style="color: #a6e22e;">newTimeout</span>(TimerTask task, <span style="color: #F92672;">long</span> delay, TimeUnit unit) {
+<span style="color: #f92672;">volatile</span> <span style="color: #f92672;">int</span> wheelCursor;</code></pre>
+<p style="margin: 0 0 1.1em;">现在来看看该Timer是如何支持前面提到的3个动作的： <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">schedule</code>：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">public</span> Timeout <span style="color: #a6e22e;">newTimeout</span><span style="color: #f8f8f2;">(TimerTask task, <span style="color: #66d9ef;">long</span> delay, TimeUnit unit)</span> </span>{
     <span style="color: #75715e;">// ... ...</span>
     delay = unit.toMillis(delay);
-    HashedWheelTimeout timeout = <span style="color: #F92672;">new</span> HashedWheelTimeout(task, currentTime + delay);
+    HashedWheelTimeout timeout = <span style="color: #f92672;">new</span> HashedWheelTimeout(task, currentTime + delay);
     scheduleTimeout(timeout, delay);
-    <span style="color: #F92672;">return</span> timeout;
+    <span style="color: #f92672;">return</span> timeout;
 }
-<span style="color: #F92672;">void</span> scheduleTimeout(HashedWheelTimeout timeout, <span style="color: #F92672;">long</span> delay) {
+<span style="color: #f92672;"><span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">scheduleTimeout</span><span style="color: #f8f8f2;">(HashedWheelTimeout timeout, <span style="color: #66d9ef;">long</span> delay)</span> </span>{
     <span style="color: #75715e;">// ... ...</span>
     <span style="color: #75715e;">// 计算round和格子相对当前指针的偏移</span>
-    <span style="color: #F92672;">final</span> <span style="color: #F92672;">long</span> lastRoundDelay = delay % roundDuration;
-    <span style="color: #F92672;">final</span> <span style="color: #F92672;">long</span> lastTickDelay = delay % tickDuration;
-    <span style="color: #F92672;">final</span> <span style="color: #F92672;">long</span> relativeIndex =
+    <span style="color: #f92672;">final</span> <span style="color: #f92672;">long</span> lastRoundDelay = delay % roundDuration;
+    <span style="color: #f92672;">final</span> <span style="color: #f92672;">long</span> lastTickDelay = delay % tickDuration;
+    <span style="color: #f92672;">final</span> <span style="color: #f92672;">long</span> relativeIndex =
         lastRoundDelay / tickDuration + (lastTickDelay != <span style="color: #ae81ff;">0</span>? <span style="color: #ae81ff;">1</span> : <span style="color: #ae81ff;">0</span>);
 
-    <span style="color: #F92672;">final</span> <span style="color: #F92672;">long</span> remainingRounds =
+    <span style="color: #f92672;">final</span> <span style="color: #f92672;">long</span> remainingRounds =
         delay / roundDuration - (delay % roundDuration == <span style="color: #ae81ff;">0</span>? <span style="color: #ae81ff;">1</span> : <span style="color: #ae81ff;">0</span>);
 
     <span style="color: #75715e;">// 加入任务到对应的格子中</span>
     lock.readLock().lock();
-    <span style="color: #F92672;">try</span> {
-        <span style="color: #F92672;">int</span> stopIndex = (<span style="color: #F92672;">int</span>) (wheelCursor + relativeIndex &amp; mask);
+    <span style="color: #f92672;">try</span> {
+        <span style="color: #f92672;">int</span> stopIndex = (<span style="color: #f92672;">int</span>) (wheelCursor + relativeIndex &amp; mask);
         timeout.stopIndex = stopIndex;
         timeout.remainingRounds = remainingRounds;
 
         wheel[stopIndex].add(timeout);
-    } <span style="color: #F92672;">finally</span> {
+    } <span style="color: #f92672;">finally</span> {
         lock.readLock().unlock();
     }
-}
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">cancel</code>:<br/>cancel是在代表任务的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">HashWheelTimeout</code>类中实现的：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">public</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">cancel</span>() {
+}</code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cancel</code>: <br/>
+cancel是在代表任务的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HashWheelTimeout</code>类中实现的：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">cancel</span><span style="color: #f8f8f2;">()</span> </span>{
     <span style="color: #75715e;">// ... ...</span>
-    wheel[stopIndex].remove(<span style="color: #F92672;">this</span>); <span style="color: #75715e;">// 简单地将自己从对应的任务列表中移除</span>
-}
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code>:<br/>内部有一个专门的Worker线程负责转动指针轮询并<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">expire</code>：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">private</span> <span style="color: #F92672;">final</span> <span><span style="color: #66d9ef;">class</span> <span style="color: #f8f8f2;">Worker</span> <span style="color: #F92672;">implements</span> <span style="color: #a6e22e; font-style: italic;">Runnable</span> </span>{
+    wheel[stopIndex].remove(<span style="color: #f92672;">this</span>); <span style="color: #75715e;">// 简单地将自己从对应的任务列表中移除</span>
+}</code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code>: <br/>
+内部有一个专门的Worker线程负责转动指针轮询并<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">expire</code>：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">private</span> <span style="color: #f92672;">final</span> <span><span style="color: #66d9ef;">class</span> <span style="color: #f8f8f2;">Worker</span> <span style="color: #f92672;">implements</span> <span style="color: #a6e22e; font-style: italic;">Runnable</span> </span>{
     <span style="color: #75715e;">// ... ...</span>
-    <span style="color: #F92672;">public</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">run</span>() {
+    <span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">run</span><span style="color: #f8f8f2;">()</span> </span>{
         <span style="color: #75715e;">// 保存所有的过期任务</span>
-        List&lt;HashedWheelTimeout&gt; expiredTimeouts = <span style="color: #F92672;">new</span> ArrayList&lt;HashedWheelTimeout&gt;();
+        List&lt;HashedWheelTimeout&gt; expiredTimeouts = <span style="color: #f92672;">new</span> ArrayList&lt;HashedWheelTimeout&gt;();
 
         startTime = System.currentTimeMillis();
         tick = <span style="color: #ae81ff;">1</span>;
 
-        <span style="color: #F92672;">while</span> (!shutdown.get()) {
-            <span style="color: #F92672;">final</span> <span style="color: #F92672;">long</span> deadline = waitForNextTick();    <span style="color: #75715e;">// 休眠直到下一个tick代表的时间到来</span>
-            <span style="color: #F92672;">if</span> (deadline &gt; <span style="color: #ae81ff;">0</span>) {
+        <span style="color: #f92672;">while</span> (!shutdown.get()) {
+            <span style="color: #f92672;">final</span> <span style="color: #f92672;">long</span> deadline = waitForNextTick();    <span style="color: #75715e;">// 休眠直到下一个tick代表的时间到来</span>
+            <span style="color: #f92672;">if</span> (deadline &gt; <span style="color: #ae81ff;">0</span>) {
                 fetchExpiredTimeouts(expiredTimeouts, deadline);
                 notifyExpiredTimeouts(expiredTimeouts);
             }
         }
     }
 
-    <span style="color: #F92672;">private</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">fetchExpiredTimeouts</span>(List&lt;HashedWheelTimeout&gt; expiredTimeouts, <span style="color: #F92672;">long</span> deadline) {
+    <span style="color: #f92672;"><span style="color: #66d9ef;">private</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">fetchExpiredTimeouts</span><span style="color: #f8f8f2;">(List&lt;HashedWheelTimeout&gt; expiredTimeouts, <span style="color: #66d9ef;">long</span> deadline)</span> </span>{
         <span style="color: #75715e;">// ... ...</span>
-        <span style="color: #F92672;">int</span> newWheelCursor = wheelCursor = wheelCursor + <span style="color: #ae81ff;">1</span> &amp; mask; <span style="color: #75715e;">// 格子指针前进一步</span>
+        <span style="color: #f92672;">int</span> newWheelCursor = wheelCursor = wheelCursor + <span style="color: #ae81ff;">1</span> &amp; mask; <span style="color: #75715e;">// 格子指针前进一步</span>
         ReusableIterator&lt;HashedWheelTimeout&gt; i = iterators[newWheelCursor];
         <span style="color: #75715e;">// 拿到当前格子中所有到期的（round==0）任务，并将其他任务的round-1</span>
         fetchExpiredTimeouts(expiredTimeouts, i, deadline); 
@@ -171,9 +200,9 @@ category: "并发"
     }
 
     <span style="color: #75715e;">// 执行所有到期任务，没有使用新线程，因此任务应快速完成。</span>
-    <span style="color: #F92672;">private</span> <span style="color: #F92672;">void</span> <span style="color: #a6e22e;">notifyExpiredTimeouts</span>(List&lt;HashedWheelTimeout&gt; expiredTimeouts) {
+    <span style="color: #f92672;"><span style="color: #66d9ef;">private</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">notifyExpiredTimeouts</span><span style="color: #f8f8f2;">(List&lt;HashedWheelTimeout&gt; expiredTimeouts)</span> </span>{
         <span style="color: #75715e;">// Notify the expired timeouts.</span>
-        <span style="color: #F92672;">for</span> (<span style="color: #F92672;">int</span> i = expiredTimeouts.size() - <span style="color: #ae81ff;">1</span>; i &gt;= <span style="color: #ae81ff;">0</span>; i --) {
+        <span style="color: #f92672;">for</span> (<span style="color: #f92672;">int</span> i = expiredTimeouts.size() - <span style="color: #ae81ff;">1</span>; i &gt;= <span style="color: #ae81ff;">0</span>; i --) {
             expiredTimeouts.get(i).expire();
         }
 
@@ -181,19 +210,17 @@ category: "并发"
         expiredTimeouts.clear();
     }
     <span style="color: #75715e;">// ... ...</span>
-}
-</code></pre>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.4 <strong style="font-weight: bold;">分级的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Hash Time Wheeler</code></strong></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">如果任务的时间跨度很大，数量也多，传统的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">HashTimeWheeler</code>会造成任务的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">round</code>很大，单个格子的任务List很长，并会维持很长一段时间。这时可将Wheel按时间粒度分级：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1398303819924.png" name="a378f066-2baf-4173-b170-b6a13d2c9809" src="/assets/img/7f03c027b1de345a0b1e57239d73de74.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在，每个任务除了要维护在当前轮子的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">round</code>，还要计算在所有下级轮子的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">round</code>。当本层的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">round</code>为0时，任务按下级<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">round</code>值被<em>下放</em>到下级轮子，最终在最底层的轮子得到执行。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">现在，<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">schedule</code>的复杂度提高到了O(m)，m为轮子的级数，因为要计算每级的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">round</code>值。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这种方式的优点在于能够保证任务链表的长度一直在比较短的状态，但缺点是需要更多的空间。</p>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; line-height: 1.6; margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid rgba(102, 128, 153, 0.15);"/>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考资料：</p>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Flinux%2Fl-cn-timers%2F" style="background: transparent;" target="_blank">Linux 下定时器的实现方式分析</a></li>
-<li style="line-height: 1.6;"><a href="http://www.cs.wustl.edu/~schmidt/Timer_Queue.html" style="background: transparent;" target="_blank">Design, Performance, and Optimization of Timer Strategies for Real-time ORBs</a></li>
-<li style="line-height: 1.6;"><a href="http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf" style="background: transparent;" target="_blank">Hashed and Hierarchical Timing Wheels: Efﬁcient Data Structures for Implementing a Timer Facility (PDF)</a></li>
-</ul>
-</div>
+}</code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.4 <strong style="font-weight: bold;">分级的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Hash Time Wheeler</code></strong></h3>
+<p style="margin: 0 0 1.1em;">如果任务的时间跨度很大，数量也多，传统的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HashTimeWheeler</code>会造成任务的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">round</code>很大，单个格子的任务List很长，并会维持很长一段时间。这时可将Wheel按时间粒度分级：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1398303819924.png" name="a378f066-2baf-4173-b170-b6a13d2c9809" src="/assets/img/7f03c027b1de345a0b1e57239d73de74.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">现在，每个任务除了要维护在当前轮子的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">round</code>，还要计算在所有下级轮子的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">round</code>。当本层的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">round</code>为0时，任务按下级<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">round</code>值被<em>下放</em>到下级轮子，最终在最底层的轮子得到执行。</p>
+<p style="margin: 0 0 1.1em;">现在，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">schedule</code>的复杂度提高到了O(m)，m为轮子的级数，因为要计算每级的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">round</code>值。</p>
+<p style="margin: 0 0 1.1em;">这种方式的优点在于能够保证任务链表的长度一直在比较短的状态，但缺点是需要更多的空间。</p>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
+<p style="margin: 0 0 1.1em;">参考资料：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Flinux%2Fl-cn-timers%2F" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Linux 下定时器的实现方式分析</a></li>
+<li><a href="http://www.cs.wustl.edu/~schmidt/Timer_Queue.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Design, Performance, and Optimization of Timer Strategies for Real-time ORBs</a></li>
+<li><a href="http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Hashed and Hierarchical Timing Wheels: Efﬁcient Data Structures for Implementing a Timer Facility (PDF)</a></li>
+</ul></div><div></div></div>

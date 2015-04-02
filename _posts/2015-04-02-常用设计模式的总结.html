@@ -1,0 +1,449 @@
+---
+layout: post
+title: "常用设计模式的总结"
+category: "设计"
+---
+
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">常用设计模式的总结</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">一. 创建型模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. Factory method 工厂方法</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. Abstract factory 抽象工厂</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">应用</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. Singleton 单例</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. Builder</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">交互</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">二. 结构型模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. Adapter 适配器</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. Proxy 代理</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">与Decorator模式的区别</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. Bridge 桥接模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">总结</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. Decorator 装饰者</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">应用</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">5. Composite 组合模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">应用</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">6. Facade</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">三. 行为模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. Chain of Responsibility 责任链</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">扩展</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">应用</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">标准责任链</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">扩展（功能链）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. Command 命令</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. Memento 备忘录</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. Observer 观察者</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">扩展：EventBus</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">5. State 状态模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">6. Strategy 策略模式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">7. Template Method 模板方法</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">作用</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">四. 设计原则</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div></div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">一. 创建型模式</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">1. Factory method 工厂方法</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">一个类需要一个产品来完成某项工作，但它不能确定，也不关心具体拿到什么产品，因此它定义一个工厂方法，将具体产品的生产延迟到子类决定。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403160006818.png" name="815b1ae9-fa42-45c7-8ce1-1e3cfa9697eb" src="/assets/img/18beee5db7b6bd0a8be14199eaa9289e.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>父类可以选择为工厂方法提供一个默认的实现；</li>
+<li>工厂方法通常在模板方法（Template method）中被调用，上图中<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">AnOperation()</code>就是一个模板方法。</li>
+</ol></div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2. Abstract factory 抽象工厂</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">系统有一组相互关联的产品接口，及几套不同的实现。客户只依赖产品接口，并需要能灵活地在几套实现中切换。</p>
+<p style="margin: 0 0 1.1em;">因此提供一个抽象工厂生产抽象的产品，每个产品在其中都对应一个工厂方法，产品族的每一套实现都提供一个具体工厂。客户通过抽象工厂获取产品，当需要切换到产品的其他实现时只需要更换工厂的实现类。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403146746942.png" name="cc1f550b-d3ac-4847-91d6-df55775dcbe5" src="/assets/img/035462ec043438b6758dcf27783ac846.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">应用</h4>
+<p style="margin: 0 0 1.1em;">根据底层数据源的不同，DAO的实现通常有几套，当切换数据源时，系统使用的DAO的实现也应当能快速切换。这是使用抽象工厂的一个典型场景。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">3. Singleton 单例</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">保证一个类只有一个对象</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">private</code>构造器</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">private static</code> 类变量 singleton</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">public static</code> 类方法 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">getInstance()</code> 返回singleton。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">实例化时机：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>eager</li>
+<li>lazy</li>
+</ol>
+<p style="margin: 0 0 1.1em;">lazy init 多线程问题的解决办法：<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Double Check</code></p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">private</span> <span style="color: #f92672;">volatile</span> <span style="color: #f92672;">static</span> A singleton = <span style="color: #f92672;">null</span>;
+
+<span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">static</span> A <span style="color: #a6e22e;">getInstance</span><span style="color: #f8f8f2;">()</span></span>{
+    <span style="color: #f92672;">if</span>(singleton == <span style="color: #f92672;">null</span>){
+        sychronized(A.class){
+            <span style="color: #f92672;">if</span>(singleton == <span style="color: #f92672;">null</span>) singleton = <span style="color: #f92672;">new</span> A();
+        }
+    }
+    <span style="color: #f92672;">return</span> singleton;
+}
+
+<span style="color: #f92672;"><span style="color: #66d9ef;">private</span> <span style="color: #a6e22e;">A</span><span style="color: #f8f8f2;">()</span></span>{}</code></pre>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>为什么要第二次的null判断？ <br/>
+在第一次判null / 获取锁之间可能有其他线程实例化了。</li>
+<li>为什么要<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">volatile</code>？ <br/>
+在上面提到的情况下，如果没有<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">volatile</code>保证的可见性，在第二次null判断时当前线程可能看不到别的线程创建的对象，从而通过并再创建一次。</li>
+</ol>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">static 内部类</code>利用 “类的加载/static块是线程安全的” 实现线程安全的lazy init：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">public</span> <span><span style="color: #66d9ef;">class</span> <span style="color: #a6e22e; font-style: italic;">A</span></span>{
+    <span style="color: #f92672;">private</span> <span style="color: #f92672;">static</span> <span><span style="color: #66d9ef;">class</span> <span style="color: #a6e22e; font-style: italic;">Holder</span></span>{
+        <span style="color: #f92672;">private</span> <span style="color: #f92672;">static</span> A singleton = <span style="color: #f92672;">new</span> A();
+    }
+
+    <span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">static</span> A <span style="color: #a6e22e;">getInstance</span><span style="color: #f8f8f2;">()</span></span>{
+        <span style="color: #f92672;">return</span> Holder.singleton;
+    }
+
+    <span style="color: #f92672;"><span style="color: #66d9ef;">private</span> <span style="color: #a6e22e;">A</span><span style="color: #f8f8f2;">()</span></span>{}
+}</code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">4. Builder</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">你有一个产品，该产品由若干part装配而成，装配的逻辑是固定的，但各个part的构造是可切换选择的，Builder模式将 <strong style="font-weight: bold;">固定的装配逻辑</strong> 与 <strong style="font-weight: bold;">易变的part构造逻辑</strong> 分离开，可以方便地在不同的part实现逻辑之间切换。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403163234482.png" name="f2f52c32-904f-4005-b469-6ceab218cb79" src="/assets/img/c0a3a2c8ac96ae2b632840adff485541.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Director#construct()</code> 负责固定的装配逻辑；</li>
+<li>一个<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Builder</code>实例负责一个产品内部所有part的构造（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">buildPart()</code>方法族），并向外部暴露方法，在part都装配完毕后获取该产品。</li>
+</ol>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">交互</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403163378411.png" name="401a0656-67ee-4ad6-8884-bba562877f1b" src="/assets/img/48bc1c5fd3e8b0feb1c8376c2624881b.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">二. 结构型模式</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">1. Adapter 适配器</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">在两个不兼容的接口之间加一个中间层，用组合的方式将一个现有对象匹配到需要的接口。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">Convert the interface of a class into another interface the client expects</p>
+</blockquote>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403164872248.png" name="b2280c71-73c2-44eb-b3eb-daeb3b69ed07" src="/assets/img/c064c439075e2763de2e671525b1eda6.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2. Proxy 代理</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">Provide a surrogate or place holder for another object to control access to it</p>
+</blockquote>
+<p style="margin: 0 0 1.1em;">你有一个真正干活的对象RealSubject，但需要向client控制对他的访问，比如权限的控制 / Lazy load / 结果的缓存等等，因此在client和RealSubject之间增加一个中间层Proxy代替RealSubject，Proxy包裹RealSubject，将具体功能实现委托给它，并在RealSubject执行真正的功能前后插入自己的逻辑；此外，Proxy向client隐藏了RealSubject的存在。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403416618628.png" name="4da066cf-ad1c-4575-b5b6-e673befd26f6" src="/assets/img/f1d237241de80e592a429463c570401b.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">与<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Decorator</code>模式的区别</h4>
+<p style="margin: 0 0 1.1em;">Proxy与Decorator有着相似的结构，<em>* 他们都在client和真实对象之间增加一个与真实对象实现了相同接口的中间层，这个中间层保留了对真实对象的引用并向他们发送请求*</em>。然而他们的设计目的是不同的：</p>
+<p style="margin: 0 0 1.1em;">Decorator侧重动态为实体增加功能，因此在该模式中：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>实体只实现了部分功能，Decorator实现了其他的增强功能；</li>
+<li>支持递归组合（增加多重功能）；</li>
+<li>Decorator不知道自己装饰的是哪个具体对象，client必须自己手动将实体和Decorator关联起来。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">Proxy的目的则是当访问一个特定实体不方便或不符合要求时，为这个实体提供一个替代者，因此：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>实体实现了关键功能，Proxy提供（或拒绝）对它的访问；</li>
+<li>不支持递归组合；</li>
+<li>Proxy向client屏蔽RealSubject的存在，client只能拿到Proxy；</li>
+<li>Proxy确定地知道自己的代理目标是RealSubject，因此它和RealSubject相关联而不是Subject接口；此外，它们的关系是静态的，无法在运行时改变Proxy代理的目标对象。</li>
+</ol>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">3. Bridge 桥接模式</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">你有一个产品，它在两个维度上都是可变化的，如果用继承，则需要n*m个子类。Bridge模式将两个维度的继承体系独立出来，并在二者之间用组合进行装配，避免类的泛滥。</p>
+<p style="margin: 0 0 1.1em;">进一步地考虑，一个产品的继承体系应该只有一个维度，如果出现了其他维度上的继承，要考虑该维度是否是行为/实现相关的。对于行为/实现方面的变化，应当先把行为独立地抽象出来，并与原产品<strong style="font-weight: bold;">组合</strong>（这就是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">策略模式</code>的含义），而不应该直接在原产品上通过继承表达该行为的变化。</p>
+<p style="margin: 0 0 1.1em;">举个例子，假如系统内要发送消息，消息按迫切程度分为普通/加急/特急，消息的发送形式也可以多样，比如站内信/短信/email，每种消息都要求可以用任意方式发送：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403166907142.png" name="ef3fdeb5-1eb1-46f4-90a8-63b4df7dd9af" src="/assets/img/847c1c498fbe0949cea6d1e54529116c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">如果简单地用继承，则需要3*3 = 9个类。但实际上，<em>消息的发送</em> 这个维度属于行为，<strong style="font-weight: bold;">不要用继承来表达行为的变化，这样会污染原本的抽象层次</strong>，应当用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">策略模式</code>将 <em>消息发送</em> 这个行为分离。</p>
+<p style="margin: 0 0 1.1em;">采用Bridge模式： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1403168007802.png" name="ec69d397-81eb-4e54-bf0f-caccd04c8b82" src="/assets/img/26bd87f9aac60b903429a043f5267fe2.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p></div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403167837240.png" name="19482432-6997-47bf-abf5-09d94692ad6d" src="/assets/img/f575f921b45b33e766d4996850d57f51.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">产品的抽象 + 行为的分离（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">策略模式</code>）</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">总结</h4>
+<p style="margin: 0 0 1.1em;">Bridge模式在我看来是对<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">策略模式</code>的扩展，它的核心有两点：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>只在一个维度上用继承，出现了多个维度则考虑分离并用组合，避免类的泛滥和抽象维度的混杂；</li>
+<li>用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">策略模式</code>隔离行为的变化，不要让行为/实现的变化污染原本的继承体系。</li>
+</ol>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">4. Decorator 装饰者</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">有一系列产品，你希望动态地为他们添加额外 / 可自由组合 的功能，并且不影响产品本身。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">Attach additional responsibilities to an object dynamically.</p>
+</blockquote>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403176265661.png" name="608e2ade-e005-4f88-a483-30f3464db3db" src="/assets/img/30afda5a1ce0b38a24ddf91ab1cc35fd.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Decorator 装饰器</code>继承产品抽象接口，并在内部持有一个产品（可能是具体产品，也有可能被装饰过了）；</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Decorator</code>的具体实现，为其装饰的产品提供额外的功能，类似递归的调用；</li>
+<li>可以同时反复应用多个 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Decorator</code> ，实现额外功能的动态组合。</li>
+</ol>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">应用</h4>
+<p style="margin: 0 0 1.1em;">1. <br/>
+java的IO流的设计是一个典型的装饰者模式： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1403176954152.png" name="5c5975fd-71df-48c5-9d30-1639cb018042" src="/assets/img/0b3cd16d7a13a3595c5d2ce4bc8e7989.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ByteArrayInputStream | FileInputStream | ObjectInputStream | StringBufferInputStream</code>是具体的输入流产品，根据数据来源区分； <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">FilterInputStream</code>是装饰器； <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">BufferedInputStream | DataInputStream | LineNumberInputStream | PushbackInputStream</code>是具体的装饰器，分别为其他输入流提供缓冲/类型读写/跟踪行号/退回已读数据的功能，这些装饰器是可以组合使用的：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">InputStream in = <span style="color: #f92672;">new</span> DataInputStream(<span style="color: #f92672;">new</span> BufferedInputStream(<span style="color: #f92672;">new</span> FileInputStream(<span style="color: #e6db74;">"test.txt"</span>))); </code></pre>
+<p style="margin: 0 0 1.1em;">2. <br/>
+<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Decorator模式</code>也可以用来实现<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">AOP</code>的类似功能（虽然实际大部分都是用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">JDK动态代理 / 运行时修改字节码</code>），<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Decorator</code>的具体实现就是我们想要独立出来的切面，产品的具体实现则是我们想要保持独立的业务逻辑。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">5. Composite 组合模式</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">实现树形结构，并让用户可以用统一的接口对待叶子节点和非叶子节点。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403178780524.png" name="798cd136-1a17-4043-bbbc-252aa7309666" src="/assets/img/209632dd71560ad008afa322afcd4a8b.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>操作孩子的方法应该放在Component中吗？毕竟Leaf是不支持这些操作的。 <br/>
+出于透明性考虑，应该放在Component中，Leaf对这些方法就提供一个空的实现。</li>
+<li>Component除了保存孩子，也可以记录父亲；</li>
+</ol>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">应用</h4>
+<p style="margin: 0 0 1.1em;">UI / 人员组织管理这种典型的树形结构中用的比较广泛。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">6. Facade</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">一个系统对外提供服务，系统暴露的接口应该是简单而统一的，客户不应该直接和系统内复杂的子部件进行交互，而应只依赖于一个单一的高层接口，该组件为客户屏蔽了内部的复杂性，降低了客户和系统的耦合。</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403180072180.png" name="51a5345e-8878-45e3-be1d-f107fe8e299a" src="/assets/img/614a5339a4bc9e877faba8860023bd7e.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">更像是一种设计思路，而非一个具体模式。</p>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">三. 行为模式</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">1. Chain of Responsibility 责任链</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">客户端发出一个请求，有一系列的处理器都有机会处理这个请求，但具体哪个是运行时决定的，客户端也不知道究竟谁会来处理。</p>
+<p style="margin: 0 0 1.1em;">因此将所有处理器组成一个链条，将请求从链条中流过，每个处理器查看是否应该处理它，如果不是，则交给后面的处理器，否则处理并退出。</p>
+<p style="margin: 0 0 1.1em;">将请求者和处理者解耦，可以动态切换/组合处理者。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403243902492.png" name="865e77db-ace2-4ec6-a785-efa647309a64" src="/assets/img/a56fee528e339c6613e30648efbef87c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">扩展</h4>
+<p style="margin: 0 0 1.1em;">客户端发出一个请求，请求的处理分为很多步骤，这些步骤是不确定的/可以动态组合的，甚至需要支持在运行时改变步骤，或者在步骤间任意跳转。</p>
+<p style="margin: 0 0 1.1em;">解决方案和责任链类似，将处理流程抽象为一个处理器链条，链条的组装交给外部决定。每个处理器对请求完成自己负责的业务逻辑，并看情况结束/传递给下一个处理器/跳转到任意处理器。</p>
+<p style="margin: 0 0 1.1em;">这和标准的责任链的结构基本一样，但他们的目的不一样。标准责任链目的是动态 <strong style="font-weight: bold;">找到请求的处理者</strong> ；扩展（某些地方称为“功能链”？）则是为了获取 <strong style="font-weight: bold;">动态拼装和改变处理流程</strong> 的能力。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">应用</h4>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">标准责任链</h5>
+<p style="margin: 0 0 1.1em;">UI中的事件冒泡机制是责任链的一个典型应用。HTML中，点击一个DOM元素，产生的click事件将依次冒泡给它的父元素，每个父元素上都可以注册对click事件的监听器，监听器中除了对事件处理外，也可以结束事件的继续冒泡。</p>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">扩展（功能链）</h5>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>Web应用中的各种filter/拦截器；</li>
+<li>Netty中的pipeline</li>
+</ol>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2. Command 命令</h3>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">Encapsulate a request as an object, thereby letting you parameterize clients with different requests, queue or log requests, and support undoable operations.</p>
+</blockquote>
+<p style="margin: 0 0 1.1em;">你需要向一个对象提交请求，但对请求的处理是动态的，无法写死。比如一个菜单项，在不同的上下文中，点击它要做的事情显然是不一样的。</p>
+<p style="margin: 0 0 1.1em;">Command模式的思路是 <em>抽象请求(及处理)</em>：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403330120754.png" name="54ec3d42-3a0e-40df-b379-796fcbadc5d6" src="/assets/img/3b17f754f940a0f0fe4ba7ab42d3bf7b.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Client</code> 装配 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Invoker</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Command</code>，<em>* 如果需要不同的处理，装配不同的Command即可 *</em>;</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Client</code> 向 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Invoker</code> 发出请求;</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Invoker</code> 将请求的处理委托给 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Command#execute()</code>。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">很多时候Command不够智能，自己无法处理请求，需要将请求委托给另一个Receiver进行真正的处理，ConcreteCommand可以认为是Receiver的适配器：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403330618542.png" name="12ffea50-afe4-4721-b820-028fa7e9ef9b" src="/assets/img/218e4d5340a7128621b66317a0231de9.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">可以看到，Command模式的最大价值在于：隔离 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">请求的接收者</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">请求的处理逻辑</code>； <br/>
+此外，将请求及其处理逻辑抽象为Command后可以做很多有意思的事情：</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">1. 可撤销的操作</strong> <br/>
+在Command接口中增加一个接口 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">undo()</code> 实现单个命令的撤销动作，并用一个<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">stack</code>保存所有Command；当用户触发撤销时依次从stack pop出最近的Command，执行其<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">undo()</code>方法。</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">2. 宏命令</strong> <br/>
+宏命令实质是个树形结构，对Command应用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Composite 组合模式</code>即可实现：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403331500067.png" name="e7847b4f-41bf-4119-a951-4d624dba8667" src="/assets/img/dc457220d36c915d5e2029e38450f985.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">3. 排队</strong> <br/>
+<strong style="font-weight: bold;">4. 日志记录和恢复</strong></p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">3. Memento 备忘录</h3>
+<p style="margin: 0 0 1.1em;">有些情况下你需要记录一个对象（称为<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Originator</code>）在某个时刻的状态（snapshot），以便后续恢复，我们可以用一个类<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Memento</code>表示snapshot，它包含了Originator的部分或全部状态：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403337566655.png" name="be9e3e1d-4218-44e6-8a2e-3d97bc30a012" src="/assets/img/9c6a8340acd50dba1917c3cf4a125982.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>Originator 负责创建Memento，以及恢复到某个Memento；</li>
+<li>Memento 即Originator的snapshot；</li>
+<li>Caretaker 充当协调者，它负责向Originator请求当前Memento / 保存Memento / 在后续某个时刻让Originator恢复到某个Memento。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">但这里有一个问题，为了隐藏Originator的实现细节，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Memento</code>必须向外部隐藏内部数据，即不开放<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">state</code> 的 getter/setter 给外部，但这样一来，Originator也无法创建<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Memento</code>了。</p>
+<p style="margin: 0 0 1.1em;">为了解决这个问题，在Memento模式的一般实现中，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Memento</code> 类被分为两个部分：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403338095772.png" name="5674e674-3a18-4f78-99e7-6a7f92fba97a" src="/assets/img/3d7987515415ba78f3ea820f2f1bc8e0.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>标记接口 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Memento</code>，空的，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Caretaker</code>只能得到这个接口；</li>
+<li>Memento的真正实现<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">MementoImpl</code>，作为<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Originator</code>的 <strong style="font-weight: bold;">私有内部类</strong> ，这样既允许Originator访问Memento的内部状态，又满足了Memento向外部（主要是Caretaker）隐藏内部细节的要求。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">如果对 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Memento</code> 的封装性没有严格的要求，第一种实现显然更简单。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">4. Observer 观察者</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">定义一个一对多关系，在Subject状态发生改变时，所有Observer获得通知。</p>
+<p style="margin: 0 0 1.1em;">解耦 事件发生者 &amp; 事件接收者，使得双方的改动互不影响，关联关系也可动态改变。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403418566851.png" name="7c703bde-46c8-40ab-b902-80c8c0896ee8" src="/assets/img/dce2e441e24a27dc6a4c0ca8d82d0e41.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">数据传递的两种方式：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>推：由 Subject 主动向 Observer 推送信息，而不管信息对后者而言是否需要/是否足够。</li>
+<li>拉：Subject 把自己传递给 Observer，由 Observer 从 Subject 拉取自己需要的信息。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">扩展： Observer 注册时可以指定自己感兴趣的事件。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">扩展：EventBus</h4>
+<p style="margin: 0 0 1.1em;">传统的Observer模式中，事件发生者和接收者依然存在耦合，发生者需要管理接收者的集合，我们可以进一步地，在Subject和Observer间增加一个中间层负责转发事件，将它们彻底地解耦；进一步，这个事件转发者可以是通用的，支持任意发布者和接受者，通常称之为<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">EventBus</code>，是一种广泛应用的架构。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">5. State 状态模式</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">模拟状态机，描述一个对象（Context）的状态变迁，将特性状态下的行为分割开来，避免在Context中用大量的if维护所有状态的变迁，而且容易扩展新的状态。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403425126082.png" name="4c50c831-800a-498b-b553-aa9bdbae3443" src="/assets/img/06380860aa7c8cbaf8c29f204a4b5829.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Context</code>中记录它自己当前的状态；</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Context</code>接收一个输入动作，并将该输入委托给当前所处<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">State</code>处理；</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">State</code>处理输入，根据需要让<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Context</code>跃迁到另一状态。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">如果<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">State</code>不保存状态则可以是单例的，Java中，可以用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">enum</code>类型实现<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">State</code>。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">6. Strategy 策略模式</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">你有一个对象负责完成某件事情，但在不同时刻其使用的算法是不同的，Strategy模式将可变的算法独立并封装，避免大量if条件判断，并方便替换和扩展。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Strategy</code> 封装了 <strong style="font-weight: bold;">相同行为的不同实现</strong></p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403426300530.png" name="cf367d7d-c611-4531-9aad-9ca5a3b18527" src="/assets/img/268d5cd27f08e90d9ac5080546e92817.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Strategy</code>的实现通常依赖<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Context</code>的数据，后者在调用前者的方法时需要将自己传递过去。</p>
+<p style="margin: 0 0 1.1em;">实际应用中，经常会发现不同的策略其算法骨架类似，只有某些具体步骤不同，此时可以对<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Strategy</code>应用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Template Method</code>模式。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">7. Template Method 模板方法</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">作用</h4>
+<p style="margin: 0 0 1.1em;">将一个算法的通用骨架抽象到父类以避免代码重复，而将一些可变的步骤延迟到子类，子类不用关心算法结构，只需关注自己需要实现的特定步骤。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">实现</h4>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1403426928543.png" name="772bc14e-aeb5-4b1a-a5cc-949ce6f912c0" src="/assets/img/eb5eef525d7d05d550d5925a2189fa33.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">这个没什么好说的。</p>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">四. 设计原则</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><strong style="font-weight: bold;">单一职责</strong></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">开放-关闭原则</strong> <br/>
+一个类应当对扩展开放，对修改关闭。即当有新的需求时，不是修改已有的类，而是对已有的类进行扩展。 <br/>
+实现开闭原则的关键在于 <strong style="font-weight: bold;">分离不变和变化的部分，并对变化的部分进行合理的高层抽象，并让不变的部分依赖该高层抽象</strong>，这样就能在不同的实现间切换，或者扩展新的实现。很多设计模式都体现了这一点，比如<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">策略模式</code>将算法抽象出来，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">模板方法</code>将不变的算法骨架与易变的需要自定义的步骤隔离，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">装饰者模式</code>将不变的核心功能对象和易变的增强功能隔离等等。</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">里氏替换原则</strong> <br/>
+子类必须能替换掉父类，这个原则通常由语言保证。</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">依赖倒置</strong> <br/>
+高层不直接依赖底层，而是高层定义自己需要底层提供什么样的接口，底层负责实现，这样就可以随意切换底层的具体实现而不用影响高层，但底层反而要依赖高层公布的接口，所以称为“依赖倒置”。</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">接口分离原则 (interface segregation principle)</strong> <br/>
+不应出现庞大的接口，迫使客户在使用时必须从一大堆它不需要的方法中寻找目的方法。这样的接口应该按照不同客户的需求被分离成若干小接口。</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">最少知识原则（least knowledge principle）</strong> <br/>
+类应当只与自己的朋友交互。该原则的思想是，将类对外部的了解尽量保持在一定范围内，尽量减少类之间的交互，从而降低各个组件间的耦合。 <br/>
+“朋友”的定义：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>当前对象的属性</li>
+<li>当前对象所创建的对象</li>
+<li>方法参数传递进来的参数</li>
+<li>方法内创建的对象</li></ul></li>
+</ol></div><div></div></div>

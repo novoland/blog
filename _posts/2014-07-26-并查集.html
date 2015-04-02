@@ -4,66 +4,86 @@ title: "并查集"
 category: "算法"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">概述</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">树形数据结构，通常用来解决连通集合相关的问题。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">一个容量为n的集合，对应的并查集是一个等长数组，a[i] 保存着第i个元素的父节点，这样递归地组成若干棵树，每个树是一个连通集合，树根的父节点指向自己。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">操作</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">并查集最基本的两个操作：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">查询元素所在集合 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">findSet(i)</code></strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 从元素 i 向上回溯找树根即可。一个集合由其根元素标识。</p>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">并查集</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">概述</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">操作</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">优化</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">实现</a></li>
+</ul>
 </li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">合并集合 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">union(i,j)</code>：合并元素 i，j 所在集合</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 分别找到 i，j 所在集合的根，将其中一个挂在另一个下即可。<br/> <img alt="Alt text" class="en-media" longdesc="./1406021715912.png" name="d9566fd0-0fc9-4666-bac0-939131a65bc9" src="/assets/img/7925cf5f655305353e7c6b8d9b31af8c.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-</li>
+</ul>
+</div>
+</div>
+</div></div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">概述</h2>
+<p style="margin: 0 0 1.1em;">树形数据结构，通常用来解决连通集合相关的问题。</p>
+<p style="margin: 0 0 1.1em;">一个容量为n的集合，对应的并查集是一个等长数组，a[i] 保存着第i个元素的父节点，这样递归地组成若干棵树，每个树是一个连通集合，树根的父节点指向自己。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">操作</h2>
+<p style="margin: 0 0 1.1em;">并查集最基本的两个操作：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">查询元素所在集合 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">findSet(i)</code></strong></p>
+<p style="margin: 0 0 1.1em;">从元素 i 向上回溯找树根即可。一个集合由其根元素标识。</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">合并集合 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">union(i,j)</code>：合并元素 i，j 所在集合</strong></p>
+<p style="margin: 0 0 1.1em;">分别找到 i，j 所在集合的根，将其中一个挂在另一个下即可。 <br/>
+<img alt="Alt text" class="en-media" longdesc="./1406021715912.png" name="d9566fd0-0fc9-4666-bac0-939131a65bc9" src="/assets/img/7925cf5f655305353e7c6b8d9b31af8c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p></li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">初始化：每个元素独立成为一个集合。</strong></p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">优化</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">1. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">findSet</code> 路径压缩</strong><br/>极端情况下一棵集合树退化成一个链表，此时查找根节点耗时O(n)。<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">findSet</code>中可以做这样一个优化：在找到根后，将路上碰到的节点都直接挂在根下，树的高度被压缩成了2，之后的查询都是O(1)的。这是一个扁平化树的过程：</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><img alt="Alt text" class="en-media" longdesc="./1406022231178.png" name="663a7ee2-8dff-42c6-988f-f36dc92eb9ef" src="/assets/img/ffe478553d67a080217085fdc6779ef9.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">2. <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">union</code> 按集合大小合并</strong><br/>合并的时候将元素少的集合合并到元素多的集合中，这样合并之后树的高度会相对较小。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这两个动作都可以认为是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 8px; margin: 0 4px;">O(1)</code>的。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">实现</h2>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #75715e;">#! /usr/bin/python</span>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">初始化：每个元素独立成为一个集合。</strong></p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">优化</h2>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">1. <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">findSet</code> 路径压缩</strong> <br/>
+极端情况下一棵集合树退化成一个链表，此时查找根节点耗时O(n)。<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">findSet</code>中可以做这样一个优化：在找到根后，将路上碰到的节点都直接挂在根下，树的高度被压缩成了2，之后的查询都是O(1)的。这是一个扁平化树的过程：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1406022231178.png" name="663a7ee2-8dff-42c6-988f-f36dc92eb9ef" src="/assets/img/ffe478553d67a080217085fdc6779ef9.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">2. <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">union</code> 按集合大小合并</strong> <br/>
+合并的时候将元素少的集合合并到元素多的集合中，这样合并之后树的高度会相对较小。</p>
+<p style="margin: 0 0 1.1em;">这两个动作都可以认为是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">O(1)</code>的。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">实现</h2>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #75715e;">#! /usr/bin/python</span>
 <span style="color: #75715e;"># coding=utf-8</span>
 
 raw = [<span style="color: #ae81ff;">8</span>,<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">5</span>,<span style="color: #ae81ff;">6</span>,<span style="color: #ae81ff;">8</span>,<span style="color: #ae81ff;">9</span>,<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">3</span>]
 set = range(len(raw))   <span style="color: #75715e;"># 并查集 [0,1,2...]</span>
 size = [<span style="color: #ae81ff;">1</span>] * len(raw)   <span style="color: #75715e;"># 每个集合的大小</span>
 
-<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">findSet</span><span style="color: #f8f8f2;">(i)</span>:</span>
-    <span style="color: #F92672;">if</span> set[i] == i:
-        <span style="color: #F92672;">return</span> i
+<span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">findSet</span><span style="color: #f8f8f2;">(i)</span>:</span>
+    <span style="color: #f92672;">if</span> set[i] == i:
+        <span style="color: #f92672;">return</span> i
 
     set[i] = findSet(set[i])
-    <span style="color: #F92672;">return</span> set[i]
+    <span style="color: #f92672;">return</span> set[i]
 
-<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">union</span><span style="color: #f8f8f2;">(i,j)</span>:</span>
+<span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">union</span><span style="color: #f8f8f2;">(i,j)</span>:</span>
     root1 = findSet(i)
     size1 = size[root1]
 
     root2 = findSet(j)
     size2 = size[root2]
 
-    <span style="color: #F92672;">if</span> size1 &gt; size2:       <span style="color: #75715e;"># 把2挂在1下</span>
+    <span style="color: #f92672;">if</span> size1 &gt; size2:       <span style="color: #75715e;"># 把2挂在1下</span>
         set[root2] = root1
         size[root1] += size2
         size[root2] = <span style="color: #ae81ff;">0</span>
-    <span style="color: #F92672;">else</span>:                   <span style="color: #75715e;"># 把1挂在2下</span>
+    <span style="color: #f92672;">else</span>:                   <span style="color: #75715e;"># 把1挂在2下</span>
         set[root1] = root2
         size[root2] += size1
         size[root1] = <span style="color: #ae81ff;">0</span>
 
 <span style="color: #75715e;"># 测试</span>
-<span style="color: #F92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">test</span><span style="color: #f8f8f2;">()</span>:</span>
-    <span style="color: #F92672;">print</span> size[<span style="color: #ae81ff;">3</span>],size[<span style="color: #ae81ff;">5</span>]   <span style="color: #75715e;"># 1,1</span>
+<span style="color: #f92672;"><span style="color: #66d9ef;">def</span> <span style="color: #a6e22e;">test</span><span style="color: #f8f8f2;">()</span>:</span>
+    <span style="color: #f92672;">print</span> size[<span style="color: #ae81ff;">3</span>],size[<span style="color: #ae81ff;">5</span>]   <span style="color: #75715e;"># 1,1</span>
     union(<span style="color: #ae81ff;">3</span>,<span style="color: #ae81ff;">2</span>)
     union(<span style="color: #ae81ff;">1</span>,<span style="color: #ae81ff;">2</span>)              
     union(<span style="color: #ae81ff;">5</span>,<span style="color: #ae81ff;">6</span>)
-    <span style="color: #F92672;">print</span> findSet(<span style="color: #ae81ff;">3</span>) == findSet(<span style="color: #ae81ff;">1</span>), findSet(<span style="color: #ae81ff;">5</span>) == findSet(<span style="color: #ae81ff;">6</span>) <span style="color: #75715e;"># True True</span>
-    <span style="color: #F92672;">print</span> size[findSet(<span style="color: #ae81ff;">1</span>)],size[findSet(<span style="color: #ae81ff;">5</span>)] <span style="color: #75715e;"># 3,2</span>
+    <span style="color: #f92672;">print</span> findSet(<span style="color: #ae81ff;">3</span>) == findSet(<span style="color: #ae81ff;">1</span>), findSet(<span style="color: #ae81ff;">5</span>) == findSet(<span style="color: #ae81ff;">6</span>) <span style="color: #75715e;"># True True</span>
+    <span style="color: #f92672;">print</span> size[findSet(<span style="color: #ae81ff;">1</span>)],size[findSet(<span style="color: #ae81ff;">5</span>)] <span style="color: #75715e;"># 3,2</span>
 
-test()
-</code></pre>
-</div>
+test()</code></pre></div><div></div></div>

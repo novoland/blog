@@ -4,240 +4,351 @@ title: "链路层 网络层 UDP IO模型"
 category: "网络"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">OSI 7层：物数网传|会表应；<br style="margin-top: 0px;"/>TCP/IP 5层：物理层 / 链路层 / 网络层 / 传输层 / 应用层</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 链路层</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">传输单位是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">frame</code>,负责同一局域网内主机/直接连接主机之间的数据传输。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">常见的链路层协议：</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">以太网（有线和无线局域网）</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><em style="margin-top: 0px;">只讨论星形拓扑结构</em></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">共享型以太网</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">是一种广播网络，通过 <strong style="font-weight: bold; margin-top: 0px;">集线器hub</strong> 组建。Hub工作在物理层，单纯地复制并向所有主机转发物理信号，因此主机能够看到局域网内传送的所有信息。主机通过比对帧内的目的MAC地址和自己的MAC地址，判断是否接收。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">WIFI也是共享型。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">交换型以太网</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通过交换机组建，交换机工作在链路层，会解析帧的目的MAC地址并选择性地转发。</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">以太网中的单播/广播/组播： 根据帧目的MAC地址区分</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">广播</strong>：（目的MAC地址全1）</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">组播</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">网络层中，组播地址允许源设备向一组设备发送数据包，组播IP地址只能是D类。</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">组播帧中的目的 MAC 地址是一个特殊的十六进制数值，以 01-00-5E 开头。然后将 IP 组播组地址的低 23 位换算成以太网地址中剩余的 6 个十六进制字符，作为组播 MAC 地址的结尾。MAC 地址剩余的位始终为 "0"。</p>
-</blockquote><h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">ppp</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">~</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">MTU</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">帧的最大长度，不同类型的链路层有自己的MTU；当IP数据报长度超过链路层MTU时，需要分片。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 网络层</h2>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 IP</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">IP协议传输的特点：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">best-effort，不保证到达</li>
-<li style="line-height: 1.6;">无序，不保证到达的顺序</li>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">链路层 网络层 UDP IO模型</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 链路层</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">以太网（有线和无线局域网）</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">ppp</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">MTU</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 网络层</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.1 IP</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">地址管理</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">选路</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">转发规则</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.2 ARP</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.3 IP的配套协议：ICMP</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">ICMP的典型应用:</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.4 IP数据报的分片</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 传输层</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3.1 UDP</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3.2 Socket缓冲区</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 发送缓冲区</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 接收缓冲区</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Poll</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<p style="margin: 0 0 1.1em;">OSI 7层：物数网传|会表应； <br/>
+TCP/IP 5层：物理层 / 链路层 / 网络层 / 传输层 / 应用层</p></div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. 链路层</h2>
+<p style="margin: 0 0 1.1em;">传输单位是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">frame</code>,负责同一局域网内主机/直接连接主机之间的数据传输。</p>
+<p style="margin: 0 0 1.1em;">常见的链路层协议：</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">以太网（有线和无线局域网）</h3>
+<p style="margin: 0 0 1.1em;"><em>只讨论星形拓扑结构</em></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">共享型以太网</strong></p>
+<p style="margin: 0 0 1.1em;">是一种广播网络，通过 <strong style="font-weight: bold;">集线器hub</strong> 组建。Hub工作在物理层，单纯地复制并向所有主机转发物理信号，因此主机能够看到局域网内传送的所有信息。主机通过比对帧内的目的MAC地址和自己的MAC地址，判断是否接收。</p>
+<p style="margin: 0 0 1.1em;">WIFI也是共享型。</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">交换型以太网</strong></p>
+<p style="margin: 0 0 1.1em;">通过交换机组建，交换机工作在链路层，会解析帧的目的MAC地址并选择性地转发。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">以太网中的单播/广播/组播： 根据帧目的MAC地址区分</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">广播</strong>：（目的MAC地址全1）</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">组播</strong></p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">网络层中，组播地址允许源设备向一组设备发送数据包，组播IP地址只能是D类。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">组播帧中的目的 MAC 地址是一个特殊的十六进制数值，以 01-00-5E 开头。然后将 IP 组播组地址的低 23 位换算成以太网地址中剩余的 6 个十六进制字符，作为组播 MAC 地址的结尾。MAC 地址剩余的位始终为 “0”。</p>
+</blockquote>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">ppp</h3>
+<p style="margin: 0 0 1.1em;">~</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">MTU</h3>
+<p style="margin: 0 0 1.1em;">帧的最大长度，不同类型的链路层有自己的MTU；当IP数据报长度超过链路层MTU时，需要分片。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. 网络层</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.1 IP</h3>
+<p style="margin: 0 0 1.1em;">IP协议传输的特点：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>best-effort，不保证到达</li>
+<li>无序，不保证到达的顺序</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">主要负责两件事：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">地址管理</li>
-<li style="line-height: 1.6;">分组转发</li>
+<p style="margin: 0 0 1.1em;">主要负责两件事：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>地址管理</li>
+<li>分组转发</li>
 </ol>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">地址管理</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">IP地址分为3个部分：网络号/子网号/主机号</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">网络号的长度：地址分类决定</strong> </p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">地址管理</h4>
+<p style="margin: 0 0 1.1em;">IP地址分为3个部分：网络号/子网号/主机号</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">网络号的长度：地址分类决定</strong> </p>
 <table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
-<thead style="margin-top: 0px;">
-<tr style="margin-top: 0px;">
-<th style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;"></th>
-<th style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">头--网络号--(子网号&amp;主机号)</th>
+<thead>
+<tr>
+<th align="center" style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">头–网络号–(子网号&amp;主机号)</th>
 </tr>
 </thead>
-<tbody>
-<tr style="margin-top: 0px;">
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">A类</td>
-<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">0--7位--24位</td>
+<tbody><tr>
+<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">A类</td>
 </tr>
 <tr>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">B类</td>
-<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">10--14位--16位</td>
+<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">B类</td>
 </tr>
 <tr>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">C类</td>
-<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">110--21位--8位</td>
+<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">C类</td>
 </tr>
 <tr>
-<td style="text-align: center; padding: 8px; line-height: 20px; vertical-align: top; border: 1px solid #DDD; margin-top: 0px;">D类</td>
-<td style="padding: 8px; line-height: 20px; text-align: left; vertical-align: top; border: 1px solid #DDD;">1110--28位多播组号</td>
+<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">D类</td>
 </tr>
-</tbody>
-</table>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">子网号的长度：子网掩码决定</strong><br/>子网掩码的0决定了主机号的长度。<br/>主机号全0代表这个子网，全1则是广播地址；这两个不能分配给主机。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">保留IP地址，用于局域网</strong><br/>10.x.x.x、172.16.x.x-172.31.x.x、192.168.x.x</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以太网根据帧的目的MAC地址决定该帧需要单播/广播/多播，相应的，IP地址也有这样的分类：<br style="margin-top: 0px;"/>广播：主机号全1（指向网络的，子网号也全1/指向子网的）。<br/>多播：D类地址<br/>传输层协议中，只有UDP支持广播和多播。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">选路</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">IP数据报的传递是逐跳的。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">路由器将各局域网连接起来，工作在网络层，负责IP数据报的转发。Switches create a network. Routers connect networks.</p>
-<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 14px;">转发规则</h5>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">路由过程中，主机按照路由表匹配数据报的IP地址，决定下一跳要发往相邻节点。路由表项：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">目标IP：一个完整的IP地址（主机号不为0），或一个网络地址（只有网络号和子网号，主机号全0，需要子网掩码判断主机号/子网号的长度）</li>
-<li style="line-height: 1.6;">下一跳路由器IP（gateway）：符合该项的数据报发送到哪个路由器</li>
-<li style="line-height: 1.6;">标志</li>
-<li style="line-height: 1.6;">网卡：经过哪个网卡发送</li>
+</tbody></table>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">子网号的长度：子网掩码决定</strong> <br/>
+子网掩码的0决定了主机号的长度。 <br/>
+主机号全0代表这个子网，全1则是广播地址；这两个不能分配给主机。</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">保留IP地址，用于局域网</strong> <br/>
+10.x.x.x、172.16.x.x-172.31.x.x、192.168.x.x</p>
+<p style="margin: 0 0 1.1em;">以太网根据帧的目的MAC地址决定该帧需要单播/广播/多播，相应的，IP地址也有这样的分类： <br/>
+广播：主机号全1（指向网络的，子网号也全1/指向子网的）。 <br/>
+多播：D类地址 <br/>
+传输层协议中，只有UDP支持广播和多播。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">选路</h4>
+<p style="margin: 0 0 1.1em;">IP数据报的传递是逐跳的。</p>
+<p style="margin: 0 0 1.1em;">路由器将各局域网连接起来，工作在网络层，负责IP数据报的转发。Switches create a network. Routers connect networks.</p>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">转发规则</h5>
+<p style="margin: 0 0 1.1em;">路由过程中，主机按照路由表匹配数据报的IP地址，决定下一跳要发往相邻节点。路由表项：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>目标IP：一个完整的IP地址（主机号不为0），或一个网络地址（只有网络号和子网号，主机号全0，需要子网掩码判断主机号/子网号的长度）</li>
+<li>下一跳路由器IP（gateway）：符合该项的数据报发送到哪个路由器</li>
+<li>标志</li>
+<li>网卡：经过哪个网卡发送</li>
 </ol>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 ARP</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">数据报从网络层进入链路层被发送，在发送一个以太网帧前，必须将目的<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">IP地址</code>（不是IP数据报中的目的IP，而是选路决定的下一跳IP）转换成<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">以太网地址（MAC地址）</code>。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">ARP为IP到MAC地址提供动态映射，这个过程是自动的；每个主机有一个ARP缓存，ARP协议自动维护该结构。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">ARP工作在网络层，有自己的数据报格式。它利用以太网的广播功能，发送一个广播帧给局域网内的所有主机，当某一主机收到对自己的ARP请求后（依据目标IP判断），就把自己的MAC地址填入并单播发送回去。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.3 IP的配套协议：ICMP</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">工作在传输层</strong>，和TCP/UDP一样，由IP数据包包裹发送，但 <strong style="font-weight: bold;">逻辑上划分在网络层</strong>，作为IP协议的辅助协议，用于:</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">发送IP数据报传输过程中出现的错误；</li>
-<li style="line-height: 1.6;">查询/控制/诊断信息。</li>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.2 ARP</h3>
+<p style="margin: 0 0 1.1em;">数据报从网络层进入链路层被发送，在发送一个以太网帧前，必须将目的<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">IP地址</code>（不是IP数据报中的目的IP，而是选路决定的下一跳IP）转换成<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">以太网地址（MAC地址）</code>。</p>
+<p style="margin: 0 0 1.1em;">ARP为IP到MAC地址提供动态映射，这个过程是自动的；每个主机有一个ARP缓存，ARP协议自动维护该结构。</p>
+<p style="margin: 0 0 1.1em;">ARP工作在网络层，有自己的数据报格式。它利用以太网的广播功能，发送一个广播帧给局域网内的所有主机，当某一主机收到对自己的ARP请求后（依据目标IP判断），就把自己的MAC地址填入并单播发送回去。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.3 IP的配套协议：ICMP</h3>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">工作在传输层</strong>，和TCP/UDP一样，由IP数据包包裹发送，但 <strong style="font-weight: bold;">逻辑上划分在网络层</strong>，作为IP协议的辅助协议，用于:</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>发送IP数据报传输过程中出现的错误；</li>
+<li>查询/控制/诊断信息。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">格式：<br style="margin-top: 0px;"/>类型 | 代码 | 检验和 | 内容</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">类型和代码决定ICMP报文具体类型；</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">ICMP的典型应用:</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;"> 1. 主机不可达错误 </strong><br/>当主机/路由器接受一个IP数据报，但又无法转发时，向源主机发送“主机不可达”ICMP报文。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;"> 2. 端口不可达错误 </strong><br/>UDP发送到主机一个没有使用的端口，目的主机将返回一个ICMP“端口不可达”错误报文。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;"> 3. Ping </strong><br/>目的：诊断网络通畅；<br/>工作方式：循环向目标主机发送ICMP echo请求，目标主机返回ICMP echo响应。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;"> 4. TraceRoute </strong><br/>目的： 查看到目的主机的网络路径<br/>原理： ICMP超时报文 + IP数据报中TTL字段。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">TTL由发送端设置，指定数据报的存活跳数，每转发一次减1，当TTL降到0时数据报被丢弃，主机向源发送ICMP“超时”报文。<br style="margin-top: 0px;"/>TraceRoute通过UDP发送数据给目的主机，但选择一个不可能的端口，目的主机将返回“端口不可达”ICMP报文。程序每次发送数据时，其TTL递增，初始值为1，依据“超时”ICMP报文构建路径，收到“端口不可到达”报文时结束。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.4 IP数据报的分片</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">当IP数据报超过链路层的MTU时需要分片，每一片成为一个独立的数据报被传输，最终目的地负责组装。如果其中一片丢失，整个原始数据报被当做发送失败，这增加了IP数据报发送失败的机会。对于TCP这样的具有超时重传机制的高层协议，IP分片大大提高了需要重传数据的数量，因此TCP通过在连接阶段交换两端MSS/路径MTU发现等方式尽力避免IP分片。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">IP数据报也可以被设置成不允许分片，当路由器发现其大小超过MTU但又无法分片时，将向源主机发送ICMP“不能分片”错误报文。<strong style="font-weight: bold; margin-top: 0px;">TCP的路径MTU发现也是依赖该机制的。</strong></p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">3. 传输层</h2>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.1 UDP</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">UDP是IP协议在传输层暴露的一个简单接口，增加了对“端口”概念的支持。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">3.2 Socket缓冲区</h3>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">1. 发送缓冲区</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">TCP</strong><br/><img alt="Alt text" class="en-media" longdesc="./1401176186205.png" name="dbc4ea6e-680b-4ef5-b159-d574dcee8eed" src="/assets/img/e215948a4febbdaee99740765ad9b60c.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">TCP服务器通常是并发的。每个TCP socket都有发送缓冲区，write只是将数据从应用进程缓冲区拷贝到了socket缓冲区，当发送缓冲区容量不够时，write调用被阻塞（假设是阻塞IO方式）。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">TCP模块取发送缓冲区的数据并发送，报文段的长度为MSS或更小；直到收到ACK，数据才可从缓冲区中删除。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">UDP</strong><br/><img alt="Alt text" class="en-media" longdesc="./1401176413600.png" name="79194caa-1fd5-428a-84c8-423249e46789" src="/assets/img/e7e3ae032b1dd39e408cf28ec517e9f8.png" style="border: 0; max-width: 100%; border-radius: 8px;"/></p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">UDP没有发送缓冲区，socket上每次write，内核都直接将数据封装成一个UDP报文段/IP数据报，并将其或者其分片加入链路层的输出队列。UDP的发送缓冲区大小(SO_SNDBUF)其实是设置每次写到socket数据的最大值，当写数据大于该值时，返回EMSGSIZE错误。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">理论上，UDP数据报的最大长度由IP数据报的最大长度决定，IP首部16bit总长度字段限制IP数据报最大长度为65535字节，但实际实现往往要小于这个值。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">UDP没有MSS机制，因此更容易发生IP分片，数据更容易丢失。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;">2. 接收缓冲区</h4>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">TCP</strong><br/>接收缓冲区的剩余空间就是滑动窗口协议中的接收窗口大小。<br/>TCP提供流式的数据读取，当报文段到达时，应用层数据被提取并送入接收缓冲区，应用进程读取时不了解报文段之间的边界。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">UDP</strong><br/>UDP没有连接的概念，因此UDP服务器通常只用一个线程循环处理所有收到的数据报，<strong style="font-weight: bold;">所有客户端在服务器端重用一个接收缓冲区</strong>，发来的数据报都会先其中排队，依次交付给应用进程。UDP是非流式的，应用进程以数据报为单位读取（将数据报从内核缓冲区复制到应用缓冲区），如果应用进程缓冲区小于该次读取的数据报长度，数据报将被截断，剩下的部分被丢弃，API提示一个错误。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><a href="http://www2.chrishardick.com:1099/Notes/Computing/C/sockets/socket_options.html" style="background: transparent; margin-top: 0px;" target="_blank">参考</a>：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><div style="padding: 6px 15px 4px; background: #D2DADF; color: #666; border-bottom: 1px solid #CECBF0; text-shadow: 1px 1px 0px #FFF; margin-top: 0px;">SO_RCVBUF/SO_SNDBUF Socket Options</div><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">* Option Type: Int
-* Every socket has a socket send buffer and a socket receive buffer
-* Allows you to <span style="margin-top: 0px;"><span style="color: #F92672; margin-top: 0px;">change</span> the <span style="color: #F92672;">default</span> sizes
-* TCP buffer sizes <span style="color: #F92672;">for</span> connected sockets <span style="color: #F92672;">are</span> always inherited <span style="color: #F92672;">from</span> the listening socket
-
-Socket Receive Buffer
-* <span style="color: #F92672;">For</span> TCP, the available <span style="color: #F92672;">size</span> <span style="color: #F92672;">in</span> the receive buffer <span style="color: #F92672;">is</span> the advertised window which <span style="color: #F92672;">is</span> advertised <span style="color: #F92672;">to</span> the TCP peer. This <span style="color: #F92672;">is</span> TCP<span style="color: #e6db74;">'s flow control.
-* With both TCP and UDP, if a segment arrives which will not fit in the socket receive buffer, it will be discarded
-* For TCP clients, this option must be set prior to calling connect( )
-* For TCP servers, this option must be set for the listening socket, prior to calling listen( )
-
-Socket Send Buffer
-* UDP does not physically have a socket send buffer--it'</span>s <span style="color: #F92672;">not</span> a reliable protocol <span style="color: #F92672;">and</span> need <span style="color: #F92672;">not</span> keep a copy <span style="color: #F92672;">of</span> the <span style="color: #F92672;">data</span> <span style="color: #F92672;">for</span> re-transmission. <span style="color: #F92672;">For</span> UDP, SO_SNDBUF <span style="color: #F92672;">is</span> simply an <span style="color: #F92672;">upper</span> bound <span style="color: #F92672;">on</span> the maximum sized UDP datagram which can be written <span style="color: #F92672;">to</span> the socket (<span style="color: #F92672;">not</span> the <span style="color: #F92672;">size</span> <span style="color: #F92672;">of</span> a physical buffer)</span>
-</code></pre>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">什么时候用UDP代替TCP？</p>
-<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">如果只是简短的单次交互（如查询--应答），这时TCP的3次握手和4次挥手的开销就显得太大，UDP效率更高，但需要应用层自己负责超时和重传，保证可靠性；DNS就是这样的例子。</li>
-<li style="line-height: 1.6;">注重传输效率/时效性，不需要可靠性和有序性的场景，典型的如流媒体/语音通话</li>
-<li style="line-height: 1.6;">并发连接太多，TCP需要为每个连接维护相应的数据结构（如缓冲区），但每个连接上发送的数据频率较低且量小，此时UDP能显著降低开销，但可能需要在应用层提供TCP的一些特性，如超时重传/顺序性/流量&amp;拥塞控制等等。</li>
-</ol>
-</blockquote><h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">4. Unix下的IO模型</h2>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">阻塞IO</li>
-<li style="line-height: 1.6;">非阻塞IO</li>
-<li style="line-height: 1.6;">IO复用（select/poll/epoll）</li>
-<li style="line-height: 1.6;">信号驱动IO</li>
-<li style="line-height: 1.6;">异步IO（Posix中的aio...系列函数）</li>
-</ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以读为例，IO的两个阶段：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">等待内核数据就绪，在TCP中就是等待TCP接收缓冲区中有数据；</li>
-<li style="line-height: 1.6;">从内核拷贝数据到用户空间</li>
-</ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">以上IO模型：</p>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">阻塞IO两个阶段都阻塞，直到整个请求完成；</li>
-<li style="line-height: 1.6;">非阻塞IO是best-effort式的，只做请求的一部分并立即返回；</li>
-<li style="line-height: 1.6;">IO复用是针对第一个阶段而言的，阻塞在第一阶段，但可以用一个selector监控多个fd；第二阶段可以搭配阻塞IO或非阻塞IO；</li>
-<li style="line-height: 1.6;">信号驱动IO？</li>
-<li style="line-height: 1.6;">异步IO两个阶段都由内核完成，用户进程只需要提供一个callback，在IO完成后接收OS的通知。</li>
+<p style="margin: 0 0 1.1em;">格式： <br/>
+类型 | 代码 | 检验和 | 内容</p>
+<p style="margin: 0 0 1.1em;">类型和代码决定ICMP报文具体类型；</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">ICMP的典型应用:</h4>
+<p style="margin: 0 0 1.1em;"><em>* 1. 主机不可达错误 *</em> <br/>
+当主机/路由器接受一个IP数据报，但又无法转发时，向源主机发送“主机不可达”ICMP报文。</p>
+<p style="margin: 0 0 1.1em;"><em>* 2. 端口不可达错误 *</em> <br/>
+UDP发送到主机一个没有使用的端口，目的主机将返回一个ICMP“端口不可达”错误报文。</p>
+<p style="margin: 0 0 1.1em;"><em>* 3. Ping *</em> <br/>
+目的：诊断网络通畅； <br/>
+工作方式：循环向目标主机发送ICMP echo请求，目标主机返回ICMP echo响应。</p>
+<p style="margin: 0 0 1.1em;"><em>* 4. TraceRoute *</em> <br/>
+目的： 查看到目的主机的网络路径 <br/>
+原理： ICMP超时报文 + IP数据报中TTL字段。</p>
+<p style="margin: 0 0 1.1em;">TTL由发送端设置，指定数据报的存活跳数，每转发一次减1，当TTL降到0时数据报被丢弃，主机向源发送ICMP“超时”报文。 <br/>
+TraceRoute通过UDP发送数据给目的主机，但选择一个不可能的端口，目的主机将返回“端口不可达”ICMP报文。程序每次发送数据时，其TTL递增，初始值为1，依据“超时”ICMP报文构建路径，收到“端口不可到达”报文时结束。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.4 IP数据报的分片</h3>
+<p style="margin: 0 0 1.1em;">当IP数据报超过链路层的MTU时需要分片，每一片成为一个独立的数据报被传输，最终目的地负责组装。如果其中一片丢失，整个原始数据报被当做发送失败，这增加了IP数据报发送失败的机会。对于TCP这样的具有超时重传机制的高层协议，IP分片大大提高了需要重传数据的数量，因此TCP通过在连接阶段交换两端MSS/路径MTU发现等方式尽力避免IP分片。</p>
+<p style="margin: 0 0 1.1em;">IP数据报也可以被设置成不允许分片，当路由器发现其大小超过MTU但又无法分片时，将向源主机发送ICMP“不能分片”错误报文。<strong style="font-weight: bold;">TCP的路径MTU发现也是依赖该机制的。</strong></p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">3. 传输层</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">3.1 UDP</h3>
+<p style="margin: 0 0 1.1em;">UDP是IP协议在传输层暴露的一个简单接口，增加了对“端口”概念的支持。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">3.2 Socket缓冲区</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">1. 发送缓冲区</h4>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">TCP</strong> <br/>
+<img alt="Alt text" class="en-media" longdesc="./1401176186205.png" name="dbc4ea6e-680b-4ef5-b159-d574dcee8eed" src="/assets/img/e215948a4febbdaee99740765ad9b60c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">TCP服务器通常是并发的。每个TCP socket都有发送缓冲区，write只是将数据从应用进程缓冲区拷贝到了socket缓冲区，当发送缓冲区容量不够时，write调用被阻塞（假设是阻塞IO方式）。</p>
+<p style="margin: 0 0 1.1em;">TCP模块取发送缓冲区的数据并发送，报文段的长度为MSS或更小；直到收到ACK，数据才可从缓冲区中删除。</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">UDP</strong> <br/>
+<img alt="Alt text" class="en-media" longdesc="./1401176413600.png" name="79194caa-1fd5-428a-84c8-423249e46789" src="/assets/img/e7e3ae032b1dd39e408cf28ec517e9f8.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">UDP没有发送缓冲区，socket上每次write，内核都直接将数据封装成一个UDP报文段/IP数据报，并将其或者其分片加入链路层的输出队列。UDP的发送缓冲区大小(SO_SNDBUF)其实是设置每次写到socket数据的最大值，当写数据大于该值时，返回EMSGSIZE错误。</p>
+<p style="margin: 0 0 1.1em;">理论上，UDP数据报的最大长度由IP数据报的最大长度决定，IP首部16bit总长度字段限制IP数据报最大长度为65535字节，但实际实现往往要小于这个值。</p>
+<p style="margin: 0 0 1.1em;">UDP没有MSS机制，因此更容易发生IP分片，数据更容易丢失。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">2. 接收缓冲区</h4>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">TCP</strong> <br/>
+接收缓冲区的剩余空间就是滑动窗口协议中的接收窗口大小。 <br/>
+TCP提供流式的数据读取，当报文段到达时，应用层数据被提取并送入接收缓冲区，应用进程读取时不了解报文段之间的边界。</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">UDP</strong> <br/>
+UDP没有连接的概念，因此UDP服务器通常只用一个线程循环处理所有收到的数据报，<strong style="font-weight: bold;">所有客户端在服务器端重用一个接收缓冲区</strong>，发来的数据报都会先其中排队，依次交付给应用进程。UDP是非流式的，应用进程以数据报为单位读取（将数据报从内核缓冲区复制到应用缓冲区），如果应用进程缓冲区小于该次读取的数据报长度，数据报将被截断，剩下的部分被丢弃，API提示一个错误。</p>
+<p style="margin: 0 0 1.1em;"><a href="http://www2.chrishardick.com:1099/Notes/Computing/C/sockets/socket_options.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">参考</a>：</p>
+</div><div>
+<p style="margin: 0 0 1.1em;">“`SO_RCVBUF/SO_SNDBUF Socket Options</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>Option Type: Int</li>
+<li>Every socket has a socket send buffer and a socket receive buffer</li>
+<li>Allows you to change the default sizes</li>
+<li>TCP buffer sizes for connected sockets are always inherited from the listening socket</li>
 </ul>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;"><strong style="font-weight: bold; margin-top: 0px;">异步/同步，阻塞/非阻塞</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">假设某线程（姑且称为client线程）要完成某任务：</p>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">同步：client线程亲自处理，并在处理完毕后才去做别的事情；</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">异步：client线程提交任务给他人（内核/框架/etc）并立刻运行其他逻辑，后者在完成后通过某种方式（如callback）通知client线程。client线程也可以通过某些方式（如Future）在任一时刻查询任务完成的情况。</p>
-</li>
+<p style="margin: 0 0 1.1em;">Socket Receive Buffer</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>For TCP, the available size in the receive buffer is the advertised window which is advertised to the TCP peer. This is TCP’s flow control.</li>
+<li>With both TCP and UDP, if a segment arrives which will not fit in the socket receive buffer, it will be discarded</li>
+<li>For TCP clients, this option must be set prior to calling connect( )</li>
+<li>For TCP servers, this option must be set for the listening socket, prior to calling listen( )</li>
 </ul>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">同步和异步的区别在于谁是任务的执行者：client线程 or 其他。</strong></p>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">阻塞：如果任务不能一次性完成，则client线程进入等待状态，任务之后的逻辑无法执行直到条件满足；</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">非阻塞：如果任务不能一次性完成，则完成部分并立刻返回，不会等待。</p>
-</li>
+<p style="margin: 0 0 1.1em;">Socket Send Buffer</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>UDP does not physically have a socket send buffer–it’s not a reliable protocol and need not keep a copy of the data for re-transmission. For UDP, SO_SNDBUF is simply an upper bound on the maximum sized UDP datagram which can be written to the socket (not the size of a physical buffer)</li>
 </ul>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold; margin-top: 0px;">阻塞和非阻塞的区别在于client线程是否会进入等待状态</strong></p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">异步和非阻塞这两个概念尤其容易混淆，因为<strong style="font-weight: bold; margin-top: 0px;">异步 "包含了" 非阻塞的语义</strong>（因为任务不是client线程完成的，不用傻等任务完成），但非阻塞并不一定意味着异步。这一点很好理解，比如非阻塞io依然需要client线程不停地来回在内核缓冲区和用户空间进行内存拷贝 --- client线程参与执行了任务，它是同步的。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">根据上面的理论，如果在IO的语境且IO指的是“等待条件就绪 + 数据拷贝完成 ”，很明显，《Unix网络编程》中对5种IO方式的划分是很合理的：除了异步IO，其他的都是同步IO。</p>
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word;">“任务/client线程/任务执行者”的含义通常随语境变化。如Netty的write是client线程提交给框架并最终由后者完成的（严格来说是无法第一次全部写入的那部分数据），因此它可以宣称自己的API接口是“异步的”。但如果再细粒度地从底层IO考察，它是基于IO多路复用+non-blocking io的，显然属于同步IO。</p>
-</blockquote><h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">4.1 多路复用</h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">通常 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">IO multiplexing</code> 和 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">非阻塞</code> 二者是联合起来使用的。传统阻塞IO在服务器端的并发模型是一连接一线程，即使某个连接上没有数据流动，也要占用一个线程的资源；多路复用+非阻塞，连接上没有数据流动则不占线程资源，因此可以用少量线程处理大量连接，但只适合 <strong style="font-weight: bold;">“总连接很多，但同一时刻活跃连接较少” </strong> 的情况，如果连接的读写都很频繁，该模型没有优势。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">select</code></h4>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><div style="padding: 6px 15px 4px; background: #D2DADF; color: #666; border-bottom: 1px solid #CECBF0; text-shadow: 1px 1px 0px #FFF; margin-top: 0px;">IO multiplexing: select</div><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672; margin-top: 0px;">int</span> <span style="color: #F92672;">select</span>(<span style="color: #F92672;">int</span> nfds, fd_set <span style="color: #f8f8f2;">*readfds</span>, fd_set <span style="color: #f8f8f2;">*writefds</span>, fd_set <span style="color: #f8f8f2;">*exceptfds</span>, struct timeval <span style="color: #f8f8f2;">*timeout</span>);
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">fd_set内部实际上是个bitmap，每个文件描述符对应一个bit。读写事件分别对应一个bitmap，需要监测某个socket则将其对应的bit置1。当select返回时，bitmap中有事件的为1，没有事件的被清零，循环bitmap可知哪些文件描述符上有事件发生。</p>
-<blockquote style="padding: 15px 20px; margin: 0 0 15px 0; font-size: 14px; border-left: 5px solid #ddd; background-color: rgba(102, 128, 153, 0.05);">
-<p style="margin: 0 0 10px; margin-bottom: 0; line-height: 1.6; font-size: 14px; font-weight: 300; white-space: pre-wrap; word-wrap: break-word; margin-top: 0px;">每个进程的文件描述符（包括socket）从2开始依次递增</p>
-</blockquote><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">select的缺点：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">bitmap的长度决定了单个进程能够监控的socket的最大数量，但它是个固定值，由系统决定，一般是1024或2048，大部分情况下不够，如果要支持更高的连接数则只能用多进程；</li>
-<li style="line-height: 1.6;">select需要将fd bitmap在用户空间/内核空间来回拷贝，这个开销是O(N)的；</li>
-<li style="line-height: 1.6;">select是基于 <strong style="font-weight: bold; margin-top: 0px;">轮询</strong> 的，每次select内核需要对所有监控的fd扫描一遍，O(N)，连接数一多性能就下降；</li>
-<li style="line-height: 1.6;">select返回后，用户必须自己遍历bitmap才能知道哪些fd上有IO事件发生。</li>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">
+&gt; 什么时候用UDP代替TCP？
+1. 如果只是简短的单次交互（如查询--应答），这时TCP的3次握手和4次挥手的开销就显得太大，UDP效率更高，但需要应用层自己负责超时和重传，保证可靠性；DNS就是这样的例子。
+2. 注重传输效率/时效性，不需要可靠性和有序性的场景，典型的如流媒体/语音通话
+3. 并发连接太多，TCP需要为每个连接维护相应的数据结构（如缓冲区），但每个连接上发送的数据频率较低且量小，此时UDP能显著降低开销，但可能需要在应用层提供TCP的一些特性，如超时重传/顺序性/流量&amp;拥塞控制等等。
+
+
+
+
+
+<span style="color: #f8f8f2;">&lt;div class="se-preview-section-delimiter"&gt;</span><span style="color: #f8f8f2;">&lt;/div&gt;</span>
+
+<span style="color: #75715e;">## 4. Unix下的IO模型</span>
+1. 阻塞IO
+2. 非阻塞IO
+3. IO复用（select/poll/epoll）
+4. 信号驱动IO
+5. 异步IO（Posix中的aio...系列函数）
+
+以读为例，IO的两个阶段：
+1. 等待内核数据就绪，在TCP中就是等待TCP接收缓冲区中有数据；
+2. 从内核拷贝数据到用户空间
+
+以上IO模型：
+<span style="color: #f92672;">*</span> 阻塞IO两个阶段都阻塞，直到整个请求完成；
+<span style="color: #f92672;">*</span> 非阻塞IO是best-effort式的，只做请求的一部分并立即返回；
+<span style="color: #f92672;">*</span> IO复用是针对第一个阶段而言的，阻塞在第一阶段，但可以用一个selector监控多个fd；第二阶段可以搭配阻塞IO或非阻塞IO；
+<span style="color: #f92672;">*</span> 信号驱动IO？
+<span style="color: #f92672;">*</span> 异步IO两个阶段都由内核完成，用户进程只需要提供一个callback，在IO完成后接收OS的通知。
+
+&gt; <span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>异步/同步，阻塞/非阻塞<span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>
+
+&gt; 假设某线程（姑且称为client线程）要完成某任务：
+<span style="color: #f92672;">*</span> 同步：client线程亲自处理，并在处理完毕后才去做别的事情；
+
+&gt;<span style="color: #f92672;">*</span> 异步：client线程提交任务给他人（内核/框架/etc）并立刻运行其他逻辑，后者在完成后通过某种方式（如callback）通知client线程。client线程也可以通过某些方式（如Future）在任一时刻查询任务完成的情况。
+
+&gt; <span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>同步和异步的区别在于谁是任务的执行者：client线程 or 其他。<span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>
+
+&gt; <span style="color: #f92672;">*</span> 阻塞：如果任务不能一次性完成，则client线程进入等待状态，任务之后的逻辑无法执行直到条件满足；
+
+&gt; <span style="color: #f92672;">*</span> 非阻塞：如果任务不能一次性完成，则完成部分并立刻返回，不会等待。
+
+&gt; <span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>阻塞和非阻塞的区别在于client线程是否会进入等待状态<span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>
+
+&gt; 异步和非阻塞这两个概念尤其容易混淆，因为<span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>异步 <span style="color: #e6db74;">"包含了"</span> 非阻塞的语义<span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>（因为任务不是client线程完成的，不用傻等任务完成），但非阻塞并不一定意味着异步。这一点很好理解，比如非阻塞io依然需要client线程不停地来回在内核缓冲区和用户空间进行内存拷贝 --- client线程参与执行了任务，它是同步的。
+
+&gt; 根据上面的理论，如果在IO的语境且IO指的是“等待条件就绪 + 数据拷贝完成 ”，很明显，《Unix网络编程》中对5种IO方式的划分是很合理的：除了异步IO，其他的都是同步IO。
+
+&gt; “任务/client线程/任务执行者”的含义通常随语境变化。如Netty的write是client线程提交给框架并最终由后者完成的（严格来说是无法第一次全部写入的那部分数据），因此它可以宣称自己的API接口是“异步的”。但如果再细粒度地从底层IO考察，它是基于IO多路复用+non-blocking io的，显然属于同步IO。
+
+
+
+
+
+<span style="color: #f8f8f2;">&lt;div class="se-preview-section-delimiter"&gt;</span><span style="color: #f8f8f2;">&lt;/div&gt;</span>
+
+<span style="color: #75715e;">### 4.1 多路复用</span>
+
+通常 `IO multiplexing` 和 `非阻塞` 二者是联合起来使用的。传统阻塞IO在服务器端的并发模型是一连接一线程，即使某个连接上没有数据流动，也要占用一个线程的资源；多路复用+非阻塞，连接上没有数据流动则不占线程资源，因此可以用少量线程处理大量连接，但只适合 <span style="color: #f92672;">*</span><span style="color: #f92672;">*</span>“总连接很多，但同一时刻活跃连接较少” <span style="color: #f92672;">*</span><span style="color: #f92672;">*</span> 的情况，如果连接的读写都很频繁，该模型没有优势。
+
+
+
+
+
+<span style="color: #f8f8f2;">&lt;div class="se-preview-section-delimiter"&gt;</span><span style="color: #f8f8f2;">&lt;/div&gt;</span>
+
+<span style="color: #75715e;">#### `select`</span>
+
+
+
+
+<span style="color: #f8f8f2;">&lt;div class="se-preview-section-delimiter"&gt;</span><span style="color: #f8f8f2;">&lt;/div&gt;</span>
+
+```IO multiplexing: select
+int select(int nfds, fd_set <span style="color: #f92672;">*</span>readfds, fd_set <span style="color: #f92672;">*</span>writefds, fd_set <span style="color: #f92672;">*</span>exceptfds, struct timeval <span style="color: #f92672;">*</span>timeout);</code></pre>
+<p style="margin: 0 0 1.1em;">fd_set内部实际上是个bitmap，每个文件描述符对应一个bit。读写事件分别对应一个bitmap，需要监测某个socket则将其对应的bit置1。当select返回时，bitmap中有事件的为1，没有事件的被清零，循环bitmap可知哪些文件描述符上有事件发生。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">每个进程的文件描述符（包括socket）从2开始依次递增</p>
+</blockquote>
+<p style="margin: 0 0 1.1em;">select的缺点：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>bitmap的长度决定了单个进程能够监控的socket的最大数量，但它是个固定值，由系统决定，一般是1024或2048，大部分情况下不够，如果要支持更高的连接数则只能用多进程；</li>
+<li>select需要将fd bitmap在用户空间/内核空间来回拷贝，这个开销是O(N)的；</li>
+<li>select是基于 <strong style="font-weight: bold;">轮询</strong> 的，每次select内核需要对所有监控的fd扫描一遍，O(N)，连接数一多性能就下降；</li>
+<li>select返回后，用户必须自己遍历bitmap才能知道哪些fd上有IO事件发生。</li>
 </ol>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Poll</code></h4>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><div style="padding: 6px 15px 4px; background: #D2DADF; color: #666; border-bottom: 1px solid #CECBF0; text-shadow: 1px 1px 0px #FFF; margin-top: 0px;">IO multiplexing：poll</div><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">poll(<span style="color: #F92672; margin-top: 0px;">struct</span> pollfd *fds, <span style="color: #F92672;">int</span> nfds, <span style="color: #F92672;">int</span> timeout)
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Poll</code></h4>
+</div><div>
+<p style="margin: 0 0 1.1em;">“`IO multiplexing：poll <br/>
+poll(struct pollfd *fds, int nfds, int timeout)</p>
+<p style="margin: 0 0 1.1em;">struct pollfd { <br/>
+    int fd; <br/>
+    short events; <br/>
+    short revents; <br/>
+}</p>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">poll和<span style="color: #f92672;">select</span>本质是一样的，只不过它不是基于bitmap而是基于结构体数组的，没有最大连接数的限制。
 
-<span style="color: #F92672;">struct</span> pollfd {
-    <span style="color: #F92672;">int</span> fd;
-    <span style="color: #F92672;">short</span> events;
-    <span style="color: #F92672;">short</span> revents;
-}
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">poll和select本质是一样的，只不过它不是基于bitmap而是基于结构体数组的，没有最大连接数的限制。</p>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 25px; margin-bottom: 15px; font-size: 18px;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">epoll</code></h4>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap;" xml:space="preserve"><div style="padding: 6px 15px 4px; background: #D2DADF; color: #666; border-bottom: 1px solid #CECBF0; text-shadow: 1px 1px 0px #FFF; margin-top: 0px;">IO multiplexing：epoll</div><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #F92672; margin-top: 0px;">int</span> epoll_create(<span style="color: #F92672;">int</span> size)； <span style="color: #75715e;">// 创建epoll fd</span>
-<span style="color: #F92672;">int</span> epoll_ctl(<span style="color: #F92672;">int</span> epfd, <span style="color: #F92672;">int</span> op, <span style="color: #F92672;">int</span> fd, <span style="color: #F92672;">struct</span> epoll_event *event)；<span style="color: #75715e;">// 注册监听</span>
 
-            <span style="color: #F92672;">typedef</span> <span style="color: #F92672;">union</span> epoll_data {
-                <span style="color: #F92672;">void</span> *ptr;
-                <span style="color: #F92672;">int</span> fd;
+
+
+
+&lt;div <span style="color: #f92672;">class</span>=<span style="color: #e6db74;">"se-preview-section-delimiter"</span>&gt;&lt;/div&gt;
+
+<span>#### `epoll`</span>
+
+
+
+
+
+&lt;div <span style="color: #f92672;">class</span>=<span style="color: #e6db74;">"se-preview-section-delimiter"</span>&gt;&lt;/div&gt;
+
+```IO multiplexing：<span style="color: #f92672;">epoll
+<span style="color: #66d9ef;">int</span> <span style="color: #a6e22e;">epoll_create</span><span style="color: #f8f8f2;">(<span style="color: #66d9ef;">int</span> size)</span>； <span style="color: #75715e;">// 创建epoll fd</span>
+<span style="color: #66d9ef;">int</span> <span style="color: #a6e22e;">epoll_ctl</span><span style="color: #f8f8f2;">(<span style="color: #66d9ef;">int</span> epfd, <span style="color: #66d9ef;">int</span> op, <span style="color: #66d9ef;">int</span> fd, <span style="color: #66d9ef;">struct</span> epoll_event *<span style="color: #66d9ef;">event</span>)</span>；<span style="color: #75715e;">// 注册监听</span>
+
+            typedef union epoll_data </span>{
+                <span style="color: #f92672;">void</span> *ptr;
+                <span style="color: #f92672;">int</span> fd;
                 __uint32_t u32;
                 __uint64_t u64;
             } epoll_data_t;
 
-            <span style="color: #F92672;">struct</span> epoll_event {
+            <span style="color: #f92672;">struct</span> epoll_event {
                 __uint32_t events;      <span style="color: #75715e;">/* Epoll events */</span>
                 epoll_data_t data;      <span style="color: #75715e;">/* User data variable */</span>
             };
 
-<span style="color: #F92672;">int</span> epoll_wait(<span style="color: #F92672;">int</span> epfd, <span style="color: #F92672;">struct</span> epoll_event * events, <span style="color: #F92672;">int</span> maxevents, <span style="color: #F92672;">int</span> timeout); <span style="color: #75715e;">// 返回后events数组中就是IO事件</span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">优点：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;">监视的描述符数量不受限制，它所支持的FD上限是最大可以打开文件的数目。</li>
-<li style="line-height: 1.6;">epoll 是基于 <strong style="font-weight: bold; margin-top: 0px;">callback</strong> 的，它为每个fd定义一个callback，只有活跃的 fd（设备） 会主动调用自己对应的 callback，这相当于将原来的线性扫描的工作分散给各个fd自己了，因此时间复杂度为O(IO就绪的fd数量)，而不是O(N)，当连接数很多但活跃连接少时，性能大大提升；</li>
-<li style="line-height: 1.6;">支持<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin-top: 0px;">Level Trigger</code>和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px;">Edge Trigger</code>（只告诉进程哪些文件描述符刚刚变为就绪状态，它只说一遍，如果我们没有采取行动，那么它将不会再次告知，这种方式称为Edge Trigger；select和poll只支持LevelTrigger，会反复通知）两种方式；</li>
-<li style="line-height: 1.6;">内核需要将就绪fd通知给用户进程，select和poll简单地进行拷贝，epoll则使用mmap避免多余的内存拷贝；</li>
-<li style="line-height: 1.6;">只将IO就绪的fd通知给用户，不再需要自己遍历所有fd检查IO事件。</li>
+<span style="color: #f92672;"><span style="color: #66d9ef;">int</span> <span style="color: #a6e22e;">epoll_wait</span><span style="color: #f8f8f2;">(<span style="color: #66d9ef;">int</span> epfd, <span style="color: #66d9ef;">struct</span> epoll_event * events, <span style="color: #66d9ef;">int</span> maxevents, <span style="color: #66d9ef;">int</span> timeout)</span></span>; <span style="color: #75715e;">// 返回后events数组中就是IO事件</span></code></pre>
+<p style="margin: 0 0 1.1em;">优点：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>监视的描述符数量不受限制，它所支持的FD上限是最大可以打开文件的数目。</li>
+<li>epoll 是基于 <strong style="font-weight: bold;">callback</strong> 的，它为每个fd定义一个callback，只有活跃的 fd（设备） 会主动调用自己对应的 callback，这相当于将原来的线性扫描的工作分散给各个fd自己了，因此时间复杂度为O(IO就绪的fd数量)，而不是O(N)，当连接数很多但活跃连接少时，性能大大提升；</li>
+<li>支持<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Level Trigger</code>和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Edge Trigger</code>（只告诉进程哪些文件描述符刚刚变为就绪状态，它只说一遍，如果我们没有采取行动，那么它将不会再次告知，这种方式称为Edge Trigger；select和poll只支持LevelTrigger，会反复通知）两种方式；</li>
+<li>内核需要将就绪fd通知给用户进程，select和poll简单地进行拷贝，epoll则使用mmap避免多余的内存拷贝；</li>
+<li>只将IO就绪的fd通知给用户，不再需要自己遍历所有fd检查IO事件。</li>
 </ol>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">参考：</p>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6; margin-top: 0px;"><a href="http://www.ulduzsoft.com/2014/01/select-poll-epoll-practical-difference-for-system-architects/" style="background: transparent; margin-top: 0px;" target="_blank">select / poll / epoll: practical difference for system architects</a></li>
-<li style="line-height: 1.6;"><a href="http://www.cnblogs.com/sharra/archive/2010/12/30/1921287.html" style="background: transparent; margin-top: 0px;" target="_blank">POLL, SELECT &amp; EPOLL 原理比较分析</a></li>
-<li style="line-height: 1.6;"><a href="http://blog.csdn.net/mafuli007/article/details/7233304" style="background: transparent; margin-top: 0px;" target="_blank">Select和epoll的区别</a></li>
-<li style="line-height: 1.6;"><a href="http://www.cnblogs.com/bigwangdi/p/3182958.html" style="background: transparent; margin-top: 0px;" target="_blank">Linux中select poll和epoll的区别</a></li>
-<li style="line-height: 1.6;"><a href="http://blog.163.com/sky20081816@126/blog/static/164761023201073033517435/" style="background: transparent; margin-top: 0px;" target="_blank">在Linux上开发网络服务器的一些相关细节 poll与epoll</a></li>
-<li style="line-height: 1.6;"><a href="http://www.cnblogs.com/novoland/p/3765783.html" style="background: transparent; margin-top: 0px;" target="_blank">select/poll/epoll介绍 -- 《构建高性能Web站点》</a></li>
-</ul>
-</div>
+<p style="margin: 0 0 1.1em;">参考：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li><a href="http://www.ulduzsoft.com/2014/01/select-poll-epoll-practical-difference-for-system-architects/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">select / poll / epoll: practical difference for system architects</a></li>
+<li><a href="http://www.cnblogs.com/sharra/archive/2010/12/30/1921287.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">POLL, SELECT &amp; EPOLL 原理比较分析</a></li>
+<li><a href="http://blog.csdn.net/mafuli007/article/details/7233304" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Select和epoll的区别</a></li>
+<li><a href="http://www.cnblogs.com/bigwangdi/p/3182958.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Linux中select poll和epoll的区别</a></li>
+<li><a href="http://blog.163.com/sky20081816@126/blog/static/164761023201073033517435/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">在Linux上开发网络服务器的一些相关细节 poll与epoll</a></li>
+<li><a href="http://www.cnblogs.com/novoland/p/3765783.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">select/poll/epoll介绍 – 《构建高性能Web站点》</a></li>
+</ul></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>

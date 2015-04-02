@@ -4,47 +4,76 @@ title: "Http协议中的cache机制"
 category: "cache"
 ---
 
-<div style="line-height: 1.6; font-family: Helvetica Neue, Arial, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, SimSun, Song, sans-serif;">
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">http协议的缓存机制包括两种：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">直接本地缓存</strong> </p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 直接使用浏览器端的cache，不会发出真正的request，直到cache过期：<br/><img alt="Alt text" class="en-media" longdesc="./1398155164552.png" name="06884e1d-7c4e-43aa-a18b-45554c1cbca7" src="/assets/img/2667e0efd991ba61a1876d79d2de6cc2.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/>最省流量和服务器资源，但可能存在数据不一致，适合实时性不高的场景。</p>
-</li>
-<li style="line-height: 1.6;"><p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><strong style="font-weight: bold;">304校验缓存</strong> </p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"> 将浏览器端cache的信息发送到服务器校验，如果服务器认为cache依然有效，则返回304，浏览器再使用该cache。<br/><img alt="Alt text" class="en-media" longdesc="./1398155357600.png" name="eb7e3642-4a6d-41a3-b065-e4497d733d55" src="/assets/img/ce13998233d18ae5b33b4413e67660fc.png" style="border: 0; max-width: 100%; border-radius: 8px;"/><br/>会发出一次请求且需要服务器端校验，因此没有第一种方式那么有效，但可以保证实时，适合写少实时性要求又较高的场景。</p>
-</li>
-</ol>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">1. 直接本地缓存</h2>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.1 http 1.1的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Cache-Control</code></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">Response中的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Cache-Control</code> 头指示浏览器按何种规则缓存该资源，例：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span><span style="color: #F92672;">Cache</span>-Control: <span style="color: #F92672;">public</span>, <span style="color: #F92672;">max</span>-age=<span style="color: #ae81ff;">31536000</span></span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">该header是复合类型，常见参数的含义：</p>
-<ul style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">public</code> : 用户浏览器和中间proxy都会cache</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">private</code> : 只有用户端会cache</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">max-age=xxx</code> : 设置cache的最大存活时间，单位s</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">no-store</code>: 不要缓存</li>
-<li style="line-height: 1.6;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">no-cache</code>: 同上，但是浏览器的支持可能不一致，最好两个一起用</li>
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Http协议中的cache机制</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 直接本地缓存</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1.1 http 1.1的 Cache-Control</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1.2 http 1.0的 Expires &amp; Pragma</a></li>
 </ul>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">1.2 http 1.0的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Expires</code> &amp; <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pragma</code></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Expires: Mon, 19 Nov 2012 08:40:01 GMT</code><br/>指定cache的<em>绝对</em>过期时间，和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Cache-Control</code>一起使用时以后者为准。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Pragma: no-cache</code><br/>指定不要缓存。</p>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 30px;">2. 304校验缓存</h2>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">这种方式需要向服务器发送本地cache的信息让其校验，通常校验的标准有两个：</p>
-<ol style="margin-top: 0; margin-bottom: 10px; line-height: 1.6;">
-<li style="line-height: 1.6;">内容</li>
-<li style="line-height: 1.6;">最后修改时间</li>
-</ol>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.1 基于内容的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ETag</code></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ETag</code>是<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Entity Tag</code>的缩写，它由服务器端指定，通常是一个资源的内容的hash（需要自己在代码中计算）。当Response中指定了ETag：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">Etag</span>: <span style="color: #e6db74;">427fe7b6442f2096dff4f92339305444</span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">浏览器将资源缓存到本地，下次访问时在Request中将该ETag传回服务器：</p>
-<pre style="overflow: initial; font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 14px; display: block; padding: 0; margin: 0 0 10px; line-height: 1.6; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: none; border-radius: 0; white-space: pre-wrap; background: transparent;" xml:space="preserve"><code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: inherit; padding: 1em; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 8px; display: block; background: #23241f; margin: 0 4px;"><span style="color: #F92672;">If-None-Match</span>: <span style="color: #e6db74;">427fe7b6442f2096dff4f92339305444</span>
-</code></pre>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">服务器将该资源最新版本的ETag与收到的ETag比对，不一致则渲染页面发送200响应，一致则返回304(not modified)，通知浏览器使用本地缓存。</p>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 30px; margin-bottom: 20px; font-size: 24px;">2.2 基于最后修改时间的 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">Last-Modified</code></h3>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">工作机制和<code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">ETag</code>一致，Request将本地缓存的最后修改时间通过 <code style="font-family: Menlo, Monaco, Consolas, Courier New, monospace; font-size: 90%; padding: 0 4px; color: #c7254e; background-color: #f9f2f4; white-space: nowrap; border-radius: 4px; margin: 0 4px;">If-Modified-Since</code> 发送到服务器。</p>
-<p style="margin: 0 0 10px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">有关Http cache机制的使用场景和具体应用方法，见<strong style="font-weight: bold;"><a href="http://robbinfan.com/blog/13/http-cache-implement" style="background: transparent;" target="_blank">Robbin_基于资源的HTTP Cache的实现介绍</a></strong>，介绍的非常详细。</p>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 304校验缓存</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.1 基于内容的 ETag</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2.2 基于最后修改时间的 Last-Modified</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div>
+</div>
+</div>
+<p style="margin: 0 0 1.1em;">http协议的缓存机制包括两种：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">直接本地缓存</strong> </p>
+<p style="margin: 0 0 1.1em;">直接使用浏览器端的cache，不会发出真正的request，直到cache过期： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1398155164552.png" name="06884e1d-7c4e-43aa-a18b-45554c1cbca7" src="/assets/img/2667e0efd991ba61a1876d79d2de6cc2.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/> <br/>
+最省流量和服务器资源，但可能存在数据不一致，适合实时性不高的场景。</p></li>
+<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">304校验缓存</strong> </p>
+<p style="margin: 0 0 1.1em;">将浏览器端cache的信息发送到服务器校验，如果服务器认为cache依然有效，则返回304，浏览器再使用该cache。 <br/>
+<img alt="Alt text" class="en-media" longdesc="./1398155357600.png" name="eb7e3642-4a6d-41a3-b065-e4497d733d55" src="/assets/img/ce13998233d18ae5b33b4413e67660fc.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/> <br/>
+会发出一次请求且需要服务器端校验，因此没有第一种方式那么有效，但可以保证实时，适合写少实时性要求又较高的场景。</p></li>
+</ol></div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. 直接本地缓存</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">1.1 http 1.1的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Cache-Control</code></h3>
+<p style="margin: 0 0 1.1em;">Response中的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Cache-Control</code> 头指示浏览器按何种规则缓存该资源，例：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">Cache</span><span style="color: #f92672;">-Control</span>: <span style="color: #f92672;">public</span>, <span style="color: #f92672;">max</span><span style="color: #f92672;">-age</span><span style="color: #e6db74;">=</span><span style="color: #ae81ff;">31536000</span></code></pre>
+<p style="margin: 0 0 1.1em;">该header是复合类型，常见参数的含义：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">public</code> : 用户浏览器和中间proxy都会cache</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">private</code> : 只有用户端会cache</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">max-age=xxx</code> : 设置cache的最大存活时间，单位s</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">no-store</code>: 不要缓存</li>
+<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">no-cache</code>: 同上，但是浏览器的支持可能不一致，最好两个一起用</li>
+</ul>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">1.2 http 1.0的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Expires</code> &amp; <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Pragma</code></h3>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Expires: Mon, 19 Nov 2012 08:40:01 GMT</code> <br/>
+指定cache的<em>绝对</em>过期时间，和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Cache-Control</code>一起使用时以后者为准。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Pragma: no-cache</code> <br/>
+指定不要缓存。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. 304校验缓存</h2>
+<p style="margin: 0 0 1.1em;">这种方式需要向服务器发送本地cache的信息让其校验，通常校验的标准有两个：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>内容</li>
+<li>最后修改时间</li>
+</ol>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.1 基于内容的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ETag</code></h3>
+<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ETag</code>是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Entity Tag</code>的缩写，它由服务器端指定，通常是一个资源的内容的hash（需要自己在代码中计算）。当Response中指定了ETag：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">Etag</span>: <span style="color: #e6db74;">427fe7b6442f2096dff4f92339305444</span></code></pre>
+<p style="margin: 0 0 1.1em;">浏览器将资源缓存到本地，下次访问时在Request中将该ETag传回服务器：</p>
+</div><div>
+<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">If-None-Match</span>: <span style="color: #e6db74;">427fe7b6442f2096dff4f92339305444</span></code></pre>
+<p style="margin: 0 0 1.1em;">服务器将该资源最新版本的ETag与收到的ETag比对，不一致则渲染页面发送200响应，一致则返回304(not modified)，通知浏览器使用本地缓存。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">2.2 基于最后修改时间的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Last-Modified</code></h3>
+<p style="margin: 0 0 1.1em;">工作机制和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ETag</code>一致，Request将本地缓存的最后修改时间通过 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">If-Modified-Since</code> 发送到服务器。</p>
+<p style="margin: 0 0 1.1em;">有关Http cache机制的使用场景和具体应用方法，见<strong style="font-weight: bold;"><a href="http://robbinfan.com/blog/13/http-cache-implement" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Robbin_基于资源的HTTP Cache的实现介绍</a></strong>，介绍的非常详细。</p></div><div></div></div>
