@@ -56,6 +56,10 @@ noteList = {
     '数据库' : [
     	# MYSQL
     	'https://www.evernote.com/shard/s133/sh/d308cb41-961f-433d-ae84-98bc3015ed13/68ef39ac3bcb6b1fd5a72a8c657bacca',
+        # InnoDB 锁
+        'https://www.evernote.com/shard/s133/sh/10534c4a-d77d-4352-853b-33b84c330f72/df0d9fd51cc9c084',
+        # Insert On Dup Key Update
+        'https://www.evernote.com/shard/s133/sh/c479a74c-94af-4f9a-bf9a-c527c0ad29ed/3a3771dcb03b6979',
     ],
     'cache' :[
     	# HTTP cache
@@ -69,9 +73,7 @@ noteList = {
     	# CPU Cache 与 存储器层次结构
     	'https://www.evernote.com/shard/s133/sh/3bb6ac50-c660-49d9-b214-88b6357e35df/939f9b1f174859d1a917945d9e33db77',
     	# Mode Switch 和 Context Switch
-    	'https://www.evernote.com/shard/s133/sh/dfd3dbfa-d52d-43f9-992e-1c33e50e004d/43e12d32cc6d4e7315f04432a80d7326',
-    	# 网卡中断负载均衡
-    	'https://www.evernote.com/shard/s133/sh/94d3673c-8b42-4ecc-8334-c35e82df3616/77845e48462533093d284a987b4d0bff'
+    	'https://www.evernote.com/shard/s133/sh/dfd3dbfa-d52d-43f9-992e-1c33e50e004d/43e12d32cc6d4e7315f04432a80d7326'
     ],
     '网络' : [
     	# TCP 复习
@@ -87,7 +89,10 @@ noteList = {
     	# 高性能网络通讯笔记
     	'https://www.evernote.com/shard/s133/sh/8c13484a-9156-49b2-b037-67169541db16/e99fa77196311a6a0f35816b53cdf3e1',
         # http 状态码
-        'https://www.evernote.com/shard/s133/sh/a0a098e1-570a-42ce-aeda-e3baf2e9fc81/29d993ae1988bf7cc8b472aaa07867d4'
+        'https://www.evernote.com/shard/s133/sh/a0a098e1-570a-42ce-aeda-e3baf2e9fc81/29d993ae1988bf7cc8b472aaa07867d4',
+        # 网卡中断负载均衡
+        'https://www.evernote.com/shard/s133/sh/94d3673c-8b42-4ecc-8334-c35e82df3616/77845e48462533093d284a987b4d0bff'
+
     ],
     '工作':[
         # Skyline timeseries异常判定算法
@@ -95,12 +100,21 @@ noteList = {
         # Skyline监控系统工作原理分析
         'https://www.evernote.com/shard/s133/sh/1bb42885-61d2-4d6f-a135-6ce41c4f30e1/6967a17731dbbc7ad79bc532dcfa7ba3',
         # Mapreduce algorithms
-        'https://www.evernote.com/shard/s133/sh/793a96a2-fe2b-4147-a054-ef60da105c8c/e09a91062c3a4cbc751a0b47383a2c0f'
+        'https://www.evernote.com/shard/s133/sh/793a96a2-fe2b-4147-a054-ef60da105c8c/e09a91062c3a4cbc751a0b47383a2c0f',
+        # GIT
+        'https://www.evernote.com/shard/s133/sh/f37bda8d-7036-4d88-90fd-8faa08ef9a54/bae0246d7584385c',
+        # 消息中心开发过程中踩的几个(常识)坑
+        'https://www.evernote.com/shard/s133/sh/7c9c7c8e-53fe-4df2-9129-aa92d5581a18/e0361ebc567bb2da',
     ],
     '设计':[
         # 常见设计模式总结
-        'https://www.evernote.com/shard/s133/sh/edfa1774-6329-4c94-9cbc-b3afe951ca9b/7ce87045640b9ba2'
+        'https://www.evernote.com/shard/s133/sh/edfa1774-6329-4c94-9cbc-b3afe951ca9b/7ce87045640b9ba2',
+        # restful API
+        'https://www.evernote.com/shard/s133/sh/67b4ed0d-2e78-4c8d-8a3d-d5f14388b259/86403895336147ec',
+        # 异常
+        'https://www.evernote.com/shard/s133/sh/81ac7d73-5818-4aec-b133-ff283a31fd18/fbd8d6d963a7e439'
+
     ]
 }
 
-expire = 0 * 24 * 3600 # seconds, 1 day
+expire = 24 * 3600 # seconds, 1 day

@@ -1,0 +1,495 @@
+---
+layout: post
+title: "GIT常用操作"
+category: "工作"
+---
+
+<div style="line-height: 1.5; color: #2c3f51;">
+<div></div>
+<div>
+</div><div>
+
+<p style="margin: 0 0 1.1em;"></p>
+<div><div><div>
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">GIT常用操作</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">本地</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">初始化和设置</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">工作流</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">查看文件状态</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">忽略文件</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">工作区&lt;==&gt;暂存区</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">暂存区==&gt;版本库</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">本地版本库</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">branch 和 HEAD</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">分支的增删查改</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">分支合并</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. merge</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. rebase</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 冲突解决</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 优缺点</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">相对路径^和~</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">撤销提交</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. reset</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. revert</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">随意移动commit</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. cherry-pick</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. rebase -i</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">远程</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">clone</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">fetch</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">pull</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">push</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">常见GIT工作流</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">集中式</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Forking 工作流</a></li>
+</ul>
+</li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Tips</a></li>
+<li><a style="background: transparent; color: #1980e6; text-decoration: none;">参考资料</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">本地</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">初始化和设置</h3>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git init <span style="color: #75715e;"># 创建新仓库</span>
+
+$ git config --global user.email <span style="color: #e6db74;">"c@d.com"</span> <span style="color: #75715e;"># 设置全局email</span>
+$ git config --global user.name <span style="color: #e6db74;">"Anderson"</span> <span style="color: #75715e;"># 设置全局用户名</span></code></pre>
+<p style="margin: 0 0 1.1em;">要为某个repo设置单独的email和用户名，把上述命令中的 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">--global</code>去掉。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">.git</code>文件夹保存本地仓库git相关的所有信息，如果要恢复成一个普通文件夹，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rm -rf .git</code>删除之即可。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">工作流</h3>
+<p style="margin: 0 0 1.1em;">本地仓库由3个区域组成，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">工作区</code>持有你的源码等实际文件，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>像个工作区和版本库之间的buffer，临时存储你的改动，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">本地版本库</code>记录着你每一次的提交，并维护若干分支。</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428911979022.png" name="84783623-df91-4ee3-bf30-3fe6ebc701de" src="/assets/img/8140cecb95c65f2c709de3c504598f45.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">查看文件状态</h3>
+<p style="margin: 0 0 1.1em;">所有文件都处在两个状态之一：<strong style="font-weight: bold;">untracked</strong> 和 <strong style="font-weight: bold;">tracked</strong>。<strong style="font-weight: bold;">untracked</strong> 的文件未被纳入git的版本控制，<strong style="font-weight: bold;">tracked</strong>状态又可被细分为以下三个状态：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><strong style="font-weight: bold;">unmodified</strong>：与版本库中的最新文件一致</li>
+<li><strong style="font-weight: bold;">modified</strong>：顾名思义</li>
+<li><strong style="font-weight: bold;">staged</strong>：修改过，并已加入<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>，坐等提交</li>
+</ol>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428915917524.png" name="19ed4a42-72fa-429b-9a4e-c8f03bcd91a1" src="/assets/img/770f99d22becaf3e57b3c253789581b2.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">查看文件状态：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git status</code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">忽略文件</h3>
+<p style="margin: 0 0 1.1em;">根目录下的<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">.gitignore</code>文件描述了哪些文件需要被git忽略：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="color: #75715e;"># 此为注释 – 将被 Git 忽略</span>
+*.a <span style="color: #75715e;"># 忽略所有 .a 结尾的文件</span>
+!lib.a <span style="color: #75715e;"># 但 lib.a 除外</span>
+/TODO <span style="color: #75715e;"># 仅仅忽略项目根目录下的 TODO 文件,不包括 subdir/TODO </span>
+build/ <span style="color: #75715e;"># 忽略 build/ 目录下的所有文件</span>
+doc/*.txt <span style="color: #75715e;"># 会忽略 doc/notes.txt 但不包括 doc/server/arch.tx</span></code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">工作区&lt;==&gt;暂存区</h3>
+<p style="margin: 0 0 1.1em;">将<strong style="font-weight: bold;">untracked</strong>或<strong style="font-weight: bold;">modified</strong>文件加入<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>（这个过程称为 stage）：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git add &lt;file&gt;</code></pre>
+<p style="margin: 0 0 1.1em;">如果改了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>内的文件，需要再次<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">$ git add</code>。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">$ git add .</code> ：<em>偷懒，慎用</em>。递归把当前目录下所有<strong style="font-weight: bold;">untracked</strong>或<strong style="font-weight: bold;">modified</strong>文件加入<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>。</p>
+<p style="margin: 0 0 1.1em;">unstage某个文件（文件内容不会变）：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git reset HEAD &lt;file&gt;</code></pre>
+<p style="margin: 0 0 1.1em;">撤销对某个文件的修改，文件恢复到<strong style="font-weight: bold;">unmodified</strong>状态，与版本库一致：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout &lt;file&gt;
+$ git checkout .</code></pre>
+<p style="margin: 0 0 1.1em;">删除、移动、重命名文件：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git rm &lt;file&gt; <span style="color: #75715e;">#工作区的文件被删除，删除操作会被记录到暂存区</span>
+$ git mv &lt;file_from&gt; &lt;file_to&gt; <span style="color: #75715e;">#移动、重命名</span></code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">暂存区==&gt;版本库</h3>
+<p style="margin: 0 0 1.1em;">从<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>提交到<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">本地版本库</code>：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git commit -m <span style="color: #e6db74;">'description'</span></code></pre>
+<p style="margin: 0 0 1.1em;">stage动作和commit动作二合一，自动将<strong style="font-weight: bold;">tracked</strong>文件的更新/删除提交到<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>(忽略<strong style="font-weight: bold;">untracked</strong>文件)，然后commit，慎用：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git commit <span>-a</span> -m <span style="color: #e6db74;">'added new benchmarks'</span></code></pre>
+<p style="margin: 0 0 1.1em;">修改最后一次提交：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git commit --amend</code></pre>
+<p style="margin: 0 0 1.1em;">该命令有两个作用：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>提交当前<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">暂存区</code>，并合并到上一次commit。常用于提交后发现漏了几个文件，又不想再提交一次的情况；</li>
+<li>可以修改上一次commit的描述。</li>
+</ol>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">本地版本库</h3>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">branch 和 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code></h4>
+<p style="margin: 0 0 1.1em;">简单地说，版本库是一个个commit连接起来的一张图，<strong style="font-weight: bold;">branch是指向某个commit的<em>指针</em></strong>，从初始commit到该branch指向的commit的路径，形成了该分支的历史。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code> 是一个非常重要的概念，理解了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>很多其他命令就很直观了。<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>本质上也是一个指针，它有两种状态：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;">通常情况下，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>是一个branch的 <strong style="font-weight: bold;">引用/镜像</strong>，此时<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>和该branch绑定(<strong style="font-weight: bold;">attach</strong>)在一起，一起指向某个commit，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>和该branch指针的移动会互相同步（除了用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">checkout</code>显式移动<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>）；</p>
+<p style="margin: 0 0 1.1em;">attach <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code> 到某一分支的命令：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout &lt;branch&gt;</code></pre></li>
+<li><p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>也可以不attach到branch，而是指向某个commit，这种状态称为 <em>detached HEAD</em>。注意，即使<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>与branch本质上指向同一commit，如果没有显式用1中命令attach <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>到分支则也是 detached HEAD 状态。</p>
+<p style="margin: 0 0 1.1em;">同样地，用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">checkout</code> 命令将<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>指向某个特定的 commit：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout &lt;commit id&gt;</code></pre></li>
+</ol>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>所指向commit的版本，是当前工作区内文件的基准。除此之外，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>一个重要的作用是：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code> 为很多git命令提供<strong style="font-weight: bold;">基准位置</strong></p>
+</blockquote>
+<p style="margin: 0 0 1.1em;">比如：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
+<thead>
+<tr>
+<th align="left" style="font-weight: bold; vertical-align: bottom; padding: .5em; line-height: 1.5; border-top: 0; border: 1px solid #ddd;">命令</th>
+<th align="left" style="font-weight: bold; vertical-align: bottom; padding: .5em; line-height: 1.5; border-top: 0; border: 1px solid #ddd;">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git commit</code></td>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">将新的commit链接在<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>后并更新<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>（链表的插入），如果<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>attach到了某个branch，该branch也会被更新</td>
+</tr>
+<tr>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git branch &lt;branch&gt;</code></td>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">创建一个新的branch，值与<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>一致，与之指向同一个commit</td>
+</tr>
+<tr>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git merge &lt;branch&gt;</code></td>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">将指定branch多出来的commit合并为一个并提交到<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>，后续逻辑与<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git commit</code>一致</td>
+</tr>
+<tr>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">…</td>
+<td align="left" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">…</td>
+</tr>
+</tbody></table>
+<p style="margin: 0 0 1.1em;">举例说明，假如初始状态如下图(master* 表示<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>attach到了master分支)： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428930288886.png" name="f2284a84-3ce1-4248-9f60-8ced1f2bd9ed" src="/assets/img/6b6c720cd632b625bd57cec7df10beac.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">用以下命令将<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>指向C0：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout C0</code></pre>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428930234331.png" name="10fd009b-4bb2-44bd-b0be-d0373259e337" src="/assets/img/3d610609444fd854bfec6d0924b8a09e.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">在该状态下做一次commit（C2），C2链接在<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>后并移动<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428931457954.png" name="46ccb824-24eb-4757-8c5d-876d01038d0d" src="/assets/img/f219100df20b41415e727f2964ac72f6.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">如果此时执行<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git checkout master</code>将<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>attach到master，我们会丢失C2的引用，因此在C2处建一个 dev 分支（其实就算丢失了也没关系，神奇的<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">reflog</code>命令可以找到C2的id）：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch dev <span style="color: #75715e;"># 以 HEAD 为基准建立 dev 分支</span></code></pre>
+<p style="margin: 0 0 1.1em;">结果如下，dev与<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>同时指向C2： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428931720329.png" name="f7319ad9-d665-4d00-9f76-2f5bece10075" src="/assets/img/747d3e4f78e7b4a9ea01ca46d3a73f00.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">注意，这时依然是 detached HEAD 状态，再commit一次的话可以看到 dev 分支不受影响： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428931934972.png" name="748bdaca-89f6-4fb9-b1c5-0ab1789c852d" src="/assets/img/edfadbba4b8606277066aabc0e9dbf8c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">如果要在dev分支上提交，必须先将<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>attach到dev：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout dev</code></pre>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428932457041.png" name="3d9cc20b-9656-46d8-98ca-79b80c1382d8" src="/assets/img/8c54cde6fd477a6b808b9a0ddecd1bb8.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">然后再commit： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428932491021.png" name="18ecd23c-f793-434c-8e1e-359db004b314" src="/assets/img/a256f5d9eb06637c41cb5509480ca9ea.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">现在将dev合并到master，根据之前描述的，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">merge</code>的操作对象是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>，因此先将<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>attach到master再做merge：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout master
+$ git merge dev</code></pre>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428933640277.png" name="8e2b7956-33c3-4b66-bd5c-a18f586ab451" src="/assets/img/582c2d47b7e80e39bfc500d5524000a3.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">如果只是单纯地让<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>指向C1而不attach到master上，结果会是这样：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout C1</code></pre>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428933812055.png" name="768c0019-a8ca-4a72-9c96-f4e189b29653" src="/assets/img/9e4515e312e3af0b48e328984954a427.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git merge dev</code></pre>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1428933851514.png" name="fb84380f-f3ae-41c9-8e25-e48ae3ac92fd" src="/assets/img/9766006255eab425a1f9cf2697703a33.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">即操作的是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>，master 分支不受影响。</p>
+<p style="margin: 0 0 1.1em;">由上述例子可知，在针对某个分支操作之前，通常先要将<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>attach到该branch上，因此<strong style="font-weight: bold;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>绑定的分支也被称为当前分支</strong>。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>的位置可以通过 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">.git/HEAD</code> 文件查看：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ cat .git/HEAD
+e96c12854b77fe6f3dea81d593ddd2824eeaf9d6 <span style="color: #75715e;">#指向某个commit</span>
+$ git checkout develop
+$ cat .git/HEAD
+ref: refs/heads/develop <span style="color: #75715e;">#指向develop分支</span></code></pre>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">分支的增删查改</h4>
+<p style="margin: 0 0 1.1em;">分支的CRUD均由<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git branch</code>命令完成。</p>
+<p style="margin: 0 0 1.1em;">查询所有本地分支：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch
+master
+*develop    <span style="color: #75715e;"># 星号表示HEAD所在位置</span>
+bugfix</code></pre>
+<p style="margin: 0 0 1.1em;">以<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>为基准，新建一个分支：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch &lt;branch&gt;</code></pre>
+<p style="margin: 0 0 1.1em;">删除一个分支：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch <span>-d</span> &lt;branch&gt;</code></pre>
+<p style="margin: 0 0 1.1em;">修改一个分支，“修改”实际上指的是<strong style="font-weight: bold;">移动branch指针</strong>，理论上可以将一个branch指向任意commit：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch <span>-f</span> &lt;branch&gt; &lt;目标commit&gt;</code></pre>
+<p style="margin: 0 0 1.1em;">重命名分支：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch -m &lt;old_name&gt; &lt;new_name&gt;
+$ git branch -m &lt;new_name&gt; <span style="color: #75715e;">#重命名当前分支</span></code></pre>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">分支合并</h4>
+<p style="margin: 0 0 1.1em;">假设有两个branch：bugfix和master，初始状态如下： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428935943072.png" name="86f7de75-c7f2-45f0-8c1e-c9ea651764f3" src="/assets/img/485928ca922508e5246b23d1b4595f99.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">现在要将 bugFix 合并到 master，我们有两种选择：</p>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">1. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">merge</code></h5>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">git merge bugFix</code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">merge</code>的动作如下：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>将 bugFix 分支独有的commit（这里只有C2）合并为1个（C4），commit 到当前分支（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>绑定的分支，即master）上；</li>
+<li>1中产生的新commit有两个parent，除了master的最末commit，bugFix指向的commit也是其parent。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">结果如下： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428936525569.png" name="7c0ea7c1-5c7c-44b9-bf29-6b62c0e0f615" src="/assets/img/18c6716eda9e5cc71f9a2d0fdeae0876.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">此时 bugFix 的 commit 被合并到了 master，master 含有了两个分支的提交信息（C3 + C4），但bugFix 却没有 master 分支的提交（即C3），如果想要让 bugFix 分支也含有全部提交，则可将master merge到bugFix：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout bugFix
+$ git merge master</code></pre>
+<p style="margin: 0 0 1.1em;">由于 bugFix 指向的 commit 实际上是 master 的祖先，因此这里的 merge 只会将 bugFix 分支 <em>fast-forward</em> 到 master 分支，与其一同指向C4： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428937762260.png" name="60a6b3cc-7450-4a4b-aeb2-73d11d582010" src="/assets/img/ddc55bd463a9fd2f6ac4d59befe8bb66.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">2. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase</code></h5>
+<p style="margin: 0 0 1.1em;">对上面的场景我们也可以用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase</code> 来进行分支合并：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">git rebase bugFix</code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase</code>的工作流程可以想象成：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>将当前分支(master) <em>挪到</em> 目标分支bugFix 处；</li>
+<li>将原master的独有 commit (C3)复制一份并依次提交到新 master。</li>
+</ol>
+<p style="margin: 0 0 1.1em;">结果如下： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1428938627755.png" name="9d025939-2e99-42c3-b8f5-c098263d93e4" src="/assets/img/3da2732f1de2c9ec9dee804a1470e400.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">就像把 master 分支上的 commit “append” 到了 bugFix 分支。注意 C3 依然存在，C3’只是 C3 的一份拷贝。</p>
+<p style="margin: 0 0 1.1em;">接下来也可以用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase</code>让bugFix与master保持同步，同样也是做一次 <em>fast-forward</em>：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git checkout bugFix
+$ git rebase master</code></pre>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">3. 冲突解决</h5>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git merge</code> 时如果出现文件冲突，合并将失败，冲突的详细信息会写入对应文件中，此时应修改文件，手动解决冲突，并用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git add &lt;file&gt;</code> 表明冲突已解决。最后 commit 即完可，该提交的 message 默认为 “Merge branch xxx into yyy”：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ edit &lt;file1&gt;
+$ edit &lt;file2&gt;
+$ git add &lt;file1&gt;
+$ git add &lt;file2&gt;
+
+$ git commit</code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git rebase</code> 实质上一个多个commit依次回放的过程，如果某次“回放”出现了冲突，可以修改文件手动解决冲突，并用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git add &lt;file&gt;</code> 表明冲突已解决。<strong style="font-weight: bold;">冲突修改完毕后不需要commit</strong>，用下面命令继续 rebase：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git rebase --continue</code></pre>
+<p style="margin: 0 0 1.1em;">如果中间遇到某个补丁不需要应用，可以用下面命令忽略：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">git rebase --skip</code></pre>
+<p style="margin: 0 0 1.1em;">如果想回到rebase执行之前的状态，可以执行：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">git rebase --abort</code></pre>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">4. 优缺点</h5>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase</code>的优点是分支树会很干净，不会出现分叉，也不会有一个多余的<em>Merge From XXX</em> 的commit；缺点是commit的顺序会错乱。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">相对路径<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">^</code>和<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">~</code></h4>
+<p style="margin: 0 0 1.1em;">我们已经看到了两种修改commit指针的方式：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git checkout</code>移动<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>指针</li>
+<li>用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git branch -f &lt;branch&gt; &lt;目标commit&gt;</code></li>
+</ol>
+<p style="margin: 0 0 1.1em;">如果目标地址不是某个branch而是一个commit，我们必须找到其ID，这通常比较麻烦。我们可以用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">^</code> 和 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">~</code> 相对某个指针进行定位：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">HEAD^ <span style="color: #75715e;"># HEAD之前的commit</span>
+HEAD^^ <span style="color: #75715e;"># HEAD回退两步的commit</span>
+master~<span style="color: #ae81ff;">5</span> <span style="color: #75715e;"># master指针回退5步的commit</span></code></pre>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">撤销提交</h4>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">1. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">reset</code></h5>
+<p style="margin: 0 0 1.1em;">reset 的作用是移动当前分支。</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git reset HEAD^ <span style="color: #75715e;">#将当前分支往回退一步</span></code></pre>
+<p style="margin: 0 0 1.1em;">它的效果和<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git branch</code>移动分支是一样的：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git branch <span>-f</span> master HEAD^ <span style="color: #75715e;"># master是当前分支</span></code></pre>
+<p style="margin: 0 0 1.1em;">注意，文件的内容会被保留，你会发现多了很多未暂存的文件修改，利用这一点我们可以用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git reset</code>整理commit历史，将多个commit合并为1个。如果想让所有文件彻底回到目标commit的状态，可以再次<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">$ git checkout .</code>丢弃所有文件修改；或者给<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">reset</code>加上<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">--hard</code>参数，这样你的本地修改都会被抹杀，大招慎用。</p>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">2. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">revert</code></h5>
+<p style="margin: 0 0 1.1em;">revert 为指定的（多个）提交生成逆操作，并依次形成新的commit：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git revert HEAD</code></pre>
+<p style="margin: 0 0 1.1em;">效果： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1429632759910.png" name="7816a4e9-c1f0-4b39-8cc6-86c859ac294f" src="/assets/img/1668c449782266c97fe5be683d1de91c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/>  ==&gt; <img alt="Alt text" class="en-media" longdesc="./1429632817596.png" name="377cde64-6313-4b26-b3da-62c18935a52b" src="/assets/img/4024a57ffefd45ffb1e049bd36dd8f51.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/> <br/>
+C2被撤销了。</p>
+<p style="margin: 0 0 1.1em;">比<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">reset</code>好在可以把撤销动作push到远程分支，共享给其他开发者。</p>
+</div><div>
+<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">随意移动commit</h4>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">1. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">cherry-pick</code></h5>
+<p style="margin: 0 0 1.1em;">这命令名字很长但其实很简单，就是把指定的几个commit拷贝一份，append到HEAD后面，比如：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ git cherry-pick C2 C4</code></pre>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430032079563.png" name="4dda4a03-65f9-4029-9d50-2598a6d46c0a" src="/assets/img/27e065839cde79c86a95eca5532fe04e.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/> ==&gt; <img alt="Alt text" class="en-media" longdesc="./1430032097845.png" name="f9f0d8d3-6a5f-4222-a158-b4cffd38767b" src="/assets/img/203e9f331c55a7f03b791bee2ff9cd07.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">2. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase -i</code></h5>
+<p style="margin: 0 0 1.1em;">该命令提供了一个交互式的界面（说是界面其实用VI打开个文本文件）让你整理最近的若干次提交，你可以在这里对 commit 进行删除、合并、重排序，是整理commit历史的利器。</p>
+<p style="margin: 0 0 1.1em;">比如你现在有3次提交，分别是<em>first/second/third</em>，<em>third</em>是最后一次提交。输入以下命令：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">git rebase -i HEAD~<span style="color: #ae81ff;">3</span></code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD~3</code>表明修改对象是从<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD~3</code>开始（不包括自己）到<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HAED</code>的3个commit。</p>
+<p style="margin: 0 0 1.1em;">然后出来一个文本文件让你编辑，怎么编辑有注释告诉你：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">pick <span style="color: #ae81ff;">65</span>bc434 first
+pick <span style="color: #ae81ff;">86253</span>cb second
+pick b2756fa third
+
+<span style="color: #75715e;"># Rebase ab14c02..b2756fa onto ab14c02 (3 command(s))</span>
+<span style="color: #75715e;">#</span>
+<span style="color: #75715e;"># Commands:</span>
+<span style="color: #75715e;"># p, pick = use commit</span>
+<span style="color: #75715e;"># r, reword = use commit, but edit the commit message</span>
+<span style="color: #75715e;"># e, edit = use commit, but stop for amending</span>
+<span style="color: #75715e;"># s, squash = use commit, but meld into previous commit</span>
+<span style="color: #75715e;"># f, fixup = like "squash", but discard this commit's log message</span>
+<span style="color: #75715e;"># x, exec = run command (the rest of the line) using shell</span>
+<span style="color: #75715e;">#</span>
+<span style="color: #75715e;"># These lines can be re-ordered; they are executed from top to bottom.</span>
+<span style="color: #75715e;">#</span>
+<span style="color: #75715e;"># If you remove a line here THAT COMMIT WILL BE LOST.</span>
+<span style="color: #75715e;">#</span>
+<span style="color: #75715e;"># However, if you remove everything, the rebase will be aborted.</span>
+<span style="color: #75715e;">#</span>
+<span style="color: #75715e;"># Note that empty commits are commented out</span></code></pre>
+<p style="margin: 0 0 1.1em;">假如我们想把second和third合并为一个commit <em>new</em> ，再把first丢在new的后面，应该这么搞：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">pick <span style="color: #ae81ff;">86253</span>cb second <span style="color: #75715e;">#选择second</span>
+s b2756fa third <span style="color: #75715e;">#s：合并到上一个commit</span>
+pick <span style="color: #ae81ff;">65</span>bc434 first <span style="color: #75715e;">#选择first</span></code></pre>
+<p style="margin: 0 0 1.1em;">整个过程其实是 <strong style="font-weight: bold;">先将分支回退到指定位置（这里是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD~3</code>）然后依次执行上面的命令</strong>：第一二行把second和third合并为一个提交，并让你编辑这个新提交的commit message： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1430037853286.png" name="4d76c9a2-a508-420a-babd-15c63cefd54f" src="/assets/img/c4e5eb5760023e46167c1ef179d9bbe4.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">第三行提交first，同样也能编辑commit信息，截图就不放了。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">远程</h2>
+<p style="margin: 0 0 1.1em;">远程分支是远程版本库中分支在本地的镜像，反应了远程库中分支的状态，是<strong style="font-weight: bold;">本地库与远程库交互的桥梁</strong>。它们和本地分支没什么不同，只不过在某种意义上远程分支是“只读”的：你通常不会手动去操作远程分支，只会通过与服务器的“推送”和“拉取”动作来更新它们；而且也无法把<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">HEAD</code>指针和远程分支绑定（attach）在一起。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">clone</h3>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git clone</code>从远程主机中克隆一个版本库到本地，git 将做以下动作：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>远程库被命名为 origin；</li>
+<li>将远程库的所有数据（分支、提交历史）拷贝到本地，远程库中的每个分支以一个远程分支的形式存在（名称为<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">远程主机名/分支名</code>，如<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">origin/master</code>）；</li>
+<li>以远程库中的当前分支为基准，创建一个同名的本地分支，方便你进行后续工作。</li>
+</ul>
+<p style="margin: 0 0 1.1em;">可以用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git branch -r</code>查看远程分支，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">-a</code>查看所有分支：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git branch <span>-a</span>                                                
+* master
+  remotes/origin/HEAD -&gt; origin/master
+  remotes/origin/Task_Description_Display
+  remotes/origin/Task_Description_Edit
+  remotes/origin/master</code></pre>
+<p style="margin: 0 0 1.1em;">以一个远程分支为基准创建本地分支的方式和之前一样：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git checkout origin/dev <span style="color: #75715e;">#移动HEAD指针到远程分支（进入detached HEAD模式）</span>
+&gt; git branch dev <span style="color: #75715e;">#创建新分支dev</span></code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git remote</code> 用来管理远程库，不太常用，一般用默认的 origin 就够了：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git remote show &lt;远程库&gt; <span style="color: #75715e;">#看地址</span>
+&gt; git remote add &lt;远程库&gt; &lt;地址&gt; <span style="color: #75715e;">#加</span>
+&gt; git remote rm &lt;远程库&gt; <span style="color: #75715e;">#删</span>
+&gt; git rename &lt;远程库&gt; &lt;新名字&gt; <span style="color: #75715e;">#重命名</span></code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">fetch</h3>
+<p style="margin: 0 0 1.1em;">如果远程库有了更新，可以用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git fetch</code>将更新拉取到本地，并将对应的远程分支（即 origin/master 等指针）移动到最新位置。</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git fetch &lt;远程库&gt;   <span style="color: #75715e;"># 取所有分支的更新，如果远程库有新的分支，本地会创建对应的远程分支</span>
+&gt; git fetch -p &lt;远程库&gt; <span style="color: #75715e;"># 同上，但会删除远程库中已不存在的远程分支，p==prunge</span>
+&gt; git fetch &lt;远程库&gt; &lt;分支名&gt; <span style="color: #75715e;"># 取特定分支的更新</span></code></pre>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git fetch</code>只会更新远程分支，不会影响本地分支。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">pull</h3>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git pull</code> == <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git fetch</code> + <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git merge</code>：</p>
+<p style="margin: 0 0 1.1em;">先从远程库拉取数据更新某个远程分支，再与指定本地分支进行merge。完整格式：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git pull &lt;远程库&gt; &lt;远程分支&gt;:&lt;本地分支&gt;
+&gt; git pull origin next:master <span style="color: #75715e;"># 更新origin/next，与master分支合并</span></code></pre>
+<p style="margin: 0 0 1.1em;">如果省略<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">&lt;本地分支&gt;</code>（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git pull origin &lt;远程分支&gt;</code>），则与当前分支合并。如果当前分支与远程分支是 <em>tracking</em>关系，则<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git pull</code>即可，省略所有参数。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">Tracking Branch</strong></p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">本地分支和远程分支间可以建立一种跟踪(Tracking)关系，这样的本地分支被称为 Tracking Branch。在跟踪分支上进行<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git pull</code>或<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git push</code>，Git会自动判断应向远程库中的哪个分支拉取/推送数据。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git clone</code>时会自动为 <em>新建的本地分支</em> 与 <em>对应远程分支</em> 之间建立跟踪关系，这也是为什么克隆完成后<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git pull/push</code>直接可用的原因。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">可以用下面的命令手动建立跟踪关系：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git branch -u &lt;远程分支&gt; &lt;本地分支&gt;
+或者
+&gt; git branch --set-upstream-to=&lt;远程分支&gt; &lt;本地分支&gt;</code></pre>
+</blockquote>
+<p style="margin: 0 0 1.1em;">如果合并远程分支时不想用默认的<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">merge</code>而是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">rebase</code>，可以加上<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">--rebase</code>参数：</p></div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git pull --rebase &lt;远程库&gt; &lt;远程分支&gt;:&lt;本地分支&gt;</code></pre>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">push</h3>
+<p style="margin: 0 0 1.1em;">将某个本地分支上的更新推送到远程库中的某个分支，完整格式：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git push &lt;远程库&gt; &lt;本地分支&gt;:&lt;远程分支&gt;</code></pre>
+<p style="margin: 0 0 1.1em;">如果省略<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">&lt;本地分支&gt;</code>（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git push origin &lt;远程分支&gt;</code>），则把当前分支推送到远程库中的指定分支，无则新建。如果当前分支有且只有一个跟踪的远程分支，不带参数的<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git push</code>即可。</p>
+<p style="margin: 0 0 1.1em;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git push</code>还用来删除远程库中的分支，方法是<strong style="font-weight: bold;">将一个空白的分支推送到指定分支</strong>：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git push origin :master <span style="color: #75715e;">#把远程库中的master分支删掉</span>
+等同于
+&gt; git push origin --delete master</code></pre>
+<p style="margin: 0 0 1.1em;">这个需求很常见而命令又很奇怪，很容易忘记。</p>
+<p style="margin: 0 0 1.1em;">不带参数的<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git push</code>默认只推送当前分支，这成为“simple”方式；还有一种“matching”方式推送所有分支。2.0后默认是simple，可以用如下命令更改：</p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">&gt; git config --global push.default simple</code></pre>
+<p style="margin: 0 0 1.1em;">如果远程库中分支的版本比本地更新，push时会报错，必须先在本地fetch，解决冲突并合并后再push。</p>
+<p style="margin: 0 0 1.1em;">加<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">-f</code> (force)选项可以用本地分支强制覆盖远程库中的分支。在整理提交历史时这个选项很有用，比如你刚做了两次提交并把它们push到了远程库中，现在你想把它们合并为一次，对本地分支可以用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git rebase -i</code>或者<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git reset</code>达到目的，但你无法把合并后的commit推送到远程库，这时可用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">-f</code>把你整理后的本地分支强制推送过去。</p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">常见GIT工作流</h2>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">集中式</h3>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430108058631.png" name="75777236-40df-4260-8d9c-7976ef133673" src="/assets/img/64d163dec7d1e7ae93d376ae01f14e8b.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">和传统SVN类似，只有一个远程库，开发者把库克隆到本地，进行修改再推送回去。库有更新了则先拉取下来进行合并，有冲突则解决冲突。</p>
+<p style="margin: 0 0 1.1em;">简单实用，小型团队这么干就够了。</p>
+</div><div>
+<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">Forking 工作流</h3>
+<p style="margin: 0 0 1.1em;">在Forking工作流下，通常有一个由专人维护的官方仓库，开发者们没有官方仓库的push权限，而是先从官方仓库fork一份私有库，开发工作都在该库上进行，开发完毕后向官方仓库发起一个pull request，请求从自己的私有库中拉取更新合并到官方库。</p>
+<p style="margin: 0 0 1.1em;">Forking工作流的一个主要优势是不用开放官方仓库的push权限给第三方。开发者push到自己fork出来的私有库，只有项目维护者才能push到正式仓库。这样项目维护者可以接受任何开发者（包括不受信的第三方）的提交，而不用开放官方仓库的写权限给他。</p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">Step1</strong>：维护者建立官方仓库，假设只有一个分支master</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430117288018.png" name="d42e02a5-a55e-4a06-b214-220f1a3a5426" src="/assets/img/b97e977f8b827962608d5dc0a9b27822.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">Step2</strong>：开发者fork一个自己的私有库，一般会在fork时勾选同步，这样Git服务器（github或stash）会自动将官方仓库的更新同步过来：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430117646167.png" name="223d316d-3a0a-4bd7-bd55-68a044f55067" src="/assets/img/cd0e58344cab3019fdb42ab400eb167f.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">Step3</strong>：开发者clone自己fork的库，并在新分支上（如dev）进行开发工作，开发完毕将其push到私有库的dev分支，私有库的master分支用于同步官方仓库，不直接修改：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430117815702.png" name="156dd713-ad9f-49c7-904f-5108d184cebb" src="/assets/img/11326c2fab04c269e4a42c8c37aea781.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">Step4</strong>：开发者创建一个pull request，通知维护者将自己私有库中的分支合并到官方仓库中：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430118213821.png" name="0f414936-91be-451c-848f-d2e901259c9e" src="/assets/img/26266e4567b95a93e9586052fb342256.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;">Stash 中创建pr的表单如下，你需要指定要将自己库中的哪个分支推送到官方库中的哪个分支，本例中是dev推送到master： <br/>
+<img alt="Alt text" class="en-media" longdesc="./1430118017839.png" name="5d3b23c7-fe10-430f-885e-31c3b0dacb44" src="/assets/img/1ebf158e129d86a327266327a14ba7ec.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">Step5</strong>：官方仓库的维护者收到pr后决定是否接受。Stash提供了GUI界面，维护者可以直接在网站中查看pr的代码修改、与开发者进行讨论，最后执行合并。接受pr的效果相当用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">git pull</code>命令拉取开发者仓库分支（dev）并merge到官方仓库分支（master），这也是 “pull request” 名称的由来。如果出现了冲突，维护者必须在本地从开发者仓库中fetch分支，合并到本地分支master，并解决冲突，最后将代码push到官方仓库：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430118926103.png" name="2300a2a9-3c22-46d5-8cf6-e7fb0c40160f" src="/assets/img/eee8dca00fb4737eb882b3baf3cfae7c.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; line-height: 1.45; font-size: .9em; word-wrap: break-word; background: #f6f6f6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="color: #75715e;"># 拉取开发者仓库中的分支</span>
+&gt; git fetch https://bitbucket.org/user/repo feature-branch
+<span style="color: #75715e;"># 查看变更</span>
+&gt; git checkout master
+<span style="color: #75715e;"># 解决冲突并合并</span>
+&gt; git merge FETCH_HEAD
+&gt; git push origin master</code></pre>
+<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">Step6</strong>：官方仓库的master分支向前走了，开发者私有仓库中的master分支会自动同步，开发者将最新代码pull到本地：</p>
+<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1430119179264.png" name="6a91b9cb-affd-4e66-9ae8-189c116db2c9" src="/assets/img/ac6870ef0627b403e2501bf4129b9cd5.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">Tips</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>Mac下的图形化Git：gitx；</li>
+<li>Ubuntu下的图形化Git：gitg；</li>
+</ol>
+</div><div>
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">参考资料</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><a href="http://blog.jobbole.com/76861/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Git工作流指南：Forking工作流</a></li>
+<li>《Pro Git》</li>
+<li><a href="http://pcottle.github.io/learnGitBranching/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Learn Git Branching</a></li>
+</ol></div><div></div></div>

@@ -1,0 +1,370 @@
+---
+layout: post
+title: "Restful API 的设计规范"
+category: "设计"
+---
+
+<div style="color: #2c3f51; line-height: 1.6;">
+<div style="line-height: 1.6;"></div>
+<div style="line-height: 1.6;">
+</div><div style="line-height: 1.6;">
+
+<p style="margin: 0 0 1.1em; line-height: 1.6;"></p>
+<div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Restful API 的设计规范</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. URI</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">URI规范</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">资源集合 vs 单个资源</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">避免层级过深的URI</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">对Composite资源的访问</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. Request</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">HTTP方法</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">安全性和幂等性</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">复杂查询</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Bookmarker</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Format</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Content Negotiation</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">6. Response</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">分页response</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">7. 错误处理</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">8. 服务型资源</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">9. 异步任务</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">10. API的演进</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">版本</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">URI失效</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">11. 安全</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">参考文档</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">本文总结了 RESTful API 设计相关的一些原则，只覆盖了常见的场景。有些规则只是针对自己项目而言，并非其他做法都是错误的。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. URI</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">URI 表示资源，资源一般对应服务器端领域模型中的实体类。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">URI规范</h3>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">不用大写；</li>
+<li style="line-height: 1.6;">用中杠<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">-</code>不用下杠<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">_</code>；</li>
+<li style="line-height: 1.6;">参数列表要encode；</li>
+<li style="line-height: 1.6;">URI中的名词表示资源集合，使用复数形式。</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">资源集合 vs 单个资源</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">URI表示资源的两种方式：资源集合、单个资源。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">资源集合：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">/zoos <span style="line-height: 1.6; color: #75715e;">//所有动物园</span>
+/zoos/<span style="line-height: 1.6; color: #ae81ff;">1</span>/animals <span style="line-height: 1.6; color: #75715e;">//id为1的动物园中的所有动物</span></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">单个资源：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">/zoos/<span style="line-height: 1.6; color: #ae81ff;">1</span> <span style="line-height: 1.6; color: #75715e;">//id为1的动物园</span>
+/zoos/<span style="line-height: 1.6; color: #ae81ff;">1</span>;<span style="line-height: 1.6; color: #ae81ff;">2</span>;<span style="line-height: 1.6; color: #ae81ff;">3</span> <span style="line-height: 1.6; color: #75715e;">//id为1，2，3的动物园</span></code></pre>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">避免层级过深的URI</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">/</code>在url中表达层级，用于<strong style="font-weight: bold; line-height: 1.6;">按实体关联关系进行对象导航</strong>，一般根据id导航。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">过深的导航容易导致url膨胀，不易维护，如 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">GET /zoos/1/areas/3/animals/4</code>，尽量使用查询参数代替路径中的实体导航，如<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">GET /animals?zoo=1&amp;area=3</code>；</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">对Composite资源的访问</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">服务器端的组合实体必须在uri中通过父实体的id导航访问。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">组合实体不是first-class的实体，它的生命周期完全依赖父实体，无法独立存在，在实现上通常是对数据库表中某些列的抽象，不直接对应表，也无id。一个常见的例子是 User — Address，Address是对User表中zipCode/country/city三个字段的简单抽象，无法独立于User存在。必须通过User索引到Address：<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">GET /user/1/addresses</code></p>
+</blockquote>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. Request</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">HTTP方法</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">通过标准HTTP方法对资源CRUD：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">GET：查询</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #f92672;">GET</span> /zoos
+<span style="line-height: 1.6; color: #f92672;">GET</span> /zoos/<span style="line-height: 1.6; color: #ae81ff;">1</span>
+<span style="line-height: 1.6; color: #f92672;">GET</span> /zoos/<span style="line-height: 1.6; color: #ae81ff;">1</span>/employees</code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">POST：创建单个资源。<strong style="font-weight: bold; line-height: 1.6;">POST一般向“资源集合”型uri发起</strong></p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #f92672;">POST</span> /animals  <span style="line-height: 1.6; color: #75715e;">//新增动物</span>
+<span style="line-height: 1.6; color: #f92672;">POST</span> /zoos/1/employees <span style="line-height: 1.6; color: #75715e;">//为id为1的动物园雇佣员工</span></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">PUT：更新单个资源（全量），客户端提供完整的更新后的资源。与之对应的是 PATCH，PATCH 负责部分更新，客户端提供要更新的那些字段。<strong style="font-weight: bold; line-height: 1.6;">PUT/PATCH一般向“单个资源”型uri发起</strong></p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">PUT <span style="line-height: 1.6; color: #ae81ff;">/animals/</span><span style="line-height: 1.6; color: #ae81ff;">1</span>
+PUT <span style="line-height: 1.6; color: #ae81ff;">/zoos/</span><span style="line-height: 1.6; color: #ae81ff;">1</span></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">DELETE：删除</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #f92672;">DELETE</span> <span style="line-height: 1.6; color: #ae81ff;">/zoos/</span><span style="line-height: 1.6; color: #ae81ff;">1</span><span style="line-height: 1.6; color: #ae81ff;">/employees/</span><span style="line-height: 1.6; color: #ae81ff;">2</span>
+<span style="line-height: 1.6; color: #f92672;">DELETE</span> <span style="line-height: 1.6; color: #ae81ff;">/zoos/</span><span style="line-height: 1.6; color: #ae81ff;">1</span><span style="line-height: 1.6; color: #ae81ff;">/employees/</span><span style="line-height: 1.6; color: #ae81ff;">2</span>;<span style="line-height: 1.6; color: #ae81ff;">4</span>;<span style="line-height: 1.6; color: #ae81ff;">5</span>
+<span style="line-height: 1.6; color: #f92672;">DELETE</span> <span style="line-height: 1.6; color: #ae81ff;">/zoos/</span><span style="line-height: 1.6; color: #ae81ff;">1</span><span style="line-height: 1.6; color: #ae81ff;">/animals  /</span><span style="line-height: 1.6; color: #ae81ff;">/删除id为1的动物园内的所有动物</span></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">HEAD / OPTION 用的不多，就不多解释了。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">安全性和幂等性</h3>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">安全性</strong>：不会改变资源状态，可以理解为只读的；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">幂等性</strong>：执行1次和执行N次，对资源状态改变的效果是等价的。</li>
+</ol>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">.</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">安全性</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">幂等性</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">GET</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">POST</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">×</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">×</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">PUT</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">×</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">DELETE</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">×</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+</tr>
+</tbody></table>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">安全性和幂等性均不保证反复请求能拿到相同的response。以 DELETE 为例，第一次DELETE返回200表示删除成功，第二次返回404提示资源不存在，这是允许的。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">复杂查询</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">查询可以捎带以下参数：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">.</th>
+<th align="left" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">示例</th>
+<th align="left" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">备注</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">过滤条件</td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">?type=1&amp;age=16</code></td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">允许一定的uri冗余，如<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">/zoos/1</code>与<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">/zoos?id=1</code></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">排序</td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">?sort=age,desc</code></td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">投影</td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">?whitelist=id,name,email</code></td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">分页</td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">?limit=10&amp;offset=3</code></td>
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+</tbody></table>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">Bookmarker</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">经常使用的、复杂的查询标签化，降低维护成本。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">如：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">GET /trades?<span style="line-height: 1.6; color: #f8f8f2;">status=</span>closed&amp;<span style="line-height: 1.6; color: #f8f8f2;">sort=</span>created,desc</code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">快捷方式：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #f92672;">GET</span> /trades<span style="line-height: 1.6;">#recently-closed</span>
+或者
+<span style="line-height: 1.6; color: #f92672;">GET</span> /trades/recently-closed</code></pre>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">Format</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">只用以下常见的3种body format：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Content-Type: application/json</strong></p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">POST /v1/animal HTTP/1.1
+Host: api.example.org
+Accept: application/json
+Content-Type: application/json
+Content-Length: 24
+
+{   
+  "name": "Gir",
+  "animalType": "12"
+}</code></pre></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Content-Type: application/x-www-form-urlencoded</strong> (浏览器POST表单用的格式)</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">POST /login HTTP/1.1
+Host: example.com
+Content-Length: 31
+Accept: text/html
+Content-Type: application/x-www-form-urlencoded
+
+username=root&amp;password=Zion0101</code></pre></li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Content-Type: multipart/form-data; boundary=—-RANDOM_jDMUxq4Ot5</strong> (表单有文件上传时的格式)</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">Content Negotiation</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">资源可以有多种表示方式，如json、xml、pdf、excel等等，客户端可以指定自己期望的格式，通常有两种方式：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">http header <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Accept</code>：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #66d9ef;">Accept</span><span style="line-height: 1.6; color: #f92672;">:application/xml</span>;q=<span style="line-height: 1.6; color: #ae81ff;">0</span>.<span style="line-height: 1.6; color: #ae81ff;">6</span>,application/atom+xml;q=<span style="line-height: 1.6; color: #ae81ff;">1.0</span></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">q为各项格式的偏好程度</p></li>
+<li style="line-height: 1.6;">url中加文件后缀：<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">/zoo/1.json</code></li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">6. Response</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">不要包装</strong>： <br/>
+response 的 body 直接就是数据，不要做多余的包装。错误示例：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">{
+    <span style="line-height: 1.6; color: #e6db74;">"success"</span>:<span style="line-height: 1.6; color: #ae81ff;">true</span>,
+    <span style="line-height: 1.6; color: #e6db74;">"data"</span>:{<span style="line-height: 1.6; color: #e6db74;">"id"</span>:<span style="line-height: 1.6; color: #ae81ff;">1</span>,<span style="line-height: 1.6; color: #e6db74;">"name"</span>:<span style="line-height: 1.6; color: #e6db74;">"xiaotuan"</span>},
+}</code></pre></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">各HTTP方法成功处理后的数据格式：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="left" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">·</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">response 格式</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">GET</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">单个对象、集合</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">POST</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">新增成功的对象</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">PUT/PATCH</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">更新成功的对象</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">DELETE</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">空</td>
+</tr>
+</tbody></table>
+</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">json格式的约定：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">时间用长整形(毫秒数)，客户端自己按需解析（<a href="http://mementjs.com" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">moment.js</a>）</li>
+<li style="line-height: 1.6;">不传<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">null</code>字段</li></ol></li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">分页response</h3>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">{
+    <span style="line-height: 1.6; color: #e6db74;">"paging"</span>:{<span style="line-height: 1.6; color: #e6db74;">"limit"</span>:<span style="line-height: 1.6; color: #ae81ff;">10</span>,<span style="line-height: 1.6; color: #e6db74;">"offset"</span>:<span style="line-height: 1.6; color: #ae81ff;">0</span>,<span style="line-height: 1.6; color: #e6db74;">"total"</span>:<span style="line-height: 1.6; color: #ae81ff;">729</span>},
+    <span style="line-height: 1.6; color: #e6db74;">"data"</span>:[{},{},{}...]
+}</code></pre>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">7. 错误处理</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">不要发生了错误但给2xx响应，客户端可能会缓存成功的http请求；</li>
+<li style="line-height: 1.6;">正确设置http状态码，不要自定义；</li>
+<li style="line-height: 1.6;">Response body 提供 1) 错误的代码（日志/问题追查）；2) 错误的描述文本（展示给用户）。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">对第三点的实现稍微多说一点：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">Java 服务器端一般用异常表示 RESTful API 的错误。API 可能抛出两类异常：业务异常和非业务异常。<strong style="font-weight: bold; line-height: 1.6;">业务异常</strong>由自己的业务代码抛出，表示一个用例的前置条件不满足、业务规则冲突等，比如参数校验不通过、权限校验失败。<strong style="font-weight: bold; line-height: 1.6;">非业务类异常</strong>表示不在预期内的问题，通常由类库、框架抛出，或由于自己的代码逻辑错误导致，比如数据库连接失败、空指针异常、除0错误等等。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">业务类异常必须提供2种信息：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">如果抛出该类异常，HTTP 响应状态码应该设成什么；</li>
+<li style="line-height: 1.6;">异常的文本描述；</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在Controller层使用统一的异常拦截器：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">设置 HTTP 响应状态码：对业务类异常，用它指定的 HTTP code；对非业务类异常，统一500；</li>
+<li style="line-height: 1.6;">Response Body 的错误码：异常类名</li>
+<li style="line-height: 1.6;">Response Body 的错误描述：对业务类异常，用它指定的错误文本；对非业务类异常，线上可以统一文案如“服务器端错误，请稍后再试”，开发或测试环境中用异常的 stacktrace，服务器端提供该行为的开关。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">常用的http状态码及使用场景：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="left" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">状态码</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">使用场景</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">400 bad request</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">常用在参数校验</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">401 unauthorized</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">未经验证的用户，常见于未登录。如果经过验证后依然没权限，应该 403（即 authentication 和 authorization 的区别）。</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">403 forbidden</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">无权限</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">404 not found</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">资源不存在</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">500 internal server error</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">非业务类异常</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="left" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">503 service unavaliable</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">由容器抛出，自己的代码不要抛这个异常</td>
+</tr>
+</tbody></table>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">8. 服务型资源</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">除了资源简单的CRUD，服务器端经常还会提供其他服务，这些服务无法直接用上面提到的URI映射。如：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">按关键字搜索；</li>
+<li style="line-height: 1.6;">计算地球上两点间的距离；</li>
+<li style="line-height: 1.6;">批量向用户推送消息</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">可以把这些服务看成资源，计算的结果是资源的presentation，按服务属性选择合适的HTTP方法。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">例：</p></div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">GET /search?q=filter?category=file  搜索
+GET /distance-calc?lats=<span style="line-height: 1.6; color: #ae81ff;">47.480</span>&amp;lngs=-<span style="line-height: 1.6; color: #ae81ff;">122.389</span>&amp;late=<span style="line-height: 1.6; color: #ae81ff;">37.108</span>&amp;lnge=-<span style="line-height: 1.6; color: #ae81ff;">122.448</span>
+POST /batch-publish-msg
+[{<span style="line-height: 1.6; color: #e6db74;">"from"</span>:<span style="line-height: 1.6; color: #ae81ff;">0</span>,<span style="line-height: 1.6; color: #e6db74;">"to"</span>:<span style="line-height: 1.6; color: #ae81ff;">1</span>,<span style="line-height: 1.6; color: #e6db74;">"text"</span>:<span style="line-height: 1.6; color: #e6db74;">"abc"</span>},{},{}<span style="line-height: 1.6; color: #f92672;">...</span>]</code></pre></div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">9. 异步任务</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">对耗时的异步任务，服务器端接受客户端传递的参数后，应返回创建成功的任务资源，其中包含了任务的执行状态。客户端可以轮训该任务获得最新的执行进度。</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">提交任务：
+POST /batch-publish-msg
+[{<span style="line-height: 1.6; color: #e6db74;">"from"</span>:<span style="line-height: 1.6; color: #ae81ff;">0</span>,<span style="line-height: 1.6; color: #e6db74;">"to"</span>:<span style="line-height: 1.6; color: #ae81ff;">1</span>,<span style="line-height: 1.6; color: #e6db74;">"text"</span>:<span style="line-height: 1.6; color: #e6db74;">"abc"</span>},{},{}<span style="line-height: 1.6; color: #f92672;">...</span>]
+
+返回：
+{<span style="line-height: 1.6; color: #e6db74;">"taskId"</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>,<span style="line-height: 1.6; color: #e6db74;">"createBy"</span>:<span style="line-height: 1.6; color: #e6db74;">"Anonymous"</span>,<span style="line-height: 1.6; color: #e6db74;">"status"</span>:<span style="line-height: 1.6; color: #e6db74;">"running"</span>}
+
+GET /task/<span style="line-height: 1.6; color: #ae81ff;">3</span>
+{<span style="line-height: 1.6; color: #e6db74;">"taskId"</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>,<span style="line-height: 1.6; color: #e6db74;">"createBy"</span>:<span style="line-height: 1.6; color: #e6db74;">"Anonymous"</span>,<span style="line-height: 1.6; color: #e6db74;">"status"</span>:<span style="line-height: 1.6; color: #e6db74;">"success"</span>}</code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">如果任务的执行状态包括较多信息，可以把“执行状态”抽象成<strong style="font-weight: bold; line-height: 1.6;">组合资源</strong>，客户端查询该状态资源了解任务的执行情况。</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">提交任务：
+POST /batch-publish-msg
+[{<span style="line-height: 1.6; color: #e6db74;">"from"</span>:<span style="line-height: 1.6; color: #ae81ff;">0</span>,<span style="line-height: 1.6; color: #e6db74;">"to"</span>:<span style="line-height: 1.6; color: #ae81ff;">1</span>,<span style="line-height: 1.6; color: #e6db74;">"text"</span>:<span style="line-height: 1.6; color: #e6db74;">"abc"</span>},{},{}<span style="line-height: 1.6; color: #f92672;">...</span>]
+
+返回：
+{<span style="line-height: 1.6; color: #e6db74;">"taskId"</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>,<span style="line-height: 1.6; color: #e6db74;">"createBy"</span>:<span style="line-height: 1.6; color: #e6db74;">"Anonymous"</span>}
+
+GET /task/<span style="line-height: 1.6; color: #ae81ff;">3</span>/status
+{<span style="line-height: 1.6; color: #e6db74;">"progress"</span>:<span style="line-height: 1.6; color: #e6db74;">"50%"</span>,<span style="line-height: 1.6; color: #e6db74;">"total"</span>:<span style="line-height: 1.6; color: #ae81ff;">18</span>,<span style="line-height: 1.6; color: #e6db74;">"success"</span>:<span style="line-height: 1.6; color: #ae81ff;">8</span>,<span style="line-height: 1.6; color: #e6db74;">"fail"</span>:<span style="line-height: 1.6; color: #ae81ff;">1</span>}</code></pre>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">10. API的演进</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">版本</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">常见的三种方式：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">在uri中放版本信息：<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">GET /v1/users/1</code></li>
+<li style="line-height: 1.6;">Accept Header：<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Accept: application/json+v1</code></li>
+<li style="line-height: 1.6;">自定义 Header：<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X-Api-Version: 1</code></li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">用第一种，虽然没有那么优雅，但最明显最方便。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">URI失效</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">随着系统发展，总有一些API失效或者迁移，对失效的API，返回404 not found 或 410 gone；对迁移的API，返回 301 重定向。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">11. 安全</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">这个不熟，接触到的时候再说。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">参考文档</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">&lt; RESTful Web Services Cookbook &gt;</li>
+<li style="line-height: 1.6;"><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fgithub.com%2Ftlhunter%2Fconsumer-centric-api-design" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Consumer-Centric API Design</a></li>
+<li style="line-height: 1.6;"><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fwww.zybuluo.com%2Fyanbo-ai%2Fnote%2F17890" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">RESTful Best Practices</a></li>
+</ol></div><div style="line-height: 1.6;"></div></div>

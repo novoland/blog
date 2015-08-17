@@ -4,177 +4,184 @@ title: "Java 并发基本知识"
 category: "并发"
 ---
 
-<div style="line-height: 1.5; color: #2c3f51;">
-<div></div>
-<div>
-</div><div>
+<div style="color: #2c3f51; line-height: 1.6;">
+<div style="line-height: 1.6;"></div>
+<div style="line-height: 1.6;">
+</div><div style="line-height: 1.6;">
 
-<p style="margin: 0 0 1.1em;"></p>
-<div><div><div>
-<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Java 并发基本知识</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 为什么要多线程？</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 线程基本操作</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 线程的状态及分析</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 线程中断</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">5. 互斥和协作</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">6. 死锁的4个必要条件</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">7. 常见的锁优化方法</a></li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"></p>
+<div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Java 并发基本知识</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 为什么要多线程？</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 线程基本操作</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 线程的状态及分析</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 线程中断</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">5. 互斥和协作</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">6. 死锁的4个必要条件</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">7. 常见的锁优化方法</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-</div></div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. 为什么要多线程？</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>利用多核CPU；</li>
-<li>利用阻塞时的空闲CPU资源，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">线程数 ≈ (运行时间 + 阻塞时间) / 运行时间</code>；</li>
-<li>均分计算资源，让多个任务能同时推进，而不是只服务一个客户。</li>
+</div>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. 为什么要多线程？</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">利用多核CPU；</li>
+<li style="line-height: 1.6;">利用阻塞时的空闲CPU资源，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">线程数 ≈ (运行时间 + 阻塞时间) / 运行时间</code>；</li>
+<li style="line-height: 1.6;">均分计算资源，让多个任务能同时推进，而不是只服务一个客户。</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. 线程基本操作</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;">两种创建线程的方法：</p>
-<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>继承<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread</code>类，重写<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">run()</code>；</li>
-<li>创建一个任务（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Runnable接口</code>），再创建一个<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread</code>对象驱动它。</li></ul>
-<p style="margin: 0 0 1.1em;">通过<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#start()</code>启动线程。</p></li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.yield()</code>，出让CPU资源，让给别的线程。只是个提示；</li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#setDaemon(true)</code>，守护线程，所有的非守护线程退出时程序结束，即使还有守护线程；</li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#join()</code>，等待该线程完成，在那之前当前线程阻塞；</li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#setUncaughtExceptionHandler(...)</code>，给线程安装异常处理器，处理线程运行时抛出的异常；</li>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. 线程基本操作</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">两种创建线程的方法：</p>
+<ul style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">继承<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread</code>类，重写<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">run()</code>；</li>
+<li style="line-height: 1.6;">创建一个任务（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Runnable接口</code>），再创建一个<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread</code>对象驱动它。</li></ul>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">通过<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#start()</code>启动线程。</p></li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.yield()</code>，出让CPU资源，让给别的线程。只是个提示；</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#setDaemon(true)</code>，守护线程，所有的非守护线程退出时程序结束，即使还有守护线程；</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#join()</code>，等待该线程完成，在那之前当前线程阻塞；</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#setUncaughtExceptionHandler(...)</code>，给线程安装异常处理器，处理线程运行时抛出的异常；</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">3. 线程的状态及分析</h2>
-<p style="margin: 0 0 1.1em;">线程的状态如下，其中绿色的4个状态对应java中<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.State</code>枚举类型的4个值。运行中线程的状态也是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">runnable</code>：</p>
-<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1404875926963.png" name="b74d3f46-33c3-46e6-9c55-4878fb29457f" src="/assets/img/d6c78c27079e697610a7b12e0b3faa42.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-<p style="margin: 0 0 1.1em;">用jdk自带工具<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">jstack</code>可以查看JVM内部线程的当前所处状态，及方法的调用栈。线程持有的锁 / 正在等待的锁 / 正在哪个对象上wait等信息也会被打印出来，这对排查死锁问题很有帮助：</p>
-</div><div>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">$ jstack <span style="color: #ae81ff;">31207</span> <span style="color: #75715e;"># pid</span>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">3. 线程的状态及分析</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">线程的状态如下，其中绿色的4个状态对应java中<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.State</code>枚举类型的4个值。运行中线程的状态也是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">runnable</code>：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><img alt="Alt text" class="en-media" longdesc="./1404875926963.png" name="b74d3f46-33c3-46e6-9c55-4878fb29457f" src="/assets/img/d6c78c27079e697610a7b12e0b3faa42.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">用jdk自带工具<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">jstack</code>可以查看JVM内部线程的当前所处状态，及方法的调用栈。线程持有的锁 / 正在等待的锁 / 正在哪个对象上wait等信息也会被打印出来，这对排查死锁问题很有帮助：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">$ jstack <span style="line-height: 1.6; color: #ae81ff;">31207</span> <span style="line-height: 1.6; color: #75715e;"># pid</span>
 ...
-<span style="color: #e6db74;">"t4"</span> prio=<span style="color: #ae81ff;">10</span> tid=<span style="color: #ae81ff;">0</span>x6dc53800 nid=<span style="color: #ae81ff;">0</span>x79fa <span style="color: #f92672;">in</span> Object.wait() [<span style="color: #ae81ff;">0</span>x6daa5000]
-   java.lang.Thread.State: WAITING (on object monitor) <span style="color: #75715e;"># &lt;-- state</span>
-    at java.lang.Object.wait(Native Method)            <span style="color: #75715e;"># &lt;-- stacktrace</span>
-    - waiting on &lt;<span style="color: #ae81ff;">0</span>x9ef2b8c8&gt; (a java.lang.Thread)     <span style="color: #75715e;"># &lt;-- 在哪个对象上wait</span>
-    at java.lang.Thread.join(Thread.java:<span style="color: #ae81ff;">1260</span>)
-    - locked &lt;<span style="color: #ae81ff;">0</span>x9ef2b8c8&gt; (a java.lang.Thread)         <span style="color: #75715e;"># &lt;-- 持有的lock</span>
-    at java.lang.Thread.join(Thread.java:<span style="color: #ae81ff;">1334</span>)
-    at ThreadStateTest<span style="color: #f8f8f2;">$4</span>.run(ThreadStateTest.java:<span style="color: #ae81ff;">53</span>)
-    at java.lang.Thread.run(Thread.java:<span style="color: #ae81ff;">724</span>)
+<span style="line-height: 1.6; color: #e6db74;">"t4"</span> prio=<span style="line-height: 1.6; color: #ae81ff;">10</span> tid=<span style="line-height: 1.6; color: #ae81ff;">0</span>x6dc53800 nid=<span style="line-height: 1.6; color: #ae81ff;">0</span>x79fa <span style="line-height: 1.6; color: #f92672;">in</span> Object.wait() [<span style="line-height: 1.6; color: #ae81ff;">0</span>x6daa5000]
+   java.lang.Thread.State: WAITING (on object monitor) <span style="line-height: 1.6; color: #75715e;"># &lt;-- state</span>
+    at java.lang.Object.wait(Native Method)            <span style="line-height: 1.6; color: #75715e;"># &lt;-- stacktrace</span>
+    - waiting on &lt;<span style="line-height: 1.6; color: #ae81ff;">0</span>x9ef2b8c8&gt; (a java.lang.Thread)     <span style="line-height: 1.6; color: #75715e;"># &lt;-- 在哪个对象上wait</span>
+    at java.lang.Thread.join(Thread.java:<span style="line-height: 1.6; color: #ae81ff;">1260</span>)
+    - locked &lt;<span style="line-height: 1.6; color: #ae81ff;">0</span>x9ef2b8c8&gt; (a java.lang.Thread)         <span style="line-height: 1.6; color: #75715e;"># &lt;-- 持有的lock</span>
+    at java.lang.Thread.join(Thread.java:<span style="line-height: 1.6; color: #ae81ff;">1334</span>)
+    at ThreadStateTest<span style="line-height: 1.6; color: #f8f8f2;">$4</span>.run(ThreadStateTest.java:<span style="line-height: 1.6; color: #ae81ff;">53</span>)
+    at java.lang.Thread.run(Thread.java:<span style="line-height: 1.6; color: #ae81ff;">724</span>)
 ...</code></pre>
-<p style="margin: 0 0 1.1em;">java对阻塞状态又细分为3个状态：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">blocked</code></strong> <br/>
-专指等待获取monitor，进入<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">synchronized</code>块的线程。</p>
-<p style="margin: 0 0 1.1em;">jstack输出:</p>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">java<span>.lang</span><span>.Thread</span><span>.State</span>: BLOCKED (on <span style="color: #f8f8f2;">object</span> monitor)</code></pre></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">waiting</code></strong> <br/>
-有两个方法会导致线程进入该状态：<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Unsafe.park()</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Object#wait</code>。</p>
-<p style="margin: 0 0 1.1em;">前者用于阻塞某个线程，典型场景是使用了JUC包内提供的同步器或同步数据结构，它们的内部依赖<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">LockSupport</code>类阻塞线程，该类进一步调用了<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Unsafe.park()</code>。它的jstack输出为：</p>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">java<span>.lang</span><span>.Thread</span><span>.State</span>: WAITING (parking)</code></pre>
-<p style="margin: 0 0 1.1em;">后者jstack输出如下。值得注意的是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#join()</code>也是基于java自带的monitor/condition机制实现的：</p>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">java<span>.lang</span><span>.Thread</span><span>.State</span>: WAITING (on <span style="color: #f8f8f2;">object</span> monitor)</code></pre></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">timed_waiting</code></strong> <br/>
-<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Unsafe.park()</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Object#wait()</code>的超时版本会让线程进入这个状态。</p>
-<p style="margin: 0 0 1.1em;">此外，调用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.sleep(...)</code>主动睡眠也是进入<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">timed_waiting</code>状态，此时jstack输出：</p>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">java<span>.lang</span><span>.Thread</span><span>.State</span>: TIMED_WAITING (sleeping)</code></pre></li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">以下3种状态的线程均为 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Runnable</code>：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">正在执行中；</li>
+<li style="line-height: 1.6;">可以执行，在等待CPU时间片；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">在IO资源上等待，如阻塞在socket.read()上</strong>。</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">4. 线程中断</h2>
-<p style="margin: 0 0 1.1em;">中断相关的几个方法：</p>
-</div><div>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">public</span> <span style="color: #f92672;"><span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">interrupt</span><span style="color: #f8f8f2;">()</span></span>; <span style="color: #75715e;">// 中断某个线程；</span>
-<span style="color: #f92672;">public</span> <span style="color: #f92672;"><span style="color: #66d9ef;">boolean</span> <span style="color: #a6e22e;">isInterrupted</span><span style="color: #f8f8f2;">()</span></span>; <span style="color: #75715e;">// 返回线程的中断标志位；</span>
-<span style="color: #f92672;">public</span> <span style="color: #f92672;">static</span> <span style="color: #f92672;"><span style="color: #66d9ef;">boolean</span> <span style="color: #a6e22e;">interrupted</span><span style="color: #f8f8f2;">()</span></span>; <span style="color: #75715e;">//返回*当前*线程的中断标志位，并重置。这可以保证并发结构不会就某个任务被中断这个问题通知你两次；</span></code></pre>
-<p style="margin: 0 0 1.1em;">每个线程都有一个interrupt status标志位，用于表明当前线程是否处于中断状态。调用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#interrupt()</code>时：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;">若线程处于 <strong style="font-weight: bold;">可中断的阻塞状态</strong> (即<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">WAITING / TIMED_WAITING</code> 状态)，则复位中断标志位，立即取消阻塞状态，并抛出<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>(这也是为什么这些方法签名都会抛出 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>的原因)，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>的处理者决定如何响应中断请求；</p></li>
-<li><p style="margin: 0 0 1.1em;">其他情况下，仅设置其<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">中断标志位</code>， 需要该线程先通过<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#isInterrrupted()</code>或<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.interrupted()</code>查询再处理。</p></li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">尤其要注意第三点，IO阻塞的线程在jstack里的输出也是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Runnable</code>的。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">阻塞状态不涉及进程外的阻塞（如IO阻塞），只描述JVM内部并发/主动休眠等原因导致的线程阻塞，3种细分：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">blocked</code></strong> <br/>
+专指等待获取monitor，进入<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">synchronized</code>块的线程。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">jstack输出:</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">java<span style="line-height: 1.6;">.lang</span><span style="line-height: 1.6;">.Thread</span><span style="line-height: 1.6;">.State</span>: BLOCKED (on <span style="line-height: 1.6; color: #f8f8f2;">object</span> monitor)</code></pre></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">waiting</code></strong> <br/>
+有两个方法会导致线程进入该状态：<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Unsafe.park()</code> 和 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Object#wait</code>。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">前者用于阻塞某个线程，典型场景是使用了JUC包内提供的同步器或同步数据结构，它们的内部依赖<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">LockSupport</code>类阻塞线程，该类进一步调用了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Unsafe.park()</code>。它的jstack输出为：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">java<span style="line-height: 1.6;">.lang</span><span style="line-height: 1.6;">.Thread</span><span style="line-height: 1.6;">.State</span>: WAITING (parking)</code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">后者jstack输出如下。<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#join()</code>也是基于java自带的monitor/condition机制实现的：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">java<span style="line-height: 1.6;">.lang</span><span style="line-height: 1.6;">.Thread</span><span style="line-height: 1.6;">.State</span>: WAITING (on <span style="line-height: 1.6; color: #f8f8f2;">object</span> monitor)</code></pre></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">timed_waiting</code></strong> <br/>
+<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Unsafe.park()</code> 和 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Object#wait()</code>的超时版本会让线程进入这个状态。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">此外，调用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.sleep(...)</code>主动睡眠也是进入<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">timed_waiting</code>状态，此时jstack输出：</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">java<span style="line-height: 1.6;">.lang</span><span style="line-height: 1.6;">.Thread</span><span style="line-height: 1.6;">.State</span>: TIMED_WAITING (sleeping)</code></pre></li>
+</ol></div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">4. 线程中断</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">中断相关的几个方法：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #f92672;">public</span> <span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">void</span> <span style="line-height: 1.6; color: #a6e22e;">interrupt</span><span style="line-height: 1.6; color: #f8f8f2;">()</span></span>; <span style="line-height: 1.6; color: #75715e;">// 中断某个线程；</span>
+<span style="line-height: 1.6; color: #f92672;">public</span> <span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">boolean</span> <span style="line-height: 1.6; color: #a6e22e;">isInterrupted</span><span style="line-height: 1.6; color: #f8f8f2;">()</span></span>; <span style="line-height: 1.6; color: #75715e;">// 返回线程的中断标志位；</span>
+<span style="line-height: 1.6; color: #f92672;">public</span> <span style="line-height: 1.6; color: #f92672;">static</span> <span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">boolean</span> <span style="line-height: 1.6; color: #a6e22e;">interrupted</span><span style="line-height: 1.6; color: #f8f8f2;">()</span></span>; <span style="line-height: 1.6; color: #75715e;">//返回*当前*线程的中断标志位，并重置。这可以保证并发结构不会就某个任务被中断这个问题通知你两次；</span></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">每个线程都有一个interrupt status标志位，用于表明当前线程是否处于中断状态。调用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#interrupt()</code>时：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">若线程处于 <strong style="font-weight: bold; line-height: 1.6;">可中断的阻塞状态</strong> (即<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">WAITING / TIMED_WAITING</code> 状态)，则复位中断标志位，立即取消阻塞状态，并抛出<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>(这也是为什么这些方法签名都会抛出 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>的原因)，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>的处理者决定如何响应中断请求；</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">其他情况下，仅设置其<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">中断标志位</code>， 需要该线程先通过<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread#isInterrrupted()</code>或<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.interrupted()</code>查询再处理。</p></li>
 </ol>
-<p style="margin: 0 0 1.1em;">由此可见，中断是一种协作机制，interrupt一个线程不是粗鲁地立即停止其当前正在进行的事情，而是请求该线程在它愿意并且方便的时候停止它的执行，这种请求可能是粗暴的(抛出<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>)，可能是温和的(仅设置中断标志位)。</p>
-<p style="margin: 0 0 1.1em;">被中断线程可以用任意方式处理中断信号，对于非阻塞但耗时较长的操作，可以轮询中断状态位，在被中断的时候执行必要的逻辑并退出。中断使得我们可以更安全地取消任务：不负责任地立即杀死一个线程可能导致资源的泄露、事务的不完整或业务的缺失等等，需要给被中断线程一个机会在退出之前进行必要的清理工作。</p>
-<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">无法处理<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>时怎么办？</strong></p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>继续抛出InterruptedException，让上层处理：</li>
-<li>如果无法上抛异常，须在<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">catch</code>块里调用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.currentThread().interrupt()</code>设置当前的中断标记位，让后续逻辑知道线程被中断过。</li>
-<li>不要 swallow 异常。</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">由此可见，中断是一种协作机制，interrupt一个线程不是粗鲁地立即停止其当前正在进行的事情，而是请求该线程在它愿意并且方便的时候停止它的执行，这种请求可能是粗暴的(抛出<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>)，可能是温和的(仅设置中断标志位)。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">被中断线程可以用任意方式处理中断信号，对于非阻塞但耗时较长的操作，可以轮询中断状态位，在被中断的时候执行必要的逻辑并退出。中断使得我们可以更安全地取消任务：不负责任地立即杀死一个线程可能导致资源的泄露、事务的不完整或业务的缺失等等，需要给被中断线程一个机会在退出之前进行必要的清理工作。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">无法处理<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">InterruptedException</code>时怎么办？</strong></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">继续抛出InterruptedException，让上层处理：</li>
+<li style="line-height: 1.6;">如果无法上抛异常，须在<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">catch</code>块里调用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Thread.currentThread().interrupt()</code>设置当前的中断标记位，让后续逻辑知道线程被中断过。</li>
+<li style="line-height: 1.6;">不要 swallow 异常。</li>
 </ol>
-<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">使用interrupt()实现可取消的任务:</strong></p>
-</div><div>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span style="color: #f92672;">public</span> <span><span style="color: #66d9ef;">class</span> <span style="color: #f8f8f2;">PrimeProducer</span> <span style="color: #f92672;">extends</span> <span style="color: #a6e22e; font-style: italic;">Thread</span> </span>{
-    <span style="color: #f92672;">private</span> <span style="color: #f92672;">final</span> BlockingQueue&lt;BigInteger&gt; queue;
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">使用interrupt()实现可取消的任务:</strong></p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><span style="line-height: 1.6; color: #f92672;">public</span> <span style="line-height: 1.6;"><span style="line-height: 1.6; color: #66d9ef;">class</span> <span style="line-height: 1.6; color: #f8f8f2;">PrimeProducer</span> <span style="line-height: 1.6; color: #f92672;">extends</span> <span style="line-height: 1.6; color: #a6e22e; font-style: italic;">Thread</span> </span>{
+    <span style="line-height: 1.6; color: #f92672;">private</span> <span style="line-height: 1.6; color: #f92672;">final</span> BlockingQueue&lt;BigInteger&gt; queue;
 
     PrimeProducer(BlockingQueue&lt;BigInteger&gt; queue) {
-        <span style="color: #f92672;">this</span>.queue = queue;
+        <span style="line-height: 1.6; color: #f92672;">this</span>.queue = queue;
     }
 
-    <span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">run</span><span style="color: #f8f8f2;">()</span> </span>{
-        <span style="color: #f92672;">try</span> {
+    <span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">public</span> <span style="line-height: 1.6; color: #66d9ef;">void</span> <span style="line-height: 1.6; color: #a6e22e;">run</span><span style="line-height: 1.6; color: #f8f8f2;">()</span> </span>{
+        <span style="line-height: 1.6; color: #f92672;">try</span> {
             BigInteger p = BigInteger.ONE;
-            <span style="color: #75715e;">//轮询中断标志位，判断是否需要取消任务</span>
-            <span style="color: #f92672;">while</span> (!Thread.currentThread().isInterrupted())
+            <span style="line-height: 1.6; color: #75715e;">//轮询中断标志位，判断是否需要取消任务</span>
+            <span style="line-height: 1.6; color: #f92672;">while</span> (!Thread.currentThread().isInterrupted())
                queue.put(p = p.nextProbablePrime());
-        } <span style="color: #f92672;">catch</span> (InterruptedException consumed) {
-           <span style="color: #75715e;">/* 任务被取消，退出。这里对中断的处理方式就是退出任务，因此可以swallow */</span>
+        } <span style="line-height: 1.6; color: #f92672;">catch</span> (InterruptedException consumed) {
+           <span style="line-height: 1.6; color: #75715e;">/* 任务被取消，退出。这里对中断的处理方式就是退出任务，因此可以swallow */</span>
         }
     }
 
-    <span style="color: #75715e;">//发起中断，取消任务执行</span>
-    <span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">cancel</span><span style="color: #f8f8f2;">()</span> </span>{ interrupt(); }
+    <span style="line-height: 1.6; color: #75715e;">//发起中断，取消任务执行</span>
+    <span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">public</span> <span style="line-height: 1.6; color: #66d9ef;">void</span> <span style="line-height: 1.6; color: #a6e22e;">cancel</span><span style="line-height: 1.6; color: #f8f8f2;">()</span> </span>{ interrupt(); }
  }</code></pre>
-<p style="margin: 0 0 1.1em;">参考资料：<a href="http://www.ibm.com/developerworks/java/library/j-jtp05236.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank"> Java theory and practice: Dealing with InterruptedException</a></p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">5. 互斥和协作</h2>
-<p style="margin: 0 0 1.1em;">二元lock保证线程之间的互斥，让线程顺序地进入临界区，保证线程不会观察到其他线程操作的中间状态；condition则用于线程间的协作，当某个线程发现条件不满足时主动进入阻塞，直到其他线程修改了条件并将其唤醒。条件的测试和修改都要锁保证互斥, 因此几乎在所有的实现中, <strong style="font-weight: bold;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">condition</code> 都是和一个锁绑定在一起, 工作在一个锁的上下文中的</strong>; 但一个锁可以有多个<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">condition</code>。</p>
-<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">condition</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock</code> 的使用范式如下:</p>
-</div><div>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">condition = lock.newCondition()
+<p style="margin: 0 0 1.1em; line-height: 1.6;">参考资料：<a href="http://www.ibm.com/developerworks/java/library/j-jtp05236.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank"> Java theory and practice: Dealing with InterruptedException</a></p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">5. 互斥和协作</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">二元lock保证线程之间的互斥，让线程顺序地进入临界区，保证线程不会观察到其他线程操作的中间状态；condition则用于线程间的协作，当某个线程发现条件不满足时主动进入阻塞，直到其他线程修改了条件并将其唤醒。条件的测试和修改都要锁保证互斥, 因此几乎在所有的实现中, <strong style="font-weight: bold; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">condition</code> 都是和一个锁绑定在一起, 工作在一个锁的上下文中的</strong>; 但一个锁可以有多个<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">condition</code>。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://stackoverflow.com/questions/2763714/why-do-pthreads-condition-variable-functions-require-a-mutex" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Why do pthreads’ condition variable functions require a mutex?</a></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">condition</code> 和 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock</code> 的使用范式如下:</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">condition = lock.newCondition()
 
-<span style="color: #75715e;">/* consumer */</span>
+<span style="line-height: 1.6; color: #75715e;">/* consumer */</span>
 lock()
-    <span style="color: #f92672;">while</span>(条件不成立){
-        condition.wait() <span style="color: #75715e;">// 1.原子地[ 释放锁 + 阻塞线程 ]; 2.然后原子地[ 被唤醒 + 尝试获取锁]</span>
+    <span style="line-height: 1.6; color: #f92672;">while</span>(条件不成立){
+        condition.wait() <span style="line-height: 1.6; color: #75715e;">// 1.原子地[ 释放锁 + 阻塞线程 ]; 2.然后原子地[ 被唤醒 + 尝试获取锁]</span>
     }
-    <span style="color: #75715e;">// 条件成立, do sth</span>
+    <span style="line-height: 1.6; color: #75715e;">// 条件成立, do sth</span>
 unlock()
 
-<span style="color: #75715e;">/* producer */</span>
+<span style="line-height: 1.6; color: #75715e;">/* producer */</span>
 lock()
-    <span style="color: #75715e;">// do sth</span>
+    <span style="line-height: 1.6; color: #75715e;">// do sth</span>
     改变条件
-    condition.signalAll()  <span style="color: #75715e;">// 唤醒阻塞在该 condition 上的线程, 让它们重新参与锁的竞争</span>
+    condition.signalAll()  <span style="line-height: 1.6; color: #75715e;">// 唤醒阻塞在该 condition 上的线程, 让它们重新参与锁的竞争</span>
 unlock()</code></pre>
-<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">wait</code>必须包裹在一个对条件的循环测试中, 这是因为<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">wait</code>存在 <a href="http://en.wikipedia.org/wiki/Spurious_wakeup" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Supurious Wakeup</a> 的问题, 即线程可能莫名其妙地被唤醒; 此外, 为了防止由于疏忽导致条件在<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock</code>的临界区外被更新, 被阻塞的线程在醒来后需要再一次判断条件是否成立, 如果不成立则继续阻塞.</p>
-<p style="margin: 0 0 1.1em;">Java 在语言层面提供了内置的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock(monitor) + condition</code> 组合:</p>
-</div><div>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;">Object lock = <span style="color: #f92672;">new</span> Object();
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">wait</code>必须包裹在一个对条件的循环测试中, 这是因为<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">wait</code>存在 <a href="http://en.wikipedia.org/wiki/Spurious_wakeup" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Supurious Wakeup</a> 的问题, 即线程可能莫名其妙地被唤醒; 此外, 为了防止由于疏忽导致条件在<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock</code>的临界区外被更新, 被阻塞的线程在醒来后需要再一次判断条件是否成立, 如果不成立则继续阻塞.</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">Java 在语言层面提供了内置的 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock(monitor) + condition</code> 组合:</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;">Object lock = <span style="line-height: 1.6; color: #f92672;">new</span> Object();
 
-<span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">consume</span><span style="color: #f8f8f2;">()</span></span>{
-    <span style="color: #f92672;">synchronized</span>(lock){
-        <span style="color: #f92672;">while</span>(条件不成立)
+<span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">public</span> <span style="line-height: 1.6; color: #66d9ef;">void</span> <span style="line-height: 1.6; color: #a6e22e;">consume</span><span style="line-height: 1.6; color: #f8f8f2;">()</span></span>{
+    <span style="line-height: 1.6; color: #f92672;">synchronized</span>(lock){
+        <span style="line-height: 1.6; color: #f92672;">while</span>(条件不成立)
             lock.wait();
-        <span style="color: #75715e;">// consume</span>
+        <span style="line-height: 1.6; color: #75715e;">// consume</span>
     }
 }
 
-<span style="color: #f92672;"><span style="color: #66d9ef;">public</span> <span style="color: #66d9ef;">void</span> <span style="color: #a6e22e;">produce</span><span style="color: #f8f8f2;">()</span></span>{
-    <span style="color: #f92672;">synchronized</span>(lock){
-        <span style="color: #75715e;">// produce</span>
+<span style="line-height: 1.6; color: #f92672;"><span style="line-height: 1.6; color: #66d9ef;">public</span> <span style="line-height: 1.6; color: #66d9ef;">void</span> <span style="line-height: 1.6; color: #a6e22e;">produce</span><span style="line-height: 1.6; color: #f8f8f2;">()</span></span>{
+    <span style="line-height: 1.6; color: #f92672;">synchronized</span>(lock){
+        <span style="line-height: 1.6; color: #75715e;">// produce</span>
         改变条件
-        lock.notifyAll(); <span style="color: #75715e;">// or notify()</span>
+        lock.notifyAll(); <span style="line-height: 1.6; color: #75715e;">// or notify()</span>
     }
 }</code></pre>
-<p style="margin: 0 0 1.1em;">每个 Object 都内置一把锁, 该锁内部有且只有一个隐含的 condition. <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">synchronized(obj){}</code>即获取该锁并在块结束的时候自动释放锁, <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">obj.wait()</code>即在该 condition 上等待; <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">obj.notify()</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">obj.notifyAll()</code> 则是唤醒在该 condition 等待的线程重新竞争锁, 不同的是前者唤醒一个线程, 后者唤醒所有.</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">6. 死锁的4个必要条件</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">资源独占</strong> <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">每个 Object 都内置一把锁, 该锁内部有且只有一个隐含的 condition. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">synchronized(obj){}</code>即获取该锁并在块结束的时候自动释放锁, <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">obj.wait()</code>即在该 condition 上等待; <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">obj.notify()</code> 和 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">obj.notifyAll()</code> 则是唤醒在该 condition 等待的线程重新竞争锁, 不同的是前者唤醒一个线程, 后者唤醒所有.</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">6. 死锁的4个必要条件</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">资源独占</strong> <br/>
 资源的使用是互斥的。</p></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">不可剥夺</strong> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">不可剥夺</strong> <br/>
 不可强行从资源占有者手中夺取资源，只能由占有者自愿释放。    </p></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">请求与保持</strong> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">请求与保持</strong> <br/>
 申请资源的时候同时保持对原有资源的占有。</p></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">循环等待</strong> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">循环等待</strong> <br/>
 若干线程同时持有的资源和请求的资源组成一个回路。</p></li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">7. 常见的锁优化方法</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Lock-free</code> 算法，避免锁和阻塞；</li>
-<li>尽可能减小临界区长度；</li>
-<li>拆锁，如<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ConcurrentHashMap</code> / <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ReadWriteLock</code>；</li>
-<li>CopyOnWrite，避免读加锁</li>
-</ol></div><div></div></div>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">7. 常见的锁优化方法</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Lock-free</code> 算法，避免锁和阻塞；</li>
+<li style="line-height: 1.6;">尽可能减小临界区长度；</li>
+<li style="line-height: 1.6;">拆锁，如<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ConcurrentHashMap</code> / <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ReadWriteLock</code>；</li>
+<li style="line-height: 1.6;">CopyOnWrite，避免读加锁</li>
+</ol></div><div style="line-height: 1.6;"></div></div>

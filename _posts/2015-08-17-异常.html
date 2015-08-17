@@ -1,0 +1,69 @@
+---
+layout: post
+title: "异常"
+category: "设计"
+---
+
+<div style="color: #2c3f51; font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif; line-height: 1.6;">
+<div style="line-height: 1.6;"></div>
+<div style="line-height: 1.6;">
+</div><div style="line-height: 1.6;">
+
+<p style="margin: 0 0 1.1em; line-height: 1.6;"></p></div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. 异常分类</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">JDK提供的异常基础类关系如下：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">           +---------+   </div><div style="line-height: 1.6;">           |Throwable|   </div><div style="line-height: 1.6;">           +-+------++   </div><div style="line-height: 1.6;">             ^      ^    </div><div style="line-height: 1.6;">             |      |    </div><div style="line-height: 1.6;">    +--------++   +-+---+</div><div style="line-height: 1.6;">    |Exception|   |Error|</div><div style="line-height: 1.6;">    +----+----+   +-----+</div><div style="line-height: 1.6;">         ^               </div><div style="line-height: 1.6;">         |               </div><div style="line-height: 1.6;">+--------+-------+       </div><div style="line-height: 1.6;">|RuntimeException|       </div><div style="line-height: 1.6;">+----------------+       </div></div></div></div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">异常分两种：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">继承 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Exception</code> 的异常类称为<strong style="font-weight: bold; line-height: 1.6;">checked exception</strong>，一个方法抛出 checked exception，就必须在方法签名中加上 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">throws</code> 声明，否则无法通过编译，这也是称为 “checked” 的原因。调用方如果选择继续向上抛出，则也应在自己的方法加上相应声明。</li>
+<li style="line-height: 1.6;">继承<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">RuntimeException</code>的异常类称为<strong style="font-weight: bold; line-height: 1.6;">unchecked exception</strong>，编译器不会检查。</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. 什么时候抛出异常</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">《程序员修炼之道-从小工到专家》第四章介绍了一种被称为“Design By Contract（按合约设计）”的设计思路，它认为，程序中的每个函数在提供某项服务，在开始真正逻辑之前，函数对程序当前的状态有某种<em style="line-height: 1.6;">期望</em>，函数对服务成功完成后程序的状态有某种<em style="line-height: 1.6;">承诺</em>。这些<em style="line-height: 1.6;">期望</em>和<em style="line-height: 1.6;">承诺</em>可以这样描述：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Precondition</strong>：为了调用函数，必须为真的条件，函数的需求。在 Precondition 无法被满足时，函数不应开始提供服务。Precondition 通常指的是<strong style="font-weight: bold; line-height: 1.6;">参数的合法性</strong>，调用者有责任保证传递的参数的正确性；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Postcondition</strong>：函数保证会做的事情，方法完成时程序的状态，一个use case的happy ending；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Class Invariant</strong>（暂不讨论）：类确保从调用者的视角来看，该条件始终为真。在函数执行过程中，不变项不一定会保持，但在函数退出时，不变项必须为真。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">举个例子，一个方法向指定用户发送push，它接受两个参数，用户id和message，具体实现是：1）查询用户设置，如果用户关闭了push 则不发送；2）查询用户当天收到的push数，超过阈值则不发送；3）调用第三方API，根据id找到设备token；4）调用第三方API，对指定设备发送push。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">对这个方法，id、message不为空这类参数格式约束条件属于 Precondition。方法成功执行后，要么由于用户的设置、收到push太多而选择不push，要么成功向用户发送push，这属于方法的 Postcondition。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">函数和调用者之间的<em style="line-height: 1.6;">合约</em>可以解读为：</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">如果调用者满足了函数的所有Precondition，那么函数在完成时，所有Postcondition和Class Invariant为真。</p>
+</blockquote>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">所以，什么时候抛异常？</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">当函数在开始真正业务逻辑之前发现Precondition不满足、业务逻辑进行过程中由于各种原因（业务规则冲突、第三方库调用失败、代码错误等）导致无法满足Postcondition时，抛异常。</p>
+</blockquote>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">以上述push方法为例，如果参数id或message为null，违反了Precondition，方法可以立即抛出<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">IllegalArgumentException</code>而不进入业务逻辑。另一方面，导致方法无法满足Postcondition的原因有很多，比如用户不存在、数据库连接失败、第三方API调用失败、找不到用户的设备token等等，这些情况也应该抛出异常。虽然用户关闭push、接收push过多也会导致push发送失败，但这属于正常的业务逻辑范畴，不算异常情况。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">这里有几个常见问题：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">1.<strong style="font-weight: bold; line-height: 1.6;">为什么不用异常码？</strong> <br/>
+很多人喜欢返回bool表示函数是否成功，或在失败的时候返回null、特殊的异常码。这种方案的第一个问题是，调用方无法知道到底是什么原因导致失败的（返回bool/null）；第二个问题是，调用方可以选择忽略异常码，但异常如果不处理则会沿调用栈上浮，到达最上层的统一异常处理器，或导致当前线程退出，从而实现fail-fast，系统不至于处在一个不稳定的、非正确的状态。此外，异常还可以将错误处理代码隔离到<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">catch</code>块内，保持正常业务代码整洁。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">2.<strong style="font-weight: bold; line-height: 1.6;">参数校验谁做？</strong> <br/>
+调用方有责任保证参数的合法性，但函数本身对调用方应该是防御性的，因此最完备的方案是进行两次校验，一次在调用方，一次在函数内。很多情况下这样显得很繁琐，所以如果函数是在一个可信、可控的环境中被调用的，比如调用方和函数都是你写的，那么函数内的参数校验可以省略；但假如你在写一个公共库，那么函数内的参数校验就是必须的。常见的参数校验库有<a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fcode.google.com%2Fp%2Fguava-libraries%2Fwiki%2FPreconditionsExplained" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Guava 的 Preconditions</a>、<a href="http://jinnianshilongnian.iteye.com/blog/1990081" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Bean Validation 1.1 的实现 Hibernate Validator</a>。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">3.<strong style="font-weight: bold; line-height: 1.6;">异常的情况有很多种，用一堆异常类还是一个异常类+各种ErrorCode？</strong> <br/>
+我的答案是用一堆异常类，原因：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">CashNotEnoughException</code> 比 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ServiceException</code> + <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ErrorType.CASH_NOT_ENOUGH</code> 更显式；</li>
+<li style="line-height: 1.6;">不同的异常类可以传递不同的上下文和具体异常信息，如<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">CashNotEnoughException</code>可以捎带用户当前的cash，后者无法做到这一点。</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">3. 抛出什么类型的异常</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">OK，现在我们要抛异常了，但究竟抛 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">checked</code> 还是 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">unchecked</code> 异常呢？</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">关于这两类异常的争论从来没有停止过，比如<a href="http://www.iteye.com/topic/2038" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">这里</a>、<a href="http://tutorials.jenkov.com/java-exception-handling/checked-or-unchecked-exceptions.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">这里</a>。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">checked的优点是:</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">将异常显式化，强制让caller考虑如何处理异常，不让caller有忘记处理异常的机会</li>
+<li style="line-height: 1.6;">可以将这种强制性沿调用栈向上传导。用unchecked，一个caller很难知道调用栈的哪个地方会抛什么异常。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">缺点是污染方法签名（包括抛出异常的函数本身、propagate异常的调用方），增加后期维护成本。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">主流观点是，<strong style="font-weight: bold; line-height: 1.6;">可恢复的、业务类的异常</strong>用checked exception，<strong style="font-weight: bold; line-height: 1.6;">不可恢复的异常</strong>用unchecked exception，如数据库连接失败、http调用超时。但实践中发现该规则存在的最大问题是，callee如何得知caller是否有能力从某种异常情况下恢复？调用方千变万化，可能A可以恢复B不行，函数本身无法了解这些情况。因此我的选择是，<strong style="font-weight: bold; line-height: 1.6;">抛弃checked exception，全部使用unchecked exception，并标注在javadoc中</strong>，让caller自己决定哪些是自己感兴趣可以处理的异常，这是一种更温和的方式。况且，调用一个方法之前了解其可能抛出的异常，这也是一个合格的调用方应该做的。某些语言如C#、Python取消了checked exception这种设计，个人觉得也是有一定道理的。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">4. 异常和日志</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">调用方对方法抛出的异常，要么处理，要么向上冒泡，为了让异常有迹可循，通常要记录在日志中。我的原则是，在<strong style="font-weight: bold; line-height: 1.6;">异常被处理的地方</strong>打日志，这个地方可能是“真正”的catch并恢复，也可能是一个最外层的统一的异常拦截器，catch所有未被捕获的异常做统一处理。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">参考文档</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">《Effective Java》Item 57- Item 65</li>
+<li style="line-height: 1.6;">《程序员修炼之道-从小工到专家》第四章</li>
+<li style="line-height: 1.6;"><a href="http://www.iteye.com/topic/2038" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">为什么 Java 中要使用 Checked Exceptions</a></li>
+<li style="line-height: 1.6;"><a href="http://tutorials.jenkov.com/java-exception-handling/checked-or-unchecked-exceptions.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Checked or Unchecked Exceptions?</a></li>
+<li style="line-height: 1.6;"><a href="http://docs.oracle.com/javase/tutorial/essential/exceptions/advantages.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Advantages of Exceptions</a></li>
+</ol></div><div style="line-height: 1.6;"></div></div>

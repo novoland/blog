@@ -1,0 +1,537 @@
+---
+layout: post
+title: "InnoDB 锁"
+category: "数据库"
+---
+
+<div style="color: #2c3f51; font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif; line-height: 1.6;">
+<div style="line-height: 1.6;"></div>
+<div style="line-height: 1.6;">
+</div><div style="line-height: 1.6;">
+
+<p style="margin: 0 0 1.1em; line-height: 1.6;"></p>
+<div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">InnoDB 锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 事务并发问题</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 事务隔离级别</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">3. MVCC</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">二阶段加锁协议 (Two-Phase Locking)</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">锁的细分</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">表锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">意向表锁</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">AUTO_INC表锁</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">表锁的兼容性</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">行锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">行锁的分类</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">where的执行原理及加锁对象</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">加锁规则</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">行锁的兼容性</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">5. 查看锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">InnoDB Lock Monitor</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">INFORMATION_SCHEMA 内的表</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">6.  两个简单的死锁示例</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">不走索引的DELETE引发的死锁</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">并发INSERT引发的死锁</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">7. 参考文档</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. 事务并发问题</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">脏读（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Dirty Read</code>）： <br/>
+A 看到 B 进行中更新的数据，并以此为根据继续执行相关的操作；B 回滚，导致 A 操作的是脏数据。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">不可重复读（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Non-repeatable Read</code>）： <br/>
+A 先查询一次数据，然后 B 更新之并提交，A 再次查询，得到和上一次不同的查询结果。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">幻读（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Phantom Read</code>）： <br/>
+A 查询一批数据，B 插入或删除了某些记录并提交，A 再次查询，发现结果集中出现了上次没有的记录，或者上次有的记录消失了。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">第二类丢失更新 (<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">覆盖丢失</code>)： <br/>
+A 和 B 更新同一条记录并提交，后提交的数据将覆盖先提交的，通常这是没问题的，但是在某些情况下，如在程序中自增自减、程序中的读-改-全量更新，就会出现并发问题。<em style="line-height: 1.6;">这类问题更像是应用层面的，不属于DB范畴。</em></p></li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. 事务隔离级别</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">read uncommited <br/>
+最弱，事务的任何动作对其他事务都是立即可见的。存在脏读、不可重复读、幻读问题（除了回滚丢失，其他的并发问题都有）。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">read commited <br/>
+只能读到其他事务已提交的数据，中间状态的数据则看不到，解决了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">脏读</code>问题。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">repeatable read  <strong style="font-weight: bold; line-height: 1.6;">(InnoDB的默认隔离级别)</strong> <br/>
+根据标准的SQL规范，该级别解决了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">不可重复读</code>的问题，保证在一个事务内，对同一条记录的重复读都是一致的。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">InnoDB 的 Repeatable Read 通过 <em style="line-height: 1.6;">MVCC</em> 和 <em style="line-height: 1.6;">间隙锁</em> 机制额外解决了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">幻读</code>问题。</p>
+</blockquote></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">serial <br/>
+最高，所有读写都是串行的。</p></li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">InnoDB 对事务隔离级别的实现依赖两个手段：锁、MVCC(多版本控制协议)。MVCC可以认为是对锁机制的优化，让普通select避免加锁，同时还能有事务隔离级别的语义保证。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">3. MVCC</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MVCC，Multi-Version Concurrency Control，为一条记录维护多个不同的snapshot，并记录各snapshot对应的版本号（事务ID），每个事务可以读到的snapshot是受限的，从而隔离其他事务的并发动作。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MVCC并发控制中，读操作分为两类：快照读 (snapshot read)与当前读 (current read)。前者读取的是记录的snapshot(有可能是历史版本)，不用加锁；后者读取的是记录的最新版本，且会加上锁，保证其他事务不会并发修改这条记录。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">快照读：</strong></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">普通的select均为快照读，不用加锁；</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">当前读：</strong></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... lock in shared mode</code>: 读锁</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... for update</code>: 写锁</li>
+<li style="line-height: 1.6;">DML（insert/delete/update）：写锁</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MVCC 只工作在RC &amp; RR两个隔离级别下，Read Uncommited 直接读数据；Serializable 所有读都是当前读。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在RR级别下，快照读只能读取本事务开始之前的snapshot，反复读同一条记录，不会看到其他事务对它的更新动作；反复执行同一条查询，不会看到其他事务插入的新记录，也不会丢失其他事务删除的记录（删除并非立刻物理删除）。可以看到，RR级别下，普通的select没有<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">不可重复读</code>和<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">幻读</code>的问题。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在RC级别下，快照读读取的是记录最新的snapshot，可以看到其他事务已提交的内容。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">4. 锁</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">二阶段加锁协议 (Two-Phase Locking)</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">事务中只加锁不释放，事务结束一起释放。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">锁的细分</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">锁可以从两个维度上进行细分。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">根据粒度大小（InnoDB 称为 lock type）锁可以细分为<strong style="font-weight: bold; line-height: 1.6;">表锁</strong> 和 <strong style="font-weight: bold; line-height: 1.6;">行锁</strong>。表锁对整个表加锁，影响表内的所有记录，行锁只影响一条记录，粒度更细，并发程度高。行锁根据场景的不同又可以进一步细分（稍后详细介绍）。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://osxr.org/mysql/source/storage/innobase/include/lock0lock.h#0833" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">lock0lock.h</a>：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6;">#<span style="line-height: 1.6; color: #f92672;">define</span> LOCK_TABLE  16  /* table lock */</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6;">#<span style="line-height: 1.6; color: #f92672;">define</span> LOCK_REC    32  /* record lock */</span></div><br/><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">/* Precise modes */</span></div><br/><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">/* ... ordinary next-key lock in contrast to LOCK_GAP or LOCK_REC_NOT_GAP*/</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6;">#<span style="line-height: 1.6; color: #f92672;">define</span> LOCK_ORDINARY   0   </span></div><br/><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">/* ... the lock holds only on the gap before the record; for instance, an x-lock on the gap does not give permission to modify the record on which the bit is set ... */</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6;">#<span style="line-height: 1.6; color: #f92672;">define</span> LOCK_GAP    512 </span></div><br/><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">/* ... the lock is only on the index record and does NOT block inserts to the gap before the index record; this is used in the case when we retrieve a record with a unique key, and is also used in locking plain SELECTs (not part of UPDATE or DELETE) when the user has set the READ COMMITTED isolation level */</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6;">#<span style="line-height: 1.6; color: #f92672;">define</span> LOCK_REC_NOT_GAP 1024   </span></div><br/><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">/* this bit is set when we place a waiting gap type record lock request in order to let an insert of an index record to wait until there are no conflicting locks by other transactions on the gap; note that this flag remains set when the waiting lock is granted, or if the lock is inherited to a neighboring record */</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6;">#<span style="line-height: 1.6; color: #f92672;">define</span> LOCK_INSERT_INTENTION 2048 </span></div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">锁的 mode 分类如下所示：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://osxr.org/mysql/source/storage/innobase/include/lock0types.h" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">lock0types.h</a>:</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">/* Basic lock modes */</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">enum</span> lock_mode {</div><div style="line-height: 1.6;">    LOCK_IS = <span style="line-height: 1.6; color: #ae81ff;">0</span>, <span style="line-height: 1.6; color: #75715e;">/* intention shared */</span></div><div style="line-height: 1.6;">    LOCK_IX,    <span style="line-height: 1.6; color: #75715e;">/* intention exclusive */</span></div><div style="line-height: 1.6;">    LOCK_S,     <span style="line-height: 1.6; color: #75715e;">/* shared */</span></div><div style="line-height: 1.6;">    LOCK_X,     <span style="line-height: 1.6; color: #75715e;">/* exclusive */</span></div><div style="line-height: 1.6;">    LOCK_AUTO_INC,  <span style="line-height: 1.6; color: #75715e;">/* locks the auto-inc counter of a table in an exclusive mode*/</span></div><div style="line-height: 1.6;">    ...</div><div style="line-height: 1.6;">};</div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">将锁分为读锁和写锁主要是为了提高读的并发，它们的兼容性矩阵：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">  S  X</div><div style="line-height: 1.6;">S +  – </div><div style="line-height: 1.6;">X -  -</div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">IX(写意向)、IS(读意向)只会应用在表锁上，方便表锁和行锁之间的冲突检测。<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">LOCK_AUTO_INC</code>是一种特殊的表锁。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">表锁</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">LOCK TABLES t1 READ, t2 WRITE</code> 对表加 S 或 X 锁、<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">ALTER TABLE</code>需要加 X 锁。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">表锁的实现有两个层面，MySQL Server 和 InnoDB 存储引擎，innodb_table_locks 参数为1（默认值）表明当 autocommit 关闭时启用 InnoDB 表锁。此时调用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">LOCK TABLES</code>,  MySQL Server 和 InnoDB 都会加表锁，不同的是，前者加的锁只有显式调用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">UNLOCK TABLES</code> 才会释放，InnoDB 层面的表锁则会在事务提交时自动释放。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">LOCK TABLES</code> 搭配 InnoDB 表锁的正确使用姿势：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">SET autocommit=<span style="line-height: 1.6; color: #ae81ff;">0</span>;</div><div style="line-height: 1.6;">LOCK TABLES t1 WRITE, t2 READ, <span style="line-height: 1.6; color: #f92672;">...</span>;</div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">...</span> do something with tables t1 and t2 here <span style="line-height: 1.6; color: #f92672;">...</span></div><div style="line-height: 1.6;">COMMIT;</div><div style="line-height: 1.6;">UNLOCK TABLES;</div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">Manual：<a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fdev.mysql.com%2Fdoc%2Frefman%2F5.6%2Fen%2Flock-tables-and-transactions.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Interaction of Table Locking and Transactions</a></p>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">意向表锁</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">表锁锁定了整张表，因此表锁和行锁之间也会冲突，为了方便检测表锁和行锁的冲突引入了<strong style="font-weight: bold; line-height: 1.6;">意向表锁</strong>。</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">意向锁分为意向读锁(IS)和意向写锁(IX)。</li>
+<li style="line-height: 1.6;">意向锁是表级锁，但表示事务试图读或写某一行记录，而不是整个表。所以意向锁之间不会产生冲突，真正的冲突在加行锁时检查。</li>
+<li style="line-height: 1.6;">在给一行记录加锁前，首先要给该表加意向锁。也就是要同时加表意向锁和行锁。</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">AUTO_INC表锁</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">为一个AUTO_INCREMENT列生成自增值前，必须先为该表加 AUTO_INC 表锁。AUTO_INC 表锁有些特别的地方：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">每个表最多只能有一个自增锁</li>
+<li style="line-height: 1.6;">为了提高并发插入的性能，<strong style="font-weight: bold; line-height: 1.6;">自增锁不遵循二阶段锁协议</strong>，加锁释放锁不跟事务而跟语句走，insert开始时获取，结束时释放</li>
+<li style="line-height: 1.6;">自增值只要分配了就会+1，不管事务是否提交了都不会撤销，所以可能出现空洞。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">从5.1.22开始，MySQL 提供了一种可选的轻量级锁(mutex)机制代替AUTO_INC表锁，参数 innodb_autoinc_lock_mode 控制分配自增值时的并发策略。介绍该参数之前先引入几个insert相关的概念：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Simple inserts</strong>：通过分析insert语句可以确定插入数量的insert语句，如<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT, INSERT … VALUES(1,2),VALUES(3,4)</code></li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Bulk inserts</strong>：通过分析insert语句无法知道插入数量的insert语句，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT … SELECT, REPLACE … SELECT, LOAD DATA</code></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">Mixed-mode inserts</strong>：不确定是否需要分配auto_increment id，一般是下面两种情况</p>
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">INSERT</span> <span style="line-height: 1.6; color: #f92672;">INTO</span> t1 (c1,c2) <span style="line-height: 1.6; color: #f92672;">VALUES</span> (<span style="line-height: 1.6; color: #ae81ff;">1</span>,<span style="line-height: 1.6; color: #e6db74;">'a'</span>), (<span style="line-height: 1.6; color: #ae81ff;">NULL</span>,<span style="line-height: 1.6; color: #e6db74;">'b'</span>), (<span style="line-height: 1.6; color: #ae81ff;">5</span>,<span style="line-height: 1.6; color: #e6db74;">'c'</span>), (<span style="line-height: 1.6; color: #ae81ff;">NULL</span>,<span style="line-height: 1.6; color: #e6db74;">'d'</span>)</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #75715e;">-- 有些指定了id，有些没</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">INSERT</span> … <span style="line-height: 1.6; color: #f92672;">ON</span> DUPLICATE <span style="line-height: 1.6; color: #f92672;">KEY</span> <span style="line-height: 1.6; color: #f92672;">UPDATE</span></div></div></code></pre></li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">参数innodb_autoinc_lock_mode可以取下列值：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">innodb_autoinc_lock_mode=0 （traditional lock mode）</strong> <br/>
+使用传统的 AUTO_INC 表锁，并发性比较差；</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">innodb_autoinc_lock_mode=1 （consecutive/连续 lock mode）默认值</strong> <br/>
+折中方式，bulk 不能确定插入数用表锁，simple、mix用mutex，只锁住预分配自增ID的过程，不锁整张表。Mixed-mode inserts 会直接分析语句，获得最坏情况下需要插入的数量，一次性分配足够的auto_increment id，缺点是会分配过多的id，导致“浪费”和空洞。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">这种模式既平衡了并发性，又能保证<strong style="font-weight: bold; line-height: 1.6;">同一条insert语句分配的自增id是连续的</strong>。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">innodb_autoinc_lock_mode=2 （interleaved/交叉 lock mode）</strong> <br/>
+全部都用mutex，并发性能最高，id一个一个分配，不会预分配。缺点是不能保证同一条insert语句内的id是连续的，但是在replication中，当binlog_format为statement-based时（基于语句的复制）存在问题，因为是来一个分配一个，同一条insert语句内获得的自增id可能不连续，主从数据集会出现数据不一致。</p></li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">表锁的兼容性</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">以上表锁的兼容性矩阵如下：（+兼容，-不兼容）</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="right" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">.</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">IS</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">IX</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">S</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">X</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">AI</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="right" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">IS</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="right" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">IX</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="right" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">S</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="right" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">X</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="right" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">AI</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">+</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+</tbody></table>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">意向表锁只会阻塞X/S表锁，不会阻塞意向表锁和AUTO_INC表锁；</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">行锁</h3>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">行锁的分类</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">行锁从mode上分为X、S，type上进一步细分为以下类型：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">LOCK_GAP</strong>：GAP锁，锁两个记录之间的GAP，防止记录插入；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">LOCK_ORDINARY</strong>：官方文档中称为 “Next-Key Lock” ，锁一条记录及其<em style="line-height: 1.6;">之前</em>的间隙，这是RR级别用的最多的锁，从名字也能看出来；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">LOCK_REC_NOT_GAP</strong>：只锁记录；</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">LOCK_INSERT_INTENSION</strong>：插入意向GAP锁，插入记录时使用，是LOCK_GAP的一种特例。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">RC级别只有记录锁，没有 Next-Key Lock 和 GAP锁，因此存在幻读现象。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">行锁是加在记录上的锁，InnoDB中的记录是以B+树索引的方式组织在一起的，InnoDB的行锁实际是 index record lock，即对B+索引叶子节点的锁。索引可能有多个，因此操作一行数据时，有可能会加多个行锁在不同的B+树上。</p>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">where的执行原理及加锁对象</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">分析不同SQL语句的加锁情况前，有必要先介绍下 SQL 中 where 条件是怎么解析和执行的。假设 where 走某个Secondary索引A，where 中所有的条件可以分为三类：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">index key</strong>：用于确定索引<strong style="font-weight: bold; line-height: 1.6;">扫描</strong>的起始位置和结束位置，因为是范围，所以分 index first key 和 index last key。查询时，先通过 index first key 条件在B+树上做一次<strong style="font-weight: bold; line-height: 1.6;">搜索</strong>确定扫描开始位置（从B+树的根节点一层层往下找），从该处开始沿着叶子节点组成的链表扫描，碰到的每个节点都要与 index last key 比对，判断是否超出扫描范围。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">注意<strong style="font-weight: bold; line-height: 1.6;">扫描</strong> / <strong style="font-weight: bold; line-height: 1.6;">搜索</strong>的区别：搜索是从根节点到叶子节点的定位过程，扫描针对的是索引叶子节点组成的链表。</p>
+</blockquote></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">index filter</strong>：是索引A的字段，但无法应用在搜索过程中，只能在扫描索引时对结果集进行过滤，不需额外查询聚集索引；</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">table filter</strong>：不是索引A的字段，innodb 对根据前面两个条件扫描得到的结果集，去聚集索引上读了完整数据后返回给MySQL Server，后者再用table filter过滤。</p></li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">对于除 insert 以外的<strong style="font-weight: bold; line-height: 1.6;">当前读</strong>，如 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">SELECT…[FOR UPDATE | LOCK IN SHARE MODE]</code>、<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">UPDATE</code>、<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">DELETE</code>，加锁的对象是<strong style="font-weight: bold; line-height: 1.6;">索引扫描后，将要返回给MySQL Server进一步过滤的那些记录</strong>。</p>
+<blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">在MySQL 5.6之前，并不区分Index Filter与Table Filter，统统将Index First Key与Index Last Key范围内的索引记录，回表读取完整记录，然后返回给MySQL Server层进行过滤。而在MySQL 5.6之后，Index Filter与Table Filter分离，Index Filter下降到InnoDB的索引层面进行过滤，减少了回表与返回MySQL Server层的记录交互开销，提高了SQL的执行效率。</p>
+</blockquote>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">加锁规则</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在RR级别下，有如下加锁规则：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">用于搜索和扫描的（where条件走的）索引，加 Next-Key Lock。对于扫描得到的最后一个记录，还要对它和下一条记录之间的空隙加 GAP Lock。<strong style="font-weight: bold; line-height: 1.6;">记录间的间隙（包括第一个记录之前、最后一个记录之后的间隙）都加了锁，新的记录无法插入到这些位置，保证了不会出现幻读</strong>；</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">如果索引是唯一索引或主索引，且SQL是个等值查询，由于有唯一性的保证，可不用锁间隙，加Record Lock 而非 Next-Key Lock。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">如果没有查询到记录，定位到的GAP依然会被锁上，这样才不会出现幻读。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">where索引扫描的结果集，在其他索引上对应的记录，加Record Lock；</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">不同索引的加锁顺序：where索引 –&gt; 主索引 –&gt; 其他二级索引；</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">如果没法走索引而走全表扫描，主索引的全部记录都会加 Next-Key Lock，加锁的顺序不定。此时该表除了不加锁的快照读，其他所有需要加锁的SQL如插入、更新、删除均不可执行。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MySQL Server层对这种情况会做优化，不符合条件的记录会立刻释放锁，但这种优化违背了二阶段锁协议，而且InnoDB加锁的动作不会省略。</p></li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT</code> 的加锁：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">插入之前，对插入的间隙加插入意向GAP锁 ；</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">插入意向GAP锁表明将向某个间隙插入记录，如果该间隙已被加上了GAP Lock或Next-Key Lock，则加锁失败。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">不同事务加的插入意向GAP锁互相兼容，否则就无法并发insert了。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">插入成功后，对插入的这条记录加X Record Lock；</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">如果违反唯一性约束导致插入失败，则对记录加S Next-Key Lock。这一点在并发插入时可能导致死锁。</p></li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">行锁的兼容性</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">S锁和S锁完全兼容，兼容性检测只发生在S和X、X和S之间。行锁的兼容性矩阵如下（由<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock0lock.c:lock_rec_has_to_wait()</code> 函数推出）：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">.</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">GAP</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">II GAP</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">RECORD</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">NEXT-KEY</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">GAP</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">II GAP</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">RECORD</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">NEXT-KEY</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">+</strong></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+</tbody></table>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">第一行，GAP锁不需要等待其他任何行锁（why？）；</li>
+<li style="line-height: 1.6;">第二行，GAP锁、Next-Key锁会阻止 Insert；插入意向锁互相是兼容的，即并发插入是允许的；</li>
+<li style="line-height: 1.6;">第三行，RECORD锁和RECORD锁、Next-Key锁冲突；</li>
+<li style="line-height: 1.6;">第二列，已有的插入意向GAP锁不会阻止任何锁。</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">5. 查看锁</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">InnoDB Lock Monitor</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">InnoDB 提供了InnoDB Monitor，可以显示InnoDB的内部状态，打开该项特性后，每隔15秒MySQL就会把<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">SHOW ENGINE INNODB STATUS</code>命令的输出重定向到标准错误输出流，如果设置了innodb-status-file=1 ，还会将上述命令的输出额外写到一个名为<em style="line-height: 1.6;">innodb_status.pid</em>的文件中。此外，如果开启了InnoDB Lock Monitor，还会打印额外的锁信息。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MySQL 5.6.16 以后使用以下两个命令打开 InnoDB Standard Monitor 和 InnoDB Lock Monitor：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #e6db74;">set</span> global innodb_status_output=ON;</div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #e6db74;">set</span> global innodb_status_output_locks=ON;</div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">SHOW ENGINE INNODB STATUS</code> 的输出示例：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">———— <br/>
+TRANSACTIONS <br/>
+———— <br/>
+Trx id counter 169246 <br/>
+Purge done for trx’s n:o &lt; 169198 undo n:o &lt; 0 state: running but idle <br/>
+History list length 802 <br/>
+LIST OF TRANSACTIONS FOR EACH SESSION:</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">事务1</strong>： <br/>
+—TRANSACTION 169245, ACTIVE 4 sec inserting <br/>
+mysql tables in use 1, locked 1 <br/>
+<strong style="font-weight: bold; line-height: 1.6;">LOCK WAIT 2 lock</strong> struct(s), heap size 360, 1 row lock(s)  <em style="line-height: 1.6;">==== 事务在等待锁，涉及两个锁，其中1个是行锁</em> <br/>
+MySQL thread id 699, OS thread handle 0x7fd4ad4e3700, query id 10304 localhost root update <br/>
+<strong style="font-weight: bold; line-height: 1.6;">insert into t2 values(3,3)</strong> <em style="line-height: 1.6;">==== 正在执行的SQL</em> <br/>
+——- TRX HAS BEEN WAITING 4 SEC FOR THIS LOCK TO BE GRANTED: <br/>
+RECORD LOCKS space id 8 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t2</code> trx id 169245 lock_mode X locks gap before rec insert intention waiting <br/>
+—————— <br/>
+<strong style="font-weight: bold; line-height: 1.6;">TABLE LOCK</strong> table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t2</code> trx id 169245 <strong style="font-weight: bold; line-height: 1.6;">lock mode IX</strong> <em style="line-height: 1.6;">==== IX插入意向表锁</em> <br/>
+<strong style="font-weight: bold; line-height: 1.6;">RECORD LOCKS</strong> space id 8 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t2</code> trx id 169245 <strong style="font-weight: bold; line-height: 1.6;">lock_mode X locks gap before rec insert intention</strong> waiting <em style="line-height: 1.6;">====在等待X插入意向GAP锁</em></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">事务2</strong>： <br/>
+—TRANSACTION 169244, ACTIVE 11 sec <br/>
+<strong style="font-weight: bold; line-height: 1.6;">2 lock struct(s)</strong>, heap size 360, 1 row lock(s) <br/>
+MySQL thread id 698, OS thread handle 0x7fd4a3c54700, query id 10305 localhost root init <br/>
+show engine INNODB status <br/>
+<strong style="font-weight: bold; line-height: 1.6;">TABLE LOCK table</strong> <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t2</code> trx id 169244 <strong style="font-weight: bold; line-height: 1.6;">lock mode IX</strong> <br/>
+<strong style="font-weight: bold; line-height: 1.6;">RECORD LOCKS</strong> space id 8 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t2</code> trx id 169244 <strong style="font-weight: bold; line-height: 1.6;">lock_mode X locks gap before rec</strong> <em style="line-height: 1.6;">====GAP锁</em></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">各种锁在<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">show engine InnoDB status</code>中的表现：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">锁类型</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">输出</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">LOCK_TABLE</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">TABLE LOCK table xxx lock mode [S|X|IS|IX]</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">LOCK_REC_NOT_GAP</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">RECORD LOCKS … lock_mode [X|S] locks rec but not gap</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">LOCK_ORNIDARY</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">RECORD LOCKS … lock_mode [X|S]</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">LOCK_GAP</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">RECORD LOCKS … lock_mode [X|S] locks gap before rec</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">LOCK_INSERT_INTENTION</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">RECORD LOCKS … lock_mode X insert intention</td>
+</tr>
+</tbody></table>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">INFORMATION_SCHEMA 内的表</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">INNODB_TRX</strong>： <br/>
+当前正在执行的事务详情</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">INNODB_LOCKS</strong>： <br/>
+每个引起阻塞的锁两个记录。1.哪个事务持有；2.哪个事务请求。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">示例：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">*************************** <span style="line-height: 1.6; color: #ae81ff;">1.</span> row ***************************</div><div style="line-height: 1.6;">    lock_id: <span style="line-height: 1.6; color: #ae81ff;">169245</span>:<span style="line-height: 1.6; color: #ae81ff;">8</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span></div><div style="line-height: 1.6;">lock_trx_id: <span style="line-height: 1.6; color: #ae81ff;">169245</span></div><div style="line-height: 1.6;">  lock_mode: X,GAP      <span style="line-height: 1.6; color: #75715e;">// -- row-&gt;lock_mode = lock_get_mode_str(lock)</span></div><div style="line-height: 1.6;">  lock_type: RECORD     <span style="line-height: 1.6; color: #75715e;">// -- row-&gt;lock_type = lock_get_type_str(lock)</span></div><div style="line-height: 1.6;"> lock_table: test.t2    </div><div style="line-height: 1.6;"> lock_index: PRIMARY</div><div style="line-height: 1.6;"> lock_space: <span style="line-height: 1.6; color: #ae81ff;">8</span></div><div style="line-height: 1.6;">  lock_page: <span style="line-height: 1.6; color: #ae81ff;">3</span></div><div style="line-height: 1.6;">   lock_rec: <span style="line-height: 1.6; color: #ae81ff;">3</span></div><div style="line-height: 1.6;">  lock_data: <span style="line-height: 1.6; color: #ae81ff;">4</span></div><div style="line-height: 1.6;">*************************** <span style="line-height: 1.6; color: #ae81ff;">2.</span> row ***************************</div><div style="line-height: 1.6;">    lock_id: <span style="line-height: 1.6; color: #ae81ff;">169244</span>:<span style="line-height: 1.6; color: #ae81ff;">8</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span></div><div style="line-height: 1.6;">lock_trx_id: <span style="line-height: 1.6; color: #ae81ff;">169244</span></div><div style="line-height: 1.6;">  lock_mode: X,GAP</div><div style="line-height: 1.6;">  lock_type: RECORD</div><div style="line-height: 1.6;"> lock_table: test.t2</div><div style="line-height: 1.6;"> lock_index: PRIMARY</div><div style="line-height: 1.6;"> lock_space: <span style="line-height: 1.6; color: #ae81ff;">8</span></div><div style="line-height: 1.6;">  lock_page: <span style="line-height: 1.6; color: #ae81ff;">3</span></div><div style="line-height: 1.6;">   lock_rec: <span style="line-height: 1.6; color: #ae81ff;">3</span></div><div style="line-height: 1.6;">  lock_data: <span style="line-height: 1.6; color: #ae81ff;">4</span></div></div></code></pre>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">lock_mode: [X|S|IX|IS], [GAP]</strong>，只有LOCK_GAP才会显示GAP，见 lock_get_mode_str()。</li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">lock_type: [Record|Table]</strong>，只能区分表锁、行锁，行锁的细分模式无法识别。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">INNODB_LOCK_WAITS</strong> <br/>
+每个被锁阻塞的事务一个记录。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">示例：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">*************************** <span style="line-height: 1.6; color: #ae81ff;">1.</span> row ***************************</div><div style="line-height: 1.6;">requesting_trx_id: <span style="line-height: 1.6; color: #ae81ff;">169245</span>           <span style="line-height: 1.6; color: #75715e;">// 请求锁的事务</span></div><div style="line-height: 1.6;">requested_lock_id: <span style="line-height: 1.6; color: #ae81ff;">169245</span>:<span style="line-height: 1.6; color: #ae81ff;">8</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>     <span style="line-height: 1.6; color: #75715e;">// 请求的锁ID</span></div><div style="line-height: 1.6;">  blocking_trx_id: <span style="line-height: 1.6; color: #ae81ff;">169244</span>           <span style="line-height: 1.6; color: #75715e;">// 持有锁的事务</span></div><div style="line-height: 1.6;"> blocking_lock_id: <span style="line-height: 1.6; color: #ae81ff;">169244</span>:<span style="line-height: 1.6; color: #ae81ff;">8</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>:<span style="line-height: 1.6; color: #ae81ff;">3</span>     <span style="line-height: 1.6; color: #75715e;">// 导致阻塞的锁ID，和请求的锁ID是同一个锁，只是事务前缀不一样</span></div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #ae81ff;">1</span> <span style="line-height: 1.6; color: #f92672;">row in <span style="line-height: 1.6; color: #a6e22e;">set</span> <span style="line-height: 1.6; color: #f8f8f2;">(0.00 sec)</span></span></div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">用一个神奇的SQL把这些表join起来分析……</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">SELECT</span></span></div><div style="line-height: 1.6;">    r.trx_id waiting_trx_id,</div><div style="line-height: 1.6;">    r.trx_mysql_thread_id waiting_thread,</div><div style="line-height: 1.6;">    <span style="line-height: 1.6; color: #f92672;">left</span>(r.trx_query,<span style="line-height: 1.6; color: #ae81ff;">20</span>) waiting_query,</div><div style="line-height: 1.6;">    <span style="line-height: 1.6; color: #f92672;">concat</span>(<span style="line-height: 1.6; color: #f92672;">concat</span>(lw.lock_type,<span style="line-height: 1.6; color: #e6db74;">' '</span>),</div><div style="line-height: 1.6;">    lw.lock_mode) waiting_for_lock,</div><div style="line-height: 1.6;">    b.trx_id blocking_trx_id,</div><div style="line-height: 1.6;">    b.trx_mysql_thread_id blocking_thread,</div><div style="line-height: 1.6;">    <span style="line-height: 1.6; color: #f92672;">left</span>(b.trx_query,<span style="line-height: 1.6; color: #ae81ff;">20</span>) blocking_query,</div><div style="line-height: 1.6;">    <span style="line-height: 1.6; color: #f92672;">concat</span>(<span style="line-height: 1.6; color: #f92672;">concat</span>(lb.lock_type,<span style="line-height: 1.6; color: #e6db74;">' '</span>),</div><div style="line-height: 1.6;">    lb.lock_mode) blocking_lock   </div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">FROM</span></div><div style="line-height: 1.6;">    information_schema.innodb_lock_waits w   </div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">INNER</span> <span style="line-height: 1.6; color: #f92672;">JOIN</span></div><div style="line-height: 1.6;">    information_schema.innodb_trx b </div><div style="line-height: 1.6;">        <span style="line-height: 1.6; color: #f92672;">ON</span> b.trx_id = w.blocking_trx_id   </div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">INNER</span> <span style="line-height: 1.6; color: #f92672;">JOIN</span></div><div style="line-height: 1.6;">    information_schema.innodb_trx r </div><div style="line-height: 1.6;">        <span style="line-height: 1.6; color: #f92672;">ON</span> r.trx_id = w.requesting_trx_id   </div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">INNER</span> <span style="line-height: 1.6; color: #f92672;">JOIN</span></div><div style="line-height: 1.6;">    information_schema.innodb_locks lw </div><div style="line-height: 1.6;">        <span style="line-height: 1.6; color: #f92672;">ON</span> lw.lock_trx_id = r.trx_id   </div><div style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">INNER</span> <span style="line-height: 1.6; color: #f92672;">JOIN</span></div><div style="line-height: 1.6;">    information_schema.innodb_locks lb </div><div style="line-height: 1.6;">        <span style="line-height: 1.6; color: #f92672;">ON</span> lb.lock_trx_id = b.trx_id</div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">结果：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">*************************** <span style="line-height: 1.6; color: #ae81ff;">1.</span> row ***************************</div><div style="line-height: 1.6;">  waiting_trx_id: <span style="line-height: 1.6; color: #ae81ff;">169245</span></div><div style="line-height: 1.6;">  waiting_thread: <span style="line-height: 1.6; color: #ae81ff;">699</span></div><div style="line-height: 1.6;">   waiting_query: insert into t2 value</div><div style="line-height: 1.6;">waiting_for_lock: RECORD X,GAP</div><div style="line-height: 1.6;"> blocking_trx_id: <span style="line-height: 1.6; color: #ae81ff;">169244</span></div><div style="line-height: 1.6;"> blocking_thread: <span style="line-height: 1.6; color: #ae81ff;">698</span></div><div style="line-height: 1.6;">  blocking_query: SELECT r.trx_id wait</div><div style="line-height: 1.6;">   blocking_lock: RECORD X,GAP</div></div></code></pre>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">6.  两个简单的死锁示例</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">不走索引的DELETE引发的死锁</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">SHOW ENGINE INNODB STATUS</code>显示的死锁现场：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">———————— <br/>
+LATEST DETECTED DEADLOCK <br/>
+———————— <br/>
+150626 11:02:07 <br/>
+<em style="line-height: 1.6;">*</em> (1) TRANSACTION: <br/>
+TRANSACTION 13260F7, ACTIVE 0 sec starting index read <br/>
+mysql tables in use 1, locked 1 <br/>
+LOCK WAIT 5 lock struct(s), heap size 1248, 3 row lock(s), undo log entries 2 <br/>
+MySQL thread id 216331, OS thread handle 0x7f5784637700, query id 136610709 10.32.57.98 movie_mc updating <br/>
+<strong style="font-weight: bold; line-height: 1.6;">DELETE FROM mc_message WHERE msg_session_id = 1250079</strong> <br/>
+<em style="line-height: 1.6;">*</em> (1) WAITING FOR THIS LOCK TO BE GRANTED: <br/>
+<strong style="font-weight: bold; line-height: 1.6;">RECORD LOCKS</strong> space id 10 page no 5 n bits 328 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">movie_message_center</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">mc_message</code> trx id 13260F7 <strong style="font-weight: bold; line-height: 1.6;">lock_mode X</strong> waiting</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><em style="line-height: 1.6;">*</em> (2) TRANSACTION: <br/>
+TRANSACTION 13260F5, ACTIVE 0 sec fetching rows <br/>
+mysql tables in use 1, locked 1 <br/>
+4815 lock struct(s), heap size 588216, <strong style="font-weight: bold; line-height: 1.6;">1237194 row lock(s)</strong>, undo log entries 1 <br/>
+MySQL thread id 219612, OS thread handle 0x7f5727c78700, query id 136610669 10.32.56.108 movie_mc updating <br/>
+<strong style="font-weight: bold; line-height: 1.6;">DELETE FROM mc_message WHERE msg_session_id = 1348342</strong> <br/>
+<em style="line-height: 1.6;">*</em> (2) HOLDS THE LOCK(S): <br/>
+RECORD LOCKS space id 10 page no 5 n bits 328 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">movie_message_center</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">mc_message</code> trx id 13260F5 lock_mode X <br/>
+<em style="line-height: 1.6;">*</em> (2) WAITING FOR THIS LOCK TO BE GRANTED: <br/>
+RECORD LOCKS space id 10 page no 8425 n bits 328 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">movie_message_center</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">mc_message</code> trx id 13260F5 lock_mode X waiting <br/>
+<em style="line-height: 1.6;">*</em> WE ROLL BACK TRANSACTION (1)</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">RR级别，对一张表的两个简单delete语句引起了死锁。由于没有走索引，delete导致主索引的所有记录及间隙都被锁上，LOG中也可以看到，第二个事务持有123万把行锁（Next-Key Lock），且由于加锁的顺序是不定的，导致死锁。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">并发INSERT引发的死锁</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">这种死锁现象涉及三个以上并发事务，执行同一条insert语句引发死锁。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">表的结构：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">CREATE</span> <span style="line-height: 1.6; color: #f92672;">TABLE</span> t1 (i <span style="line-height: 1.6; color: #e6db74;">INT</span>, <span style="line-height: 1.6; color: #f92672;">PRIMARY</span> <span style="line-height: 1.6; color: #f92672;">KEY</span> (i)) <span style="line-height: 1.6; color: #f92672;">ENGINE</span> = <span style="line-height: 1.6; color: #f92672;">InnoDB</span>;</span></div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">事务执行序列：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">tx0</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">tx1</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">tx2</th>
+</tr>
+</thead>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT INTO t1 VALUES(1)</code>，成功</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT INTO t1 VALUES(1)</code>，阻塞</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT INTO t1 VALUES(1)</code>，阻塞</td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">rollback</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+</tr>
+<tr style="line-height: 1.6;">
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">死锁</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">死锁</td>
+</tr>
+</tbody></table>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">用 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">SHOW ENGINE INNODB STATUS</code>分析一下：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">第一步：tx0插入成功</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">—TRANSACTION 0, ACTIVE 48 sec <br/>
+1 lock struct(s), heap size 360, 0 row lock(s), undo log entries 1 <br/>
+MySQL thread id 702, OS thread handle 0x7fd4ad481700, query id 10384 localhost root cleaning up <br/>
+<strong style="font-weight: bold; line-height: 1.6;">TABLE LOCK table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169250 lock mode IX</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">按之前的分析，tx0插入成功过后应对记录加X Record Lock，但log只显示了一个IX表锁，这是因为InnoDB对锁有两种实现，一种隐式，一种显式。显式的锁需要维护特有的数据结构，隐式锁是根据当前事务ID和记录中的事务ID计算出来的，开销更小：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">隐式锁是针对被修改的B+Tree记录，因此都是Record类型的锁。不可能是Gap或Next-Key类型；</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">INSERT</code>成功后对记录加的X锁，都是隐式锁；</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">UPDATE</code>、<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">DELETE</code> 对 where 索引和主索引用显式锁，其他二级索引上的Record Lock用隐式锁；</li>
+<li style="line-height: 1.6;">隐式锁发生冲突时会转换成显式锁。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">第二步：tx1、tx2插入阻塞</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">—<strong style="font-weight: bold; line-height: 1.6;">TRANSACTION 2</strong>, ACTIVE 2 sec inserting <br/>
+mysql tables in use 1, locked 1 <br/>
+LOCK WAIT 2 lock struct(s), heap size 360, 1 row lock(s) <br/>
+MySQL thread id 704, OS thread handle 0x7fd4a3b90700, query id 10389 localhost root update <br/>
+INSERT INTO t1 VALUES(1) <br/>
+<strong style="font-weight: bold; line-height: 1.6;">——- TRX HAS BEEN WAITING 2 SEC FOR THIS LOCK TO BE GRANTED:</strong> <br/>
+<strong style="font-weight: bold; line-height: 1.6;">RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169252 lock mode S locks rec but not gap waiting</strong> <br/>
+—————— <br/>
+TABLE LOCK table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169252 lock mode IX <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169252 lock mode S locks rec but not gap waiting</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">—<strong style="font-weight: bold; line-height: 1.6;">TRANSACTION 1</strong>, ACTIVE 4 sec inserting <br/>
+mysql tables in use 1, locked 1 <br/>
+LOCK WAIT 2 lock struct(s), heap size 360, 1 row lock(s) <br/>
+MySQL thread id 703, OS thread handle 0x7fd4ac144700, query id 10388 localhost root update <br/>
+INSERT INTO t1 VALUES(1) <br/>
+<strong style="font-weight: bold; line-height: 1.6;">——- TRX HAS BEEN WAITING 4 SEC FOR THIS LOCK TO BE GRANTED:</strong> <br/>
+<strong style="font-weight: bold; line-height: 1.6;">RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 lock mode S locks rec but not gap waiting</strong> <br/>
+—————— <br/>
+TABLE LOCK table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 lock mode IX <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 lock mode S locks rec but not gap waiting</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">—<strong style="font-weight: bold; line-height: 1.6;">TRANSACTION 0</strong>, ACTIVE 105 sec <br/>
+2 lock struct(s), heap size 360, 1 row lock(s), undo log entries 1 <br/>
+MySQL thread id 702, OS thread handle 0x7fd4ad481700, query id 10384 localhost root cleaning up <br/>
+TABLE LOCK table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169250 lock mode IX <br/>
+<strong style="font-weight: bold; line-height: 1.6;">RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169250 lock_mode X locks rec but not gap</strong></p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">tx0的隐式X Record Lock转成了显式；</li>
+<li style="line-height: 1.6;">tx1和tx2 duplicate-key error，试图对记录加S Record Lock，阻塞。</li>
+</ol>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">第三步：tx0 rollback，发生死锁，tx2被回滚，tx1成功</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">看看tx1成功后持有的锁：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">—TRANSACTION 1, ACTIVE 99 sec <br/>
+5 lock struct(s), heap size 1184, 3 row lock(s), undo log entries 1 <br/>
+MySQL thread id 703, OS thread handle 0x7fd4ac144700, query id 10391 localhost root cleaning up <br/>
+TABLE LOCK table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 lock mode IX <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 <strong style="font-weight: bold; line-height: 1.6;">lock mode S locks rec but not gap</strong> <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 <strong style="font-weight: bold; line-height: 1.6;">lock mode S</strong> <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 <strong style="font-weight: bold; line-height: 1.6;">lock_mode X insert intention</strong> <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 <strong style="font-weight: bold; line-height: 1.6;">lock mode S locks gap before rec</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">tx1加了一堆的行锁，仔细查看会发现，tx1获取了第二步请求的S Record Lock后再次尝试插入，这里会先加一个S Next-Key Lock 和 S GAP Lock（根据log推测，没有找到文献支持），然后才加 Insert Intention GAP Lock。 </p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">再看看死锁日志： <br/>
+———————— <br/>
+LATEST DETECTED DEADLOCK <br/>
+———————— <br/>
+2015-08-07 11:17:47 7fd4a3b90700 <br/>
+<em style="line-height: 1.6;">*</em> (1) TRANSACTION: <br/>
+TRANSACTION 1, ACTIVE 94 sec inserting <br/>
+mysql tables in use 1, locked 1 <br/>
+LOCK WAIT 4 lock struct(s), heap size 1184, 2 row lock(s) <br/>
+MySQL thread id 703, OS thread handle 0x7fd4ac144700, query id 10391 localhost root update <br/>
+INSERT INTO t1 VALUES(1) <br/>
+<em style="line-height: 1.6;">*</em> (1) WAITING FOR THIS LOCK TO BE GRANTED: <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169251 <strong style="font-weight: bold; line-height: 1.6;">lock_mode X insert intention waiting</strong> &lt;====== 等待 II GAP Lock</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><em style="line-height: 1.6;">*</em> (2) TRANSACTION: <br/>
+TRANSACTION 2, ACTIVE 92 sec inserting <br/>
+mysql tables in use 1, locked 1 <br/>
+4 lock struct(s), heap size 1184, 2 row lock(s) <br/>
+MySQL thread id 704, OS thread handle 0x7fd4a3b90700, query id 10392 localhost root update <br/>
+INSERT INTO t1 VALUES(1) <br/>
+<em style="line-height: 1.6;">*</em> (2) HOLDS THE LOCK(S): <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169252 <strong style="font-weight: bold; line-height: 1.6;">lock mode S</strong>     &lt;======== 持有 S Next-Key Lock <br/>
+<em style="line-height: 1.6;">*</em> (2) WAITING FOR THIS LOCK TO BE GRANTED: <br/>
+RECORD LOCKS space id 442 page no 3 n bits 72 index <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">PRIMARY</code> of table <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">test</code>.<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">t1</code> trx id 169252 <strong style="font-weight: bold; line-height: 1.6;">lock_mode X insert intention waiting</strong> <br/>
+<em style="line-height: 1.6;">*</em> WE ROLL BACK TRANSACTION (2) &lt;====== 等待 II GAP Lock</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">从日志可知，tx1和tx2在tx0 rollback之后，均成功获得了记录的 S Next-Key Lock，接着二者同时请求 Insert Intention GAP Lock，但与对方持有的 S Next-Key Lock 冲突，死锁发生。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">7. 参考文档</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">MySQL各种官方文档</li>
+<li style="line-height: 1.6;"><a href="http://hedengcheng.com/?p=771" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">何登成的技术博客 » MySQL 加锁处理分析</a></li>
+<li style="line-height: 1.6;"><a href="http://hedengcheng.com/?p=577" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">何登成的技术博客 » SQL中的where条件，在数据库中提取与应用浅析</a></li>
+<li style="line-height: 1.6;"><a href="http://www.zhdba.com/mysqlops/2012/05/19/locks_in_innodb/" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">MySQL数据库InnoDB存储引擎中的锁机制</a></li>
+<li style="line-height: 1.6;"><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fbugs.mysql.com%2Fbug.php%3Fid%3D35821" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Bug #35821</a></li>
+<li style="line-height: 1.6;"><a href="https://www.evernote.com/OutboundRedirect.action?dest=https%3A%2F%2Fwww.percona.com%2Fblog%2F2012%2F08%2F28%2Fdifferences-between-read-committed-and-repeatable-read-transaction-isolation-levels%2F" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Differences between READ-COMMITTED and REPEATABLE-READ transaction isolation levels</a></li>
+<li style="line-height: 1.6;"><a href="http://www.slideshare.net/valeriikravchuk1/understanding-innodb-locks-and-deadlocks" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Understanding innodb locks and deadlocks BY PERCONA</a>，强烈推荐</li>
+<li style="line-height: 1.6;">《高性能MySQL》</li>
+</ol></div><div style="line-height: 1.6;"></div></div>

@@ -18,8 +18,9 @@ if ($(window).width() <= 1280) {
     tag5       = $('.数据库'),
     tag6       = $('.cache'),
     tag7       = $('.c和os'),
-    tag8       = $('.网络');
-    tag9       = $('.工作');
+    tag8       = $('.网络'),
+    tag9       = $('.工作'),
+    tag10      = $('.设计');
 
 var sidebar    = $('#sidebar'),
     container  = $('#post'),
@@ -34,7 +35,7 @@ var clickHandler = function(k) {
     window['tag'+k].delay(50).fadeIn(350);
   }
 };
-for (var i = 1; i <= 9; i++) {
+for (var i = 1; i <= 10; i++) {
   $('#js-label' + i).on('click', clickHandler(i)).find('.post_count').text(window['tag'+i].length);
 }
 

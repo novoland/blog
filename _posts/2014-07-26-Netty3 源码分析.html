@@ -62,7 +62,8 @@ category: "网络"
 </div>
 </div>
 </div>
-<p style="margin: 0 0 1.1em;"></p></div><div>
+<p style="margin: 0 0 1.1em;"></p>
+</div><div>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. 总体结构</h2>
 <p style="margin: 0 0 1.1em;">Netty是Jboss旗下一款优秀的网络编程框架，作者是Trustin Lee，韩国人，80后。Netty简化了Java环境下的网络程序开发，它屏蔽了底层具体实现方式的差异和细节，为上层应用程序提供一个抽象的一致的接口。不管使用的传输层协议是TCP还是UDP，底层JDK API是NIO还是OIO，甚至是在同一JVM内部的通信，这些差异细节都被netty屏蔽在其内部，上层只需要跟netty提供的网络编程模型打交道，并指定要使用何种具体实现（这在netty内被称为transport service）即可，要切换时也非常方便。Netty的总体结构如下：</p>
 <p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./图片1.png" name="22b19047-d397-4ad4-a4f2-944843f6bc24" src="/assets/img/309fe45c76960f7d6f11ee79091d69d3.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
@@ -270,7 +271,7 @@ messageReceived：当Netty内部IO线程在某个Channel上读取到了数据，
 <img alt="Alt text" class="en-media" longdesc="./图片28.png" name="b3907de7-75e1-4b84-9d0c-43d9e51ffec4" src="/assets/img/1850d753be067ed136673e7e538676e9.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
 <p style="margin: 0 0 1.1em;">这种模式的缺点在于：</p>
 <ol style="margin-top: 0; margin-bottom: 1.1em;"><li>每个连接一个线程，当并发用户较多时线程数量急剧增长，大大增加系统对线程的管理开销，这将成为主要瓶颈；</li>
-<li>网络是不稳定的，一个连接什么时候有数据可读，什么时候可写完全是随机的，但OIO使用阻塞IO，即使某个连接没有数据可读该连接占用的线程也会因此而阻塞。有可能在同一时刻存在大量IO阻塞的线程，浪费资源。</li>
+<li>网络是不稳定的，此外，如果是长连接，客户端很多时候是沉默的，连接上并不是一直都有数据流动，大部分时候是空闲的。但如果使用阻塞IO和上述线程模型，即使某个连接没有数据可读，该连接占用的线程也会因此而阻塞。有可能在同一时刻存在大量IO阻塞的线程，浪费资源。</li>
 </ol>
 <p style="margin: 0 0 1.1em;">假如在读写网络的时候，socket不满足条件就返回，不用阻塞着傻傻地等待结果，那么该连接占用的线程就可以去为其他连接服务了。但过段时间socket满足IO条件了（比如有数据过来或者可以写），我们怎么得到通知呢。假想下如果有一个线程专门负责轮询所有的连接监控他们的状态，一旦发现有可读数据或可写空间，就立刻交给某个线程去进行实际的IO操作和业务处理，后者读写直到没有可读数据或无法继续写入，如果还没有完成IO操作，则继续将该连接交还给监控线程，等待下一次状态满足被处理。</p>
 <p style="margin: 0 0 1.1em;">这正是NIO带给我们的最大价值：IO多路复用和事件模型、非阻塞IO。NIO的Selector可以监控N个连接的状态，相当于我们设想中的监控线程。我们把连接注册到Selector上时会声明感兴趣的状态，Selector在一次select的过程中发现某些连接正处在它被声明的状态，则把他们挑选出来并将IO事件分发给用户处理。用户程序使用非阻塞IO对其进行“最大努力的”读写，若本次处理没有完成，则继续交由Selector监控等待下次处理。这种由“主动阻塞等待”改为“被动通知非阻塞处理”的方式有效规避了前一种模型中IO阻塞导致大量线程浪费的问题，工作线程每次处理连接都能快速返回，我们可以最大化的利用线程资源，用少的多的线程应对相同规模的连接数。</p>
@@ -285,8 +286,7 @@ messageReceived：当Netty内部IO线程在某个Channel上读取到了数据，
 <img alt="Alt text" class="en-media" longdesc="./图片30.png" name="857f7c78-c497-43ef-a7fa-e9cab99363e1" src="/assets/img/058b8dceb9781aa6d55590537cdbfcb1.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
 <p style="margin: 0 0 1.1em;">第三种模型将Reactor分成两个部分，MainReactor通常只有一个，Listening Socket注册在它上面，专门监听连接请求，并将创建的Accepted Socket注册到SubReactor上，SubReactor可以有多个，负责处理已连接的socket，其中业务处理的部分仍然交给线程池进行，如下图所示： <br/>
 <img alt="Alt text" class="en-media" longdesc="./图片31.png" name="1d0ffadf-1469-4ce3-b7e4-a7b76528dba4" src="/assets/img/9015475f80a88228f7afb5b525d14d1d.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-<p style="margin: 0 0 1.1em;">Netty的NIO实现采用的模型是第三种的变种，业务部分Handler链并没有使用连接池，而是类似第一种模型中采用串行处理。注意，SubReactor“分派事件 – Handler处理 – 分派下一次事件”这个处理过程也是串行的，只有几个Reactor是并行的。</p>
-</div><div>
+<p style="margin: 0 0 1.1em;">Netty的NIO实现采用的模型是第三种的变种，业务部分Handler链并没有使用连接池，而是类似第一种模型中采用串行处理。注意，SubReactor“分派事件 – Handler处理 – 分派下一次事件”这个处理过程也是串行的，只有几个Reactor是并行的，所以在 Netty3 中，<strong style="font-weight: bold;">一定不要在 handler 中做耗时或者阻塞的动作，否则 IO 线程会被 block，后续连接得不到响应。会引起阻塞的动作应放在单独的线程中异步去做</strong>。</p></div><div>
 <h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">11. Netty的NIO Server端实现</h2>
 <p style="margin: 0 0 1.1em;">首先我们来看看Server端Listening Channel的创建和MainReactor的启动，通常我们使用ServerBootstrap启动服务器：</p>
 </div><div>

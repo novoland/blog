@@ -4,628 +4,628 @@ title: "MySQL总结"
 category: "数据库"
 ---
 
-<div style="line-height: 1.5; color: #2c3f51;">
-<div></div>
-<div>
-</div><div>
+<div style="color: #2c3f51; font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif; line-height: 1.6;">
+<div style="line-height: 1.6;"></div>
+<div style="line-height: 1.6;">
+</div><div style="line-height: 1.6;">
 
-<p style="margin: 0 0 1.1em;"></p>
-<div><div><div>
-<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">MySQL总结</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">一. 事务</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 事务的 ACID</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 并发事务产生的问题</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 4个事务隔离级别</a></li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"></p>
+<div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;">
+<ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">MySQL总结</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">一. 事务</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 事务的 ACID</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 并发事务产生的问题</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">3. 4个事务隔离级别</a></li>
 </ul>
 </li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">二. 并发控制</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">锁优化1：拆分，读写锁</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">锁优化2：降低粒度，表锁 &amp; 行锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">表锁</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">使用MyISAM时注意对表锁的优化：</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">行锁</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">查询锁的争用情况</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. MVCC</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">MySQL的两种read方式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">a. “snapshot read”</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">b. “current read / lock read”</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">二. 并发控制</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. 锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">锁优化1：拆分，读写锁</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">锁优化2：降低粒度，表锁 &amp; 行锁</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">表锁</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">使用MyISAM时注意对表锁的优化：</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">行锁</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">查询锁的争用情况</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. gap lock &amp; phantom read</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">三. 优化query (粗略)</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">定位瓶颈</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">工具</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">基本原则</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Explain</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">四. 索引</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. B树和B+树</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">B树</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">B+树</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. MyISAM的索引</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. InnoDB的索引</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">primary index（主键索引）</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">secondary index</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">优缺点</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 什么样的查询条件会走索引?</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">a) 最左前缀的等值查询</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">b) 范围查询</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">c) 字符串%如果放在开头则无法走索引</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">5. 建立索引时的优化</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">a) 不适合创建索引的情况</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">b) 前缀索引 和 selectivity（选择性）</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">c) 尽量使用多列复合索引而不是多个单列索引</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">d) 选择正确的列顺序</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">6. 查询优化</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">a) 查询条件中不要对列做运算，否则无法使用索引；</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">b) 使用“覆盖索引”技巧</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">c) 优化join</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">d) 优化 order by</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">e) 优化 group by / distinct</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">group by：</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">索引访问方式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">1. loose index scan（MySQL不支持）</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 伪loose index scan:</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">3. Tight index scan:</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">distinct：</a></li>
-</ul>
-</li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">f) count</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">g) limit &amp; offset</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">h) union</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. MVCC</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">MySQL的两种read方式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">a. “snapshot read”</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">b. “current read / lock read”</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">五. 可扩展设计</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">分布式事务</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">最终一致性</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">Replication</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">数据切分(shard)</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none;">
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">垂直</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">水平</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">结合：先垂直再水平</a></li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">切分后的整合</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">3. gap lock &amp; phantom read</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">三. 优化query (粗略)</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">定位瓶颈</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">工具</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">基本原则</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Explain</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">四. 索引</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. B树和B+树</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">B树</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">B+树</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. MyISAM的索引</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">3. InnoDB的索引</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">primary index（主键索引）</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">secondary index</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">优缺点</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">4. 什么样的查询条件会走索引?</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">a) 最左前缀的等值查询</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">b) 范围查询</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">c) 字符串%如果放在开头则无法走索引</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">5. 建立索引时的优化</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">a) 不适合创建索引的情况</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">b) 前缀索引 和 selectivity（选择性）</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">c) 尽量使用多列复合索引而不是多个单列索引</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">d) 选择正确的列顺序</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">6. 查询优化</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">a) 查询条件中不要对列做运算，否则无法使用索引；</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">b) 使用“覆盖索引”技巧</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">c) 优化join</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">d) 优化 order by</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">e) 优化 group by / distinct</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">group by：</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">索引访问方式</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">1. loose index scan（MySQL不支持）</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">2. 伪loose index scan:</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">3. Tight index scan:</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">distinct：</a></li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">f) count</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">g) limit &amp; offset</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">h) union</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a style="background: transparent; color: #1980e6; text-decoration: none;">参考书籍：</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">五. 可扩展设计</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">分布式事务</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">最终一致性</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">Replication</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">数据切分(shard)</a><ul style="margin-top: 0; margin-bottom: 15px; list-style-type: none; line-height: 1.6;">
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">垂直</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">水平</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">结合：先垂直再水平</a></li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">切分后的整合</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li style="line-height: 1.6;"><a style="background: transparent; color: #1980e6; text-decoration: none;">参考书籍：</a></li>
 </ul>
 </div>
 </div>
 </div>
-</div><div>
-<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">一. 事务</h1>
-<p style="margin: 0 0 1.1em;"><a href="http://en.wikipedia.org/wiki/Isolation_%28database_systems%29" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">WIKI</a></p>
-<p style="margin: 0 0 1.1em;">事务并发会导致各类问题，SQL 标准预定义了4种事务隔离级别，以满足不同程度的并发。每种隔离级别都能保证解决若干并发问题。</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. 事务的 ACID</h2>
-<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
-<thead>
-<tr>
-<th style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">Explaination</th>
+</div><div style="line-height: 1.6;">
+<h1 style="font-size: 2.6em; margin: 1.2em 0 .6em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">一. 事务</h1>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://en.wikipedia.org/wiki/Isolation_%28database_systems%29" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">WIKI</a></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">事务并发会导致各类问题，SQL 标准预定义了4种事务隔离级别，以满足不同程度的并发。每种隔离级别都能保证解决若干并发问题。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. 事务的 ACID</h2>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">feature</th>
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">解释</th>
 </tr>
 </thead>
-<tbody><tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">Atomic</td>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">Atomic</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">原子，要么一起完成要么都不做</td>
 </tr>
-<tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">Consistency</td>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">Consistency</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">事务开始前和结束后数据都是满足约束规则的，如外键约束</td>
 </tr>
-<tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">Isolation</td>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">Isolation</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">隔离性，并发事务之间不会互相影响，就像串行执行一样</td>
 </tr>
-<tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">Duaration</td>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">Duaration</td>
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">持久性，事务造成的修改是持久的，故障也不会丢失</td>
 </tr>
 </tbody></table>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. 并发事务产生的问题</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;">第一类丢失更新 ( <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">回滚丢失</code>)。</p>
-<p style="margin: 0 0 1.1em;">在 A 进行期间，B 做了更新；A 如果回滚，B 的更新丢失。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. 并发事务产生的问题</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">第一类丢失更新 ( <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">回滚丢失</code>)。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在 A 进行期间，B 做了更新；A 如果回滚，B 的更新丢失。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">所有隔离级别都不会发生这种现象</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">所有隔离级别都不会发生这种现象</p>
 </blockquote></li>
-<li><p style="margin: 0 0 1.1em;">脏读（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Dirty Read</code>）：</p>
-<p style="margin: 0 0 1.1em;">A 看到 B 进行中更新的数据，并以此为根据继续执行相关的操作；B 回滚，导致 A 操作的是脏数据。</p></li>
-<li><p style="margin: 0 0 1.1em;">不可重复读（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Non-repeatable Read</code>）：</p>
-<p style="margin: 0 0 1.1em;">A 先查询一次数据，然后 B 更新之并提交，A 再次查询，得到和上一次不同的查询结果。</p></li>
-<li><p style="margin: 0 0 1.1em;">幻读（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Phantom Read</code>）：</p>
-<p style="margin: 0 0 1.1em;">A 查询一批数据，B 插入或删除了某些记录并提交，A 再次查询，发现结果集中出现了上次没有的记录，或者上次有的记录消失了。</p></li>
-<li><p style="margin: 0 0 1.1em;">第二类丢失更新 (<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">覆盖丢失</code>)：</p>
-<p style="margin: 0 0 1.1em;">A 和 B 查询同样的记录，各自 <strong style="font-weight: bold;">基于最初查询的结果</strong> 更新记录并提交，后提交的数据将覆盖先提交的，导致最终数据错误。</p>
-<p style="margin: 0 0 1.1em;">并发进行自增 / 自减是发生覆盖丢失的一个典型场景：</p>
-<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1409971482166.png" name="4ab7a1fa-077a-4de4-bfb8-f54b5baae0ea" src="/assets/img/a532fd94ccd31a031bd3700865b231c9.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-<p style="margin: 0 0 1.1em;">其中一个事务的更新被另外一个覆盖了，最终导致 i 错误。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">脏读（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Dirty Read</code>）：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">A 看到 B 进行中更新的数据，并以此为根据继续执行相关的操作；B 回滚，导致 A 操作的是脏数据。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">不可重复读（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Non-repeatable Read</code>）：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">A 先查询一次数据，然后 B 更新之并提交，A 再次查询，得到和上一次不同的查询结果。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">幻读（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Phantom Read</code>）：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">A 查询一批数据，B 插入或删除了某些记录并提交，A 再次查询，发现结果集中出现了上次没有的记录，或者上次有的记录消失了。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">第二类丢失更新 (<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">覆盖丢失</code>)：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">A 和 B 查询同样的记录，进行 “读取、计算、更新”，即各自 <del><strong style="font-weight: bold; line-height: 1.6;">基于最初查询的结果</strong> </del>（非必须） 更新记录并提交，后提交的数据将覆盖先提交的，导致最终数据错误。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">并发进行自增 / 自减是发生覆盖丢失的一个典型场景：</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><img alt="Alt text" class="en-media" longdesc="./1409971482166.png" name="4ab7a1fa-077a-4de4-bfb8-f54b5baae0ea" src="/assets/img/a532fd94ccd31a031bd3700865b231c9.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">其中一个事务的更新被另外一个覆盖了，最终导致 i 错误。</p></li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">3. 4个事务隔离级别</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;">read uncommited</p>
-<p style="margin: 0 0 1.1em;">最弱，事务的所有动作对其他事务都是立即可见的。存在脏读、不可重复读、第二类丢失更新、幻读问题（全部并发问题都有）。</p></li>
-<li><p style="margin: 0 0 1.1em;">read commited</p>
-<p style="margin: 0 0 1.1em;">只能读到其他事务已提交的数据，中间状态的数据则看不到，解决了<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">脏读</code>问题。</p></li>
-<li><p style="margin: 0 0 1.1em;">repeatable read</p>
-<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">InnoDB的默认隔离级别。</strong></p>
-<p style="margin: 0 0 1.1em;">解决了<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">不可重复读</code>的问题，保证在一个事务内，对同一条记录的重复读都是一致的。</p>
-<p style="margin: 0 0 1.1em;">依然存在幻读、第二类丢失更新问题。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">3. 4个事务隔离级别</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">read uncommited</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">最弱，事务的所有动作对其他事务都是立即可见的。存在脏读、不可重复读、第二类丢失更新、幻读问题（全部并发问题都有）。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">read commited</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">只能读到其他事务已提交的数据，中间状态的数据则看不到，解决了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">脏读</code>问题。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">repeatable read</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">InnoDB的默认隔离级别。</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">解决了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">不可重复读</code>的问题，保证在一个事务内，对同一条记录的重复读都是一致的。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">依然存在幻读、第二类丢失更新问题。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">InnoDB 在 Repeatable Read 隔离级别下提供了<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phantom read</code>的解决方案：</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">引入<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">range lock</code>区间锁，读/写时，除了对满足条件的记录加锁，记录之间的区间也加锁，保证不会出现区间内的插入操作。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">InnoDB 在 Repeatable Read 隔离级别下提供了<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phantom read</code>的解决方案：</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">引入<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">range lock</code>区间锁，读/写时，除了对满足条件的记录加锁，记录之间的区间也加锁，保证不会出现区间内的插入操作。</p>
 </blockquote></li>
-<li><p style="margin: 0 0 1.1em;">serial</p>
-<p style="margin: 0 0 1.1em;">最高，所有事务都是串行的。啥并发问题都没有。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">serial</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">最高，所有事务都是串行的。啥并发问题都没有。</p></li>
 </ol>
-<p style="margin: 0 0 1.1em;">总结：</p>
-<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px;">
-<thead>
-<tr>
-<th style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">.</th>
-<th align="center" style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">dirty read</th>
-<th align="center" style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">non-repeatable read</th>
-<th align="center" style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">phantom read</th>
-<th align="center" style="padding: .5em; line-height: 1.5; vertical-align: bottom; border-top: 0; font-weight: bold; border: 1px solid #ddd;">第二类丢失更新</th>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">总结：</p>
+<table style="border-collapse: collapse; border-spacing: 0; margin-bottom: 20px; line-height: 1.6;">
+<thead style="line-height: 1.6;">
+<tr style="line-height: 1.6;">
+<th style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">.</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">脏读</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">不可重复读</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">幻读</th>
+<th align="center" style="font-weight: bold; vertical-align: bottom; padding: .5em; border-top: 0; border: 1px solid #ddd; line-height: 1.6;">第二类丢失更新</th>
 </tr>
 </thead>
-<tbody><tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">read uncommited</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
+<tbody style="line-height: 1.6;"><tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">read uncommited</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
 </tr>
-<tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">read commited</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">read commited</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
 </tr>
-<tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">repeatable read</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">√</td>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">repeatable read</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">√</td>
 </tr>
-<tr>
-<td style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;">serial</td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
-<td align="center" style="padding: .5em; line-height: 1.5; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<tr style="line-height: 1.6;">
+<td style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;">serial</td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
+<td align="center" style="padding: .5em; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">X</code></td>
 </tr>
 </tbody></table>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
-</div><div>
-<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">二. 并发控制</h1>
-<p style="margin: 0 0 1.1em;">数据库通常通过锁来实现上述隔离级别。MySQL能够根据设置的隔离级别自动管理事务内的锁，不需要开发人员关心，用户写的普通SQL语句就能获得上述并发保障。不过数据库也支持显式加锁，对于当前隔离级别无法解决的并发问题（对InnoDB的默认<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">RR</code>隔离级别而言，并发问题指的是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">幻读</code>和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">第二类丢失更新</code>），通常有以下两种解决方式：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">悲观锁</strong>：在数据库事务中显式加锁。这种方法的逻辑是，假定每次访问资源都会出现冲突，每次均以排他形式访问数据库记录，因此称为<strong style="font-weight: bold;">悲观锁</strong>。在并发程度低的时候加的锁可能是不必要的，会浪费资源降低性能。</p></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">乐观锁</strong>：在应用程序中使用版本控制手段进行冲突检测。这种方法认为DB的并发度较低，冲突不激烈，假定每次访问数据库都不会发生冲突，不显式加数据库锁，只在更新记录时由应用程序（通常是ORM框架）从DB取最新数据，并与当前提交的数据进行版本比对（通常用额外的一个Version字段，递增记录数据版本），从而判断是否出现了并发问题，因此称为<strong style="font-weight: bold;">乐观锁</strong>。<strong style="font-weight: bold;">乐观锁只能解决第二类丢失更新（<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">覆盖丢失</code>）问题</strong>，并发度低时，乐观锁能避免数据库级不必要的加锁，降低了开销。</p></li>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0; line-height: 1.6;"/>
+</div><div style="line-height: 1.6;">
+<h1 style="font-size: 2.6em; margin: 1.2em 0 .6em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">二. 并发控制</h1>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">数据库通常通过锁来实现上述隔离级别。MySQL能够根据设置的隔离级别自动管理事务内的锁，不需要开发人员关心，用户写的普通SQL语句就能获得上述并发保障。不过数据库也支持显式加锁，对于当前隔离级别无法解决的并发问题（对InnoDB的默认<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">RR</code>隔离级别而言，并发问题指的是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">幻读</code>和<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">第二类丢失更新</code>），通常有以下两种解决方式：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">悲观锁</strong>：在数据库事务中显式加锁。这种方法的逻辑是，假定每次访问资源都会出现冲突，每次均以排他形式访问数据库记录，因此称为<strong style="font-weight: bold; line-height: 1.6;">悲观锁</strong>。在并发程度低的时候加的锁可能是不必要的，会浪费资源降低性能。</p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">乐观锁</strong>：在应用程序中使用版本控制手段进行冲突检测。这种方法认为DB的并发度较低，冲突不激烈，假定每次访问数据库都不会发生冲突，不显式加数据库锁，只在更新记录时由应用程序（通常是ORM框架）从DB取最新数据，并与当前提交的数据进行版本比对（通常用额外的一个Version字段，递增记录数据版本），从而判断是否出现了并发问题，因此称为<strong style="font-weight: bold; line-height: 1.6;">乐观锁</strong>。<strong style="font-weight: bold; line-height: 1.6;">乐观锁只能解决第二类丢失更新（<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">覆盖丢失</code>）问题</strong>，并发度低时，乐观锁能避免数据库级不必要的加锁，降低了开销。</p></li>
 </ol>
-<p style="margin: 0 0 1.1em;">InnoDB 在锁的基础上还搭配了 MVCC 作为优化，实现以上事务隔离级别。</p></div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. 锁</h2>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">锁优化1：拆分，读写锁</h3>
-<p style="margin: 0 0 1.1em;">读锁 – 共享锁 – shared <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">InnoDB 在锁的基础上还搭配了 MVCC 作为优化，实现以上事务隔离级别。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. 锁</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">two-phase locking protocol</code>：事务内部只加锁不释放，在提交时一起释放</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">锁优化1：拆分，读写锁</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">读锁 – 共享锁 – shared <br/>
 写锁 – 排他锁 – exclusive</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">锁优化2：降低粒度，表锁 &amp; 行锁</h3>
-<p style="margin: 0 0 1.1em;"><em>表锁由 mysql服务器 实现，行锁由 存储引擎 实现。</em></p>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">表锁</h4>
-<p style="margin: 0 0 1.1em;">显式的表锁： <br/>
-<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock table xxx read/write;</code></p>
-<p style="margin: 0 0 1.1em;">MyISAM几乎完全依赖MySQL服务器提供的表锁机制。</p>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">使用MyISAM时注意对表锁的优化：</h4>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>缩短锁定时间：拆分query / 索引</li>
-<li>打开concurrent insert(在尾部并发insert)</li>
-<li>根据需要设置读写的优先级。默认写大于读</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">工作方式和 JUC 里的读写锁一样。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">锁优化2：降低粒度，表锁 &amp; 行锁</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><em style="line-height: 1.6;">表锁由 mysql服务器 实现，行锁由 存储引擎 实现。表锁行锁又细分成读写锁。</em></p>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">表锁</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">显式的表锁： <br/>
+<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock table xxx read/write;</code></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MyISAM几乎完全依赖MySQL服务器提供的表锁机制，查询自动加S表锁，更新自动加X表锁。</p>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">使用MyISAM时注意对表锁的优化：</h4>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">缩短锁定时间：拆分query / 索引</li>
+<li style="line-height: 1.6;">打开concurrent insert(在尾部并发insert) <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">0 关闭尾部并发insert</li>
+<li style="line-height: 1.6;">1 如果MyISAM表中没有空洞（即表的中间没有被删除的行），MyISAM允许在一个事务读表的同时，另一个事务从表尾插入记录。这也是MySQL的默认设置。</li>
+<li style="line-height: 1.6;">2 无论MyISAM表中有没有空洞，都允许在表尾并发插入记录</li></ul></li>
+<li style="line-height: 1.6;">根据需要设置读写的优先级。默认写大于读</li>
 </ol>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">行锁</h4>
-<p style="margin: 0 0 1.1em;">InnoDB实现了行锁，基于索引的 index-row locking，<strong style="font-weight: bold;">如果锁了次级索引中的记录，则对应主索引中的记录也会被锁住</strong>。</p>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">查询锁的争用情况</h4>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>表锁 <br/>
-<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">show status like 'table%'</code> <br/>
-<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Table_locks_immediate</code>:立即获得表锁的次数 <br/>
-<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Table_locks_waited</code>:需要等待获得表锁的次数</li>
-<li>innodb的行锁 <br/>
-<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">show status like 'innodb_row_lock'</code> <br/>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">行锁</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">InnoDB实现了行锁，基于索引的 index-row locking，<strong style="font-weight: bold; line-height: 1.6;">如果锁了次级索引中的记录，则对应主索引中的记录也会被锁住</strong>。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">update/delete/insert 动作会自动加x锁。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">查询时也可以设置显式加锁：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... lock in shared mode</code>: s lock</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... for update</code>: x lock</li>
+</ol>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">查询锁的争用情况</h4>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">表锁 <br/>
+<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">show status like 'table%'</code> <br/>
+<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Table_locks_immediate</code>:立即获得表锁的次数 <br/>
+<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Table_locks_waited</code>:需要等待获得表锁的次数</li>
+<li style="line-height: 1.6;">innodb的行锁 <br/>
+<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">show status like 'innodb_row_lock'</code> <br/>
 current_waits: <br/>
 waits: <br/>
 time: <br/>
 time_avg: <br/>
 time_max:</li>
 </ol>
-<p style="margin: 0 0 1.1em;">update/delete/insert 动作会自动加x锁。</p>
-<p style="margin: 0 0 1.1em;">查询时也可以设置显式加锁：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... lock in shared mode</code>: s lock</li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... for update</code>: x lock</li>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. MVCC</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">InnoDB 并不仅仅使用上述的锁机制控制并发，它还搭配了另外一种用于提高并发度的被称为 “Multi-Version Concurrency Control 多版本并发控制” 机制一起使用。简单的说，MVCC为某条记录创建多个snapshot，不同事务读取各自的snapshot，互不影响。MVCC是对锁机制的一种优化，普通的select不加锁， <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">read commited</code> MVCC读， <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">repeatable read</code> MVCC读保证了可重复读、避免幻读。MVCC只对select有效，对加锁的select、update、delete无效。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">MVCC 只工作在RC &amp; RR两个隔离级别下，Read uncommited 隔离级别不支持 MVCC，在这个级别下每次都是读取最新版本的数据行；Serializable 也不支持 MVCC，该级别下每个 read 动作都会为记录加上读锁。</strong></p></div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">MySQL的两种read方式</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在MVCC并发控制中，读操作可以分成两类：快照读 (snapshot read)与当前读 (current read)。快照读，读取的是记录的可见版本 (有可能是历史版本)，不用加锁。当前读，读取的是记录的最新版本，并且，当前读返回的记录，都会加上锁，保证其他事务不会再并发修改这条记录。</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">snapshot read(non-lock) / consistent read</code></li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">current read(lock) / lock read</code></li>
+</ol></div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">a. “snapshot read”</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">普通的select就是snapshot read，读 MVCC 的快照，不加锁, 但是不同的隔离级别中的行为是不一样的:</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">RC: 最近的snapshot  – 可看到其他事务已提交的内容</li>
+<li style="line-height: 1.6;">RR: 事务开始时的snapshot  – 可重复读、避免幻读</li>
 </ol>
-<p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">two-phase locking protocol</code>：事务内部获得的锁在提交时一起释放</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. MVCC</h2>
-<p style="margin: 0 0 1.1em;">InnoDB 并不仅仅使用上述的锁机制控制并发，它还搭配了另外一种用于提高并发度的被称为 “Multi-Version Concurrency Control 多版本并发控制” 机制一起使用。简单的说，MVCC为某条记录创建多个snapshot，不同事务读取各自的snapshot，互不影响，它可以认为是对锁机制的一种优化，它在很多情况下避免了锁的使用：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>使普通的select避免加锁，提高并发</li>
-<li>不用锁也能实现 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">read commited</code> 和 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">repeatable read</code> 事务隔离级别的语义</li>
-</ol>
-<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">MVCC 只工作在RC &amp; RR两个隔离级别下，Read uncommited 隔离级别不支持 MVCC，在这个级别下每次都是读取最新版本的数据行；Serializable 也不支持 MVCC，该级别下每个 read 动作都会为记录加上读锁。</strong></p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">MySQL的两种read方式</h3>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">snapshot read(non-lock) / consistent read</code></li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">current read(lock) / lock read</code>:</li>
-</ol>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">a. “snapshot read”</h4>
-<p style="margin: 0 0 1.1em;">普通的select就是snapshot read，读 MVCC 的快照，不加锁, 但是不同的隔离级别中的行为是不一样的:</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>RC: 最近的snapshot  – read commited，看到其他事务的动作</li>
-<li>RR: 事务开始时的snapshot  – <strong style="font-weight: bold;">repeatable  read</strong>，一致性</li>
-</ol>
-<p style="margin: 0 0 1.1em;">可以看到，snapshot read 在RC和RR中的工作方式都满足其隔离级别的定义。</p>
-<p style="margin: 0 0 1.1em;"><a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-consistent-read.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Consistent Nonlocking read</a></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">可以看到，snapshot read 在RC和RR中的工作方式都满足其隔离级别的定义。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-consistent-read.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Consistent Nonlocking read</a></p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">If the transaction isolation level is REPEATABLE READ (the default level), all consistent reads within the same transaction read the snapshot established by the first such read in that transaction. </p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">You can get a fresher snapshot for your queries by committing the current transaction and after that issuing new queries.</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">With READ COMMITTED isolation level, each consistent read within a transaction sets and reads its own fresh snapshot.</p>
-</blockquote>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">b. “current read / lock read”</h4>
-<p style="margin: 0 0 1.1em;">lock read 操作的是数据的最新版本，且对记录加锁。以下动作属于 lock read：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... lock in shared mode</code>: s lock</li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... for update</code>: x lock</li>
-<li>DML（insert/delete/update）也属于 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock read</code></li>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">If the transaction isolation level is REPEATABLE READ (the default level), all consistent reads within the same transaction read the snapshot established by the first such read in that transaction. </p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">You can get a fresher snapshot for your queries by committing the current transaction and after that issuing new queries.</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">With READ COMMITTED isolation level, each consistent read within a transaction sets and reads its own fresh snapshot.</p>
+</blockquote></div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">b. “current read / lock read”</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">lock read 操作的是数据的最新版本，且对记录加锁。以下动作属于 lock read：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... lock in shared mode</code>: s lock</li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select... for update</code>: x lock</li>
+<li style="line-height: 1.6;">DML（insert/delete/update）也属于 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock read</code></li>
 </ol>
-<p style="margin: 0 0 1.1em;"><a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-locking-reads.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">SELECT … FOR UPDATE and SELECT … LOCK IN SHARE MODE Locking Reads</a></p>
-<p style="margin: 0 0 1.1em;">在 <strong style="font-weight: bold;">在RR隔离级别上</strong> ，lock read 除了会加记录锁，还会为记录之间的间隙加上<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">gap lock</code>，从而解决<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phantom read</code>问题。</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">3. gap lock &amp; phantom read</h2>
-<p style="margin: 0 0 1.1em;">在<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">repeatable read</code>级别上, <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock read</code> 时使用了 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">gap-key lock</code> 解决 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phathom read</code> 问题: 不仅锁找到的记录，还锁区间，保证区间内的值无法被插入。</p>
-<p style="margin: 0 0 1.1em;">注意，无法使用索引时会走主索引实现全表扫描，此时会给所有的记录加上record lock，并对其所有的区间加gap lock，表完全锁死，此时只能进行 snapshot read，极大地降低并发，这就是为何update/delete尽量要走索引的原因。</p>
-<p style="margin: 0 0 1.1em;">注意：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>普通的 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">snapshot read</code> 依然有<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phantom read</code>，只能保证<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">可重复读</code>；只有 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock read</code> 既解决了<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phantom read</code>，又保证了<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">可重复读</code>。</li>
-<li>RC级别的 lock read 没有<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">gap lock</code>，只会加 <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">record lock</code>。</li>
-</ol>
-<p style="margin: 0 0 1.1em;"><a href="http://hedengcheng.com/?p=771" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">何登成的《MySQL 加锁处理分析》</a> <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-locking-reads.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">SELECT … FOR UPDATE and SELECT … LOCK IN SHARE MODE Locking Reads</a></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在 <strong style="font-weight: bold; line-height: 1.6;">在RR隔离级别上</strong> ，lock read 除了会加记录锁，还会为记录之间的间隙加上<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">gap lock</code>，从而解决<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phantom read</code>问题。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">3. gap lock &amp; phantom read</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">在<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">repeatable read</code>级别上, <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">lock read</code> 时使用了 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">gap-key lock</code> 解决 <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">phathom read</code> 问题: 不仅锁找到的记录，还锁区间，保证区间内的值无法被插入。<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">read committed</code>只有记录锁，存在幻读。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">注意，无法使用索引时会走主索引实现全表扫描，此时会给所有的记录加上record lock，并对其所有的区间加gap lock，表完全锁死，此时只能进行 snapshot read，极大地降低并发，这就是为何update/delete尽量要走索引的原因。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://hedengcheng.com/?p=771" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">何登成的《MySQL 加锁处理分析》</a> <br/>
 <a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-record-level-locks.html" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">innodb-record-level-locks`</a></p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">MySQL/InnoDB定义的4种隔离级别：</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Read Uncommited <br/>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">MySQL/InnoDB定义的4种隔离级别：</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">Read Uncommited <br/>
   可以读取未提交记录。此隔离级别，不会使用，忽略。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Read Committed (RC) <br/>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">Read Committed (RC) <br/>
   快照读忽略，本文不考虑。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">针对当前读，RC隔离级别保证对读取到的记录加锁 (记录锁)，存在幻读现象。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Repeatable Read (RR) <br/>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">针对当前读，RC隔离级别保证对读取到的记录加锁 (记录锁)，存在幻读现象。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">Repeatable Read (RR) <br/>
   快照读忽略，本文不考虑。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">针对当前读，RR隔离级别保证对读取到的记录加锁 (记录锁)，同时保证对读取的范围加锁，新的满足查询条件的记录不能够插入 (间隙锁)，不存在幻读现象。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Serializable <br/>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">针对当前读，RR隔离级别保证对读取到的记录加锁 (记录锁)，同时保证对读取的范围加锁，新的满足查询条件的记录不能够插入 (间隙锁)，不存在幻读现象。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">Serializable <br/>
   从MVCC并发控制退化为基于锁的并发控制。不区别快照读与当前读，所有的读操作均为当前读，读加读锁 (S锁)，写加写锁 (X锁)。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">Serializable隔离级别下，读写冲突，因此并发度急剧下降，在MySQL/InnoDB下不建议使用。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">Serializable隔离级别下，读写冲突，因此并发度急剧下降，在MySQL/InnoDB下不建议使用。</p>
 </blockquote>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
-</div><div>
-<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">三. 优化query (粗略)</h1>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">定位瓶颈</h2>
-<p style="margin: 0 0 1.1em;">IO or CPU?</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">工具</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>explain &amp; profile</li>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0; line-height: 1.6;"/></div><div style="line-height: 1.6;">
+<h1 style="font-size: 2.6em; margin: 1.2em 0 .6em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">三. 优化query (粗略)</h1>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">定位瓶颈</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">IO or CPU?</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">工具</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">explain &amp; profile</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">基本原则</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>join时小结果集驱动大结果集</li>
-<li>利用索引完成排序/分组</li>
-<li><p style="margin: 0 0 1.1em;">只取需要的列（？） <br/>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">基本原则</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">join时小结果集驱动大结果集</li>
+<li style="line-height: 1.6;">利用索引完成排序/分组</li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">只取需要的列（？） <br/>
 a. network <br/>
 b. 不能使用Covering index <br/>
 c. 优化排序</p></li>
-<li><p style="margin: 0 0 1.1em;">仅仅使用最有效的过滤条件 <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">仅仅使用最有效的过滤条件 <br/>
 建立索引的字段越小越好，减少IO</p></li>
-<li><p style="margin: 0 0 1.1em;">避免复杂join和子查询 <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">避免复杂join和子查询 <br/>
 对于MyISAM，join会锁住所有相关的表（s lock），可能阻塞DML其他很长时间，此时可以在程序中做join，降低对锁的占用，减少阻塞； <br/>
 对应用而言，SQL的执行时间：网络/执行（CPU+IO）/锁阻塞，优化瓶颈 <br/>
 子查询实现不好，不一定会走索引</p></li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">Explain</h2>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
-</div><div>
-<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">四. 索引</h1>
-<p style="margin: 0 0 1.1em;"><a href="http://www.percona.com/files/presentations/percona-live/london-2011/PLUK2011-practical-mysql-indexing-guidelines.pdf" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Practical MySQL indexing guidelines</a></p>
-<p style="margin: 0 0 1.1em;">MyISAM 和 InnoDB 的索引，采用的数据结构都是B+树。</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">1. B树和B+树</h2>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">B树</h3>
-<p style="margin: 0 0 1.1em;">B树的结构类似二叉查找树，只不过节点的度远远大于2，查找的复杂度为树的高度，O(logdN)： <br/>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">Explain</h2>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0; line-height: 1.6;"/>
+</div><div style="line-height: 1.6;">
+<h1 style="font-size: 2.6em; margin: 1.2em 0 .6em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">四. 索引</h1>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><a href="http://www.percona.com/files/presentations/percona-live/london-2011/PLUK2011-practical-mysql-indexing-guidelines.pdf" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">Practical MySQL indexing guidelines</a></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MyISAM 和 InnoDB 的索引，采用的数据结构都是B+树。</p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">1. B树和B+树</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">B树</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">B树的结构类似二叉查找树，只不过节点的度远远大于2，查找的复杂度为树的高度，O(logdN)： <br/>
 <img alt="Alt text" class="en-media" longdesc="./1402812459074.png" name="6110437c-cb5b-4148-9a0d-9cbea5a7d5fd" src="/assets/img/81bb92fa7c27d9aef499efc82c4aaa73.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-<p style="margin: 0 0 1.1em;">通常会将根据硬盘上一个page的大小来调整节点的度，原因是：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>基于外存的查找数据结构中，性能的瓶颈在于IO，这样的处理一可以让一个节点只需要一次IO</li>
-<li>二可以显著降低树的高度，查找时只需几次page的IO即可定位到目标。</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">通常会将根据硬盘上一个page的大小来调整节点的度，原因是：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">基于外存的查找数据结构中，性能的瓶颈在于IO，这样的处理一可以让一个节点只需要一次IO</li>
+<li style="line-height: 1.6;">二可以显著降低树的高度，查找时只需几次page的IO即可定位到目标。</li>
 </ol>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">B+树</h3>
-<p style="margin: 0 0 1.1em;">B+树是对B树的优化：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;">只有叶子节点存data，内节点只存key； <br/>
-好处：<em>* 提高内节点的度，降低高度 *</em></p></li>
-<li><p style="margin: 0 0 1.1em;">叶子节点加上了next指针，形成一个链表 <br/>
-好处：<em>* 快速范围查找，只需确定起点和终点，顺序扫描即可 *</em></p></li>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">B+树</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">B+树是对B树的优化：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">只有叶子节点存data，内节点只存key； <br/>
+好处：<em style="line-height: 1.6;">* 提高内节点的度，降低高度 *</em></p></li>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;">叶子节点加上了next指针，形成一个链表 <br/>
+好处：<em style="line-height: 1.6;">* 快速范围查找，只需确定起点和终点，顺序扫描即可 *</em></p></li>
 </ol>
-<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1402813534888.png" name="f3392b7b-c733-4b80-ba43-d51f8cc1cf8c" src="/assets/img/9467b1f6665fb48464f4699db1a4bec2.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">2. MyISAM的索引</h2>
-<p style="margin: 0 0 1.1em;">索引和数据分离，数据文件：堆表(按插入有序)</p>
-<p style="margin: 0 0 1.1em;">主键索引和非主键索引结构一致，叶子节点存储的是行的物理位置信息（row number）</p>
-<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1402813593672.png" name="a8cab548-fa57-4191-90c6-5ff93e80c322" src="/assets/img/10b0700762cf9c5bfd97396ccfb7c8b3.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">3. InnoDB的索引</h2>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">primary index（主键索引）</h3>
-<p style="margin: 0 0 1.1em;">数据文件就是主键索引文件，叶子节点存真实数据，这种方式称为 <strong style="font-weight: bold;">聚集索引</strong>。</p>
-<p style="margin: 0 0 1.1em;">如果没有主键，InnoDB会试着使用一个Unique Nonnullable index代替；如果没有这种索引，会定义隐藏的主键。</p>
-<p style="margin: 0 0 1.1em;"><img alt="Alt text" class="en-media" longdesc="./1410230989377.png" name="69e914e7-8cfa-4a69-a08e-4483af84d5e5" src="/assets/img/f83dae9c2efa594efdea1adc45fb31d7.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">secondary index</h3>
-<p style="margin: 0 0 1.1em;">非主键上的索引称为次级索引，叶子节点存 <strong style="font-weight: bold;">主键</strong>，此时需要查找两次。</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">优缺点</h3>
-<p style="margin: 0 0 1.1em;">优点： 将相关数据保存在一起，减少IO；MyISAM访问每个行都得访问数据文件</p>
-<p style="margin: 0 0 1.1em;">缺点：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>B+树的节点按page聚集，存储着数据，因此主索引叶子节点分裂的机会远远大于非聚集索引；split会导致  <br/>
-<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>移动大量数据; </li>
-<li>需要更多空间（碎片）; </li>
-<li>split时会给整个索引加x锁，不可访问</li></ul></li>
-<li>按主键顺序插入最快，因为记录被顺序插到索引的最末，节点 split 的开销很小；乱序插入慢，因为新记录很大机会被插入到已满的叶子节点，引起频繁分裂，因此 InnoDB <strong style="font-weight: bold;">更适合用自增主键</strong>；</li>
-<li>secondary index包含了主键，体积可能很大，因此 <strong style="font-weight: bold;">不适合用过长字段当主键</strong>；</li>
-<li>在secondary index上可能需要查找两次，一次查自己，一次查主索引。</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><img alt="Alt text" class="en-media" longdesc="./1402813534888.png" name="f3392b7b-c733-4b80-ba43-d51f8cc1cf8c" src="/assets/img/9467b1f6665fb48464f4699db1a4bec2.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">2. MyISAM的索引</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">索引和数据分离，数据文件：堆表(按插入有序)</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">主键索引和非主键索引结构一致，叶子节点存储的是行的物理位置信息（row number）</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><img alt="Alt text" class="en-media" longdesc="./1402813593672.png" name="a8cab548-fa57-4191-90c6-5ff93e80c322" src="/assets/img/10b0700762cf9c5bfd97396ccfb7c8b3.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">3. InnoDB的索引</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">primary index（主键索引）</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">数据文件就是主键索引文件，叶子节点存真实数据，这种方式称为 <strong style="font-weight: bold; line-height: 1.6;">聚集索引</strong>。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">如果没有主键，InnoDB会试着使用一个Unique Nonnullable index代替；如果没有这种索引，会定义隐藏的主键。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><img alt="Alt text" class="en-media" longdesc="./1410230989377.png" name="69e914e7-8cfa-4a69-a08e-4483af84d5e5" src="/assets/img/f83dae9c2efa594efdea1adc45fb31d7.png" style="border: 0; vertical-align: middle; max-width: 100%;" title=""/></p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">secondary index</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">非主键上的索引称为次级索引，叶子节点存 <strong style="font-weight: bold; line-height: 1.6;">主键</strong>，此时需要查找两次。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">优缺点</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">优点： 将相关数据保存在一起，减少IO；MyISAM访问每个行都得访问数据文件</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">缺点：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">B+树的节点按page聚集，存储着数据，因此主索引叶子节点分裂的机会远远大于非聚集索引；split会导致  <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">移动大量数据; </li>
+<li style="line-height: 1.6;">需要更多空间（碎片）; </li>
+<li style="line-height: 1.6;">split时会给整个索引加x锁，不可访问</li></ul></li>
+<li style="line-height: 1.6;">按主键顺序插入最快，因为记录被顺序插到索引的最末，节点 split 的开销很小；乱序插入慢，因为新记录很大机会被插入到已满的叶子节点，引起频繁分裂，因此 InnoDB <strong style="font-weight: bold; line-height: 1.6;">更适合用自增主键</strong>；</li>
+<li style="line-height: 1.6;">secondary index包含了主键，体积可能很大，因此 <strong style="font-weight: bold; line-height: 1.6;">不适合用过长字段当主键</strong>；</li>
+<li style="line-height: 1.6;">在secondary index上可能需要查找两次，一次查自己，一次查主索引。</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">4. 什么样的查询条件会走索引?</h2>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">4. 什么样的查询条件会走索引?</h2>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">区分<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">范围查询</code>和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">等值查询</code></p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">in</code>是多个等值查询，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">between</code>二者都有可能。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">范围查询</strong> 使用索引的方式，是先确定起点，再根据叶子节点组成的链表顺序扫描，直到终点。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;"><strong style="font-weight: bold;">等值查询</strong> 则是从上到下搜索树。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">区分<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">范围查询</code>和<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">等值查询</code></p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">in</code>是多个等值查询，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">between</code>二者都有可能。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">范围查询</strong> 使用索引的方式，是先确定起点，再根据叶子节点组成的链表顺序扫描，直到终点。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">等值查询</strong> 则是从上到下搜索树。</p>
 </blockquote>
-<p style="margin: 0 0 1.1em;">假如有索引<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">&lt;a,b,c,d&gt;</code>：</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">a) 最左前缀的等值查询</h3>
-<p style="margin: 0 0 1.1em;">一旦出现空洞，后面的列就不能使用索引了，但空洞可以用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">in所有值</code>填充</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">b) 范围查询</h3>
-<p style="margin: 0 0 1.1em;">只有第一个出现的范围查询及其前面的列（前提是要构成最左前缀）可以使用索引，后面的即使构成最左前缀也不会走索引。</p>
-<p style="margin: 0 0 1.1em;">因此，较常进行范围查询的列要放在索引的后面。</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">c) 字符串<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">%</code>如果放在开头则无法走索引</h3>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">5. 建立索引时的优化</h2>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">a) 不适合创建索引的情况</h3>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">唯一性太差的列</strong> <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">假如有索引<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">&lt;a,b,c,d&gt;</code>：</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">a) 最左前缀的等值查询</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">一旦出现空洞，后面的列就不能使用索引了，但空洞可以用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">in所有值</code>填充</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">b) 范围查询</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">只有第一个出现的范围查询及其前面的列（前提是要构成最左前缀）可以使用索引，后面的即使构成最左前缀也不会走索引。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">因此，较常进行范围查询的列要放在索引的后面。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">c) 字符串<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">%</code>如果放在开头则无法走索引</h3>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">5. 建立索引时的优化</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">a) 不适合创建索引的情况</h3>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">唯一性太差的列</strong> <br/>
 引擎根据统计信息会做优化，可能建了也不走</p></li>
-<li><p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">频繁更新的列</strong> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">频繁更新的列</strong> <br/>
 需要同时维护索引和数据    </p></li>
 </ol>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">b) 前缀索引 和 selectivity（选择性）</h3>
-<p style="margin: 0 0 1.1em;">问题：列太长，太消耗空间；解决方案：用前缀建立索引 <br/>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">b) 前缀索引 和 selectivity（选择性）</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">问题：列太长，太消耗空间；解决方案：用前缀建立索引 <br/>
 但是又要保证良好的selectivity <br/>
 selectivity = (distinct values) / all records</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">c) 尽量使用多列复合索引而不是多个单列索引</h3>
-<p style="margin: 0 0 1.1em;">减少维护索引的开销 <br/>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">c) 尽量使用多列复合索引而不是多个单列索引</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">减少维护索引的开销 <br/>
 多个单列索引老版本只会选一个，5.0以后可以用index merge，扫描多个再合并结果（or/and）</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">d) 选择正确的列顺序</h3>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>一般来说选择性高的放前面，在最初阶段就可以排除大部分记录，减少后续需要考察的数据量；</li>
-<li>最常用的放在前面，范围查询的字段尽量靠后。</li>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">d) 选择正确的列顺序</h3>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">一般来说选择性高的放前面，在最初阶段就可以排除大部分记录，减少后续需要考察的数据量；</li>
+<li style="line-height: 1.6;">最常用的放在前面，范围查询的字段尽量靠后。</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">6. 查询优化</h2>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">a) 查询条件中不要对列做运算，否则无法使用索引；</h3>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">b) 使用“覆盖索引”技巧</h3>
-<p style="margin: 0 0 1.1em;">Covering index: 覆盖了查询的所有列，避免访问数据文件/聚集索引 <br/>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">6. 查询优化</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">a) 查询条件中不要对列做运算，否则无法使用索引；</h3>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">b) 使用“覆盖索引”技巧</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">Covering index: 覆盖了查询的所有列，避免访问数据文件/聚集索引 <br/>
 发起的查询被索引覆盖时，会在Extra出现Using Index</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">c) 优化join</h3>
-<p style="margin: 0 0 1.1em;">MySQL只支持nested loop join，没有hash join或者sort merge join。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">c) 优化join</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MySQL只支持nested loop join，没有hash join或者sort merge join。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">数据库 join 类型：</p>
-<ol style="margin-top: 0; margin-bottom: 0;"><li><p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">nested-loop join</code> <br/>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">数据库 join 类型：</p>
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">nested-loop join</code> <br/>
   两层循环，分驱动表（外层，小）和被驱动表（内层）。MySQL 只有这种 join 方式。</p></li>
-<li><p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">sort-merge join</code> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">sort-merge join</code> <br/>
   两边都先 sort（有索引就不用了），用两个指针指向两边的第一个元素，依次找相同值。 <br/>
   和 nested-loop join 类似，但利用了排序的性质，内层循环从上次停止的地方开始就可以，不要从头开始找起。</p></li>
-<li><p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">hash join</code> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">hash join</code> <br/>
   一边构造一个哈希表（或布隆过滤器），另一边依次判断记录是否在其中</p></li>
 </ol>
 </blockquote>
-<p style="margin: 0 0 1.1em;">当join无法使用索引（type是all/index/range/index_merge，用到是ref）时会用到join buffer，缓存中间的结果集</p>
-<p style="margin: 0 0 1.1em;">优化：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>某些情况下拆分join效率更高： <br/>
-<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>在应用端可以利用缓存</li>
-<li>减少MyISAM的表锁时间</li>
-<li>对大表用in替换join，更高效</li></ul></li>
-<li>减小最外层循环次数，即用小结果集驱动join（优化器会帮你挑选较小的表做驱动表）</li>
-<li>保证被驱动表上的join字段被索引</li>
-<li>只 group by 或 order by 驱动表上的列，这样可以在 join 前排序</li>
-<li>被驱动表无法走索引时，保证join buffer足够大</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">当join无法使用索引（type是all/index/range/index_merge，用到是ref）时会用到join buffer，缓存中间的结果集</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">优化：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">某些情况下拆分join效率更高： <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">在应用端可以利用缓存</li>
+<li style="line-height: 1.6;">减少MyISAM的表锁时间</li>
+<li style="line-height: 1.6;">对大表用in替换join，更高效</li></ul></li>
+<li style="line-height: 1.6;">减小最外层循环次数，即用小结果集驱动join（优化器会帮你挑选较小的表做驱动表）</li>
+<li style="line-height: 1.6;">保证被驱动表上的join字段被索引</li>
+<li style="line-height: 1.6;">只 group by 或 order by 驱动表上的列，这样可以在 join 前排序</li>
+<li style="line-height: 1.6;">被驱动表无法走索引时，保证join buffer足够大</li>
 </ol>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">d) 优化 order by</h3>
-<p style="margin: 0 0 1.1em;">当不能用索引实现排序时，mysql必须对存储引擎返回的记录排序，这个过程被称为filesort（但不一定发生在磁盘上）。纯内存时快速排序，外存时分块快速排序再归并。</p>
-<p style="margin: 0 0 1.1em;">两种filesort算法：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>order by 字段和行指针取出，在sort buffer中排序；然后通过行指针取出需要的列。需要访问两次数据，但内存消耗少。</li>
-<li>一次性将所有需要的列取出，在sort buffer中排序，需要更多内存。</li>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">d) 优化 order by</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">当不能用索引实现排序时，mysql必须对存储引擎返回的记录排序，这个过程被称为filesort（但不一定发生在磁盘上）。纯内存时快速排序，外存时分块快速排序再归并。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">两种filesort算法：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">order by 字段和行指针取出，在sort buffer中排序；然后通过行指针取出需要的列。需要访问两次数据，但内存消耗少。</li>
+<li style="line-height: 1.6;">一次性将所有需要的列取出，在sort buffer中排序，需要更多内存。</li>
 </ol>
-<p style="margin: 0 0 1.1em;">参数：max_length_for_sort_data，结果集长度超过该参数时用第一种。</p>
-<p style="margin: 0 0 1.1em;">对join的排序:</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>如果只用了驱动表的字段排序：先排序，再join</li>
-<li>否则先join，结果集放temp table，然后再排序（Using temporary; Using filesort）</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">参数：max_length_for_sort_data，结果集长度超过该参数时用第一种。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">对join的排序:</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">如果只用了驱动表的字段排序：先排序，再join</li>
+<li style="line-height: 1.6;">否则先join，结果集放temp table，然后再排序（Using temporary; Using filesort）</li>
 </ol>
-<p style="margin: 0 0 1.1em;">优化：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><strong style="font-weight: bold;">尽量走索引</strong> <br/>
-<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>order by时必须要能使用索引的最左前缀(order by+where条件中的常量组成最左前缀也可以)，且order by的方向都相同</li>
-<li>join时，order by的列如果引用第一个表（驱动表），可以在 join 前先排好序</li></ul></li>
-<li><strong style="font-weight: bold;">优化filesort</strong> <br/>
-<ul style="margin-top: 0; margin-bottom: 1.1em;"><li>内存多时加大max_length_for_sort_data，返回记录小于时用新算法，大于用老算法；</li>
-<li>用第二种算法时，去掉不必要的返回字段（会用更多内存）</li>
-<li>加大sort_buffer_size，减小排序过程的IO</li></ul></li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">优化：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">尽量走索引</strong> <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">order by时必须要能使用索引的最左前缀(order by+where条件中的常量组成最左前缀也可以)，且order by的方向都相同</li>
+<li style="line-height: 1.6;">join时，order by的列如果引用第一个表（驱动表），可以在 join 前先排好序</li></ul></li>
+<li style="line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">优化filesort</strong> <br/>
+<ul style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">内存多时加大max_length_for_sort_data，返回记录小于时用新算法，大于用老算法；</li>
+<li style="line-height: 1.6;">用第二种算法时，去掉不必要的返回字段（会用更多内存）</li>
+<li style="line-height: 1.6;">加大sort_buffer_size，减小排序过程的IO</li></ul></li>
 </ol>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">e) 优化 group by / distinct</h3>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">group by：</h4>
-<p style="margin: 0 0 1.1em;">比order by多了分组和聚合函数计算的步骤，因此优化方式和order by基本类似。</p>
-<p style="margin: 0 0 1.1em;"><em>* 1. 走索引，可以避免额外排序*</em></p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">e) 优化 group by / distinct</h3>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">group by：</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">比order by多了分组和聚合函数计算的步骤，因此优化方式和order by基本类似。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">1. 走索引，可以避免额外排序</strong></p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">索引访问方式</h4>
-<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">1. <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">loose index scan</code>（MySQL不支持）</h5>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">当前对 <strong style="font-weight: bold;">范围查询</strong> 的处理方式(range scan)是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">走叶子节点链表扫描</code>，当后续有其他列上的过滤条件时，不支持在 <strong style="font-weight: bold;">从上往下搜索的时候，对一个范围内的所有子树，利用后续列的其他条件进行查找并合并结果集</strong> 的工作方式。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">举个例子，idx(a,b,c)，where a = 1 and b &lt; 3 and c = 1，不用loose index scan时的range scan方式：</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">首先定位到 a=1 的节点，然后在这个子树中搜索 b=3 的最右侧叶子节点，接着往前扫描，并用 c=1 在链表上过滤，这种方式在搜索的时候实际上只用到了ab两列;</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">但是显然有一种更好的方式，即在树上从上往下搜索到b&lt;3的所有区间后，对每个子树用c=1的条件去扫描，并合并结果。这就是所谓的loose index scan。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">这就是 idx(a,b,c)少了只有a/c当查询条件是只能用到a列；ab都有范围查询只能用到a列 的根本原因。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Mysql的B+索引只支持等值查询，<strong style="font-weight: bold;">in实际上是和其他条件进行笛卡尔积后的多个等值查询</strong>，因此在查询b/c列时，如果用a in (‘男’,’女’)补上这个空洞时，又是可以走索引的。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;"><strong style="font-weight: bold;">可以使用下面两种方式加速分组</strong>：</p>
-<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">2. <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">伪loose index scan</code>:</h5>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">group by在有些情况下可以使用这种方式加速查询。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">idx(a,b,c)，<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select max(c) where ... group by a,b</code>时对每个 a 及 b 的组合，从该节点出发找到该子树的最左（右）节点，就能知道这个 group 中 c 的最大值了；最后合并结果即可。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">这种工作方式和真正的 loose scan 类似，都是合并子树的搜索结果，而且仅需扫描子树的部分节点。它的局限在于仅适用某些聚合函数如min/max，且查询字段必须在 group by 字段后面，二者一起组成最左前缀。</p>
-<h5 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0; text-align: start;">3. <code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Tight index scan</code>:</h5>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">其实就是利用索引的有序性，工作方式和<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">伪loose index scan</code>类似，但需要扫描满足条件的组合所对应子树中的所有节点，再进行分组/聚合，而不能直接拿到结果。</p>
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;"><a href="http://docs.oracle.com/cd/E16655_01/server.121/e15858/tgsql_optop.htm#TGSQL95163" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">B+树索引访问方式</a></p>
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">索引访问方式</h4>
+<h5 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">1. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">loose index scan</code>（MySQL不支持）</h5>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">当前对 <strong style="font-weight: bold; line-height: 1.6;">范围查询</strong> 的处理方式(range scan)是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">走叶子节点链表扫描</code>，当后续有其他列上的过滤条件时，不支持在 <strong style="font-weight: bold; line-height: 1.6;">从上往下搜索的时候，对一个范围内的所有子树，利用后续列的其他条件进行查找并合并结果集</strong> 的工作方式。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">举个例子，idx(a,b,c)，where a = 1 and b &lt; 3 and c = 1，不用loose index scan时的range scan方式：</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">首先定位到 a=1 的节点，然后在这个子树中搜索 b=3 的最右侧叶子节点，接着往前扫描，并用 c=1 在链表上过滤，这种方式在搜索的时候实际上只用到了ab两列;</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">但是显然有一种更好的方式，即在树上从上往下搜索到b&lt;3的所有区间后，对每个子树用c=1的条件去扫描，并合并结果。这就是所谓的loose index scan。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">这就是 idx(a,b,c)少了只有a/c当查询条件是只能用到a列；ab都有范围查询只能用到a列 的根本原因。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">Mysql的B+索引只支持等值查询，<strong style="font-weight: bold; line-height: 1.6;">in实际上是和其他条件进行笛卡尔积后的多个等值查询</strong>，因此在查询b/c列时，如果用a in (‘男’,’女’)补上这个空洞时，又是可以走索引的。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">可以使用下面两种方式加速分组</strong>：</p>
+<h5 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">2. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">伪loose index scan</code>:</h5>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">group by在有些情况下可以使用这种方式加速查询。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">idx(a,b,c)，<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">select max(c) where ... group by a,b</code>时对每个 a 及 b 的组合，从该节点出发找到该子树的最左（右）节点，就能知道这个 group 中 c 的最大值了；最后合并结果即可。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">这种工作方式和真正的 loose scan 类似，都是合并子树的搜索结果，而且仅需扫描子树的部分节点。它的局限在于仅适用某些聚合函数如min/max，且查询字段必须在 group by 字段后面，二者一起组成最左前缀。</p>
+<h5 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">3. <code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">Tight index scan</code>:</h5>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">其实就是利用索引的有序性，工作方式和<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">伪loose index scan</code>类似，但需要扫描满足条件的组合所对应子树中的所有节点，再进行分组/聚合，而不能直接拿到结果。</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;"><a href="http://docs.oracle.com/cd/E16655_01/server.121/e15858/tgsql_optop.htm#TGSQL95163" style="background: transparent; color: #1980e6; text-decoration: none;" target="_blank">B+树索引访问方式</a></p>
 </blockquote>
-<p style="margin: 0 0 1.1em;"><em>* 2. 不能用索引时，mysql必须先将数据放入临时表，然后filesort。*</em></p>
-</div><div>
-<h4 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0; text-align: start;">distinct：</h4>
-<p style="margin: 0 0 1.1em;">与group by的实现方式是一样的，因此优化方式也类似：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">伪loose index scan</code></li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">tight index scan</code></li>
-<li><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">filesort</code>，但distinct不需要排序</li>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">2. 不能用索引时，mysql必须先将数据放入临时表，然后filesort。</strong></p>
+</div><div style="line-height: 1.6;">
+<h4 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 10.5px; margin-bottom: 10.5px; font-size: 1.25em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">distinct：</h4>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">与group by的实现方式是一样的，因此优化方式也类似：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">伪loose index scan</code></li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">tight index scan</code></li>
+<li style="line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">filesort</code>，但distinct不需要排序</li>
 </ol>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">f) count</h3>
-<p style="margin: 0 0 1.1em;">注意区分以下两种 count ：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li><p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">count(*)</code> <br/>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">f) count</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">注意区分以下两种 count ：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">count(*)</code> <br/>
 统计结果集的行</p></li>
-<li><p style="margin: 0 0 1.1em;"><code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">count(列/表达式)</code> <br/>
+<li style="line-height: 1.6;"><p style="margin: 0 0 1.1em; line-height: 1.6;"><code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">count(列/表达式)</code> <br/>
 统计值的个数，排除null</p></li>
 </ol>
-<p style="margin: 0 0 1.1em;">MyISAM维护了表的总行数，所以没有where条件的 count(*) 很快。</p>
-<p style="margin: 0 0 1.1em;">工作方式：扫描符合条件的记录，统计。</p>
-<p style="margin: 0 0 1.1em;">一个sql语句统计不同值的count：</p>
-</div><div>
-<pre style="font-family: Source Code Pro,monospace; font-size: .9em; white-space: pre-wrap; display: block; padding: 2px; margin: 0 0 1.1em; line-height: 1.45; word-break: break-word; word-wrap: break-word; color: #333; background-color: rgba(102,128,153,0.05); border: 0; border-radius: 5px; text-align: start; background: #f6f6f6;" xml:space="preserve"><code style="font-family: Source Code Pro,monospace; font-size: inherit; padding: 18px 28px; color: #f8f8f2; background-color: transparent; white-space: pre-wrap; border-radius: 0; display: block; background: #23241f;"><span><span style="color: #f92672;">SELECT</span> <span style="color: #f92672;">COUNT</span>(color = <span style="color: #e6db74;">'blue'</span> <span style="color: #f92672;">OR</span> <span style="color: #ae81ff;">NULL</span>) <span style="color: #f92672;">AS</span> blue, <span style="color: #f92672;">COUNT</span>(color = <span style="color: #e6db74;">'red'</span> <span style="color: #f92672;">OR</span> <span style="color: #ae81ff;">NULL</span>) <span style="color: #f92672;">AS</span> red <span style="color: #f92672;">FROM</span> items</span></code></pre>
-<p style="margin: 0 0 1.1em;"><strong style="font-weight: bold;">优化</strong></p>
-<p style="margin: 0 0 1.1em;">用 “covering index” 技巧让 count 利用索引就能完成，不要访问数据文件。</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">g) limit &amp; offset</h3>
-<p style="margin: 0 0 1.1em;">一般瓶颈在于扫描的数据太多，limit 10000,20会扫描10020行数据，再丢弃前10000行.</p>
-<p style="margin: 0 0 1.1em;">优化：利用covering index在索引上偏移，而不是全表上偏移 –  可以先在索引上偏移再join原表获取其他列。</p>
-<p style="margin: 0 0 1.1em;">(没别的办法了？？)</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">h) union</h3>
-<p style="margin: 0 0 1.1em;">MySQL总是用temp table实现union</p>
-<p style="margin: 0 0 1.1em;">使用<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">union all</code>而不是<code style="font-family: Source Code Pro,monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">union</code>，后者会对temp table做distinct操作，开销很大</p>
-<p style="margin: 0 0 1.1em;"><em>* 附：数据访问方式，出现在explain的type列里 *</em> </p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>(all)        Full table scan          全表扫描</li>
-<li>(index)      Index scan               索引全部扫描：找到最左叶子节点，然后走链表</li>
-<li>(range)      Range Scan               索引范围扫描：找到范围的最左（右）侧叶子，然后走链表 <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MyISAM维护了表的总行数，所以没有where条件的 count(*) 很快。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">工作方式：扫描符合条件的记录，统计。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">一个sql语句统计不同值的count：</p>
+</div><div style="line-height: 1.6;">
+<pre style="word-break: break-word; font-family: 'Source Code Pro',monospace; white-space: pre-wrap; display: block; background-color: rgba(102,128,153,0.05); color: #333; word-wrap: break-word; font-size: .9em; background: #f6f6f6; line-height: 1.6; margin: 0 0 1.1em; padding: 2px; border: 0; border-radius: 5px; text-align: start;" xml:space="preserve"><code style="font-family: 'Source Code Pro',monospace; font-size: inherit; background-color: transparent; white-space: pre-wrap; border-radius: 0; color: #f8f8f2; display: block; background: #23241f; padding: 18px 28px;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><div style="line-height: 1.6;"><span style="line-height: 1.6;"><span style="line-height: 1.6; color: #f92672;">SELECT</span> <span style="line-height: 1.6; color: #f92672;">COUNT</span>(color = <span style="line-height: 1.6; color: #e6db74;">'blue'</span> <span style="line-height: 1.6; color: #f92672;">OR</span> <span style="line-height: 1.6; color: #ae81ff;">NULL</span>) <span style="line-height: 1.6; color: #f92672;">AS</span> blue, <span style="line-height: 1.6; color: #f92672;">COUNT</span>(color = <span style="line-height: 1.6; color: #e6db74;">'red'</span> <span style="line-height: 1.6; color: #f92672;">OR</span> <span style="line-height: 1.6; color: #ae81ff;">NULL</span>) <span style="line-height: 1.6; color: #f92672;">AS</span> red <span style="line-height: 1.6; color: #f92672;">FROM</span> items</span></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></code></pre>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><strong style="font-weight: bold; line-height: 1.6;">优化</strong></p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">用 “covering index” 技巧让 count 利用索引就能完成，不要访问数据文件。</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">g) limit &amp; offset</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">一般瓶颈在于扫描的数据太多，limit 10000,20会扫描10020行数据，再丢弃前10000行.</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">优化：利用covering index在索引上偏移，而不是全表上偏移 –  可以先在索引上偏移再join原表获取其他列。</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">(没别的办法了？？)</p>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">h) union</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">MySQL总是用temp table实现union</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">使用<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">union all</code>而不是<code style="font-family: 'Source Code Pro',monospace; font-size: .9em; padding: 2px 4px; color: #c7254e; background-color: #f9f2f4; white-space: normal; border-radius: 4px;">union</code>，后者会对temp table做distinct操作，开销很大</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;"><em style="line-height: 1.6;">* 附：数据访问方式，出现在explain的type列里 *</em> </p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">(all)        Full table scan          全表扫描</li>
+<li style="line-height: 1.6;">(index)      Index scan               索引全部扫描：找到最左叶子节点，然后走链表</li>
+<li style="line-height: 1.6;">(range)      Range Scan               索引范围扫描：找到范围的最左（右）侧叶子，然后走链表 <br/>
 例外：in显示的是range，但是是索引唯一扫描，等同于多个相等条件</li>
-<li>(ref/eq_ref) Unique Index Lookup      索引唯一扫描，走树</li>
-<li>(const)      Constant</li>
+<li style="line-height: 1.6;">(ref/eq_ref) Unique Index Lookup      索引唯一扫描，走树</li>
+<li style="line-height: 1.6;">(const)      Constant</li>
 </ol>
-<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0;"/>
-</div><div>
-<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">五. 可扩展设计</h1>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">分布式事务</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>合理设计切分规则，保证事务所需数据在同一个DB上，避免分布式事务</li>
-<li>拆分成小事务，app保证整体事务完整性</li>
+<hr style="-moz-box-sizing: content-box; box-sizing: content-box; height: 0; margin-top: 21px; margin-bottom: 21px; border: 0; border-top: 1px solid rgba(102,128,153,0.1); margin: 2em 0; line-height: 1.6;"/>
+</div><div style="line-height: 1.6;">
+<h1 style="font-size: 2.6em; margin: 1.2em 0 .6em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">五. 可扩展设计</h1>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">分布式事务</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">合理设计切分规则，保证事务所需数据在同一个DB上，避免分布式事务</li>
+<li style="line-height: 1.6;">拆分成小事务，app保证整体事务完整性</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">最终一致性</h2>
-<p style="margin: 0 0 1.1em;">为了HA/负载均衡需要冗余数据，数据冗余的地方就存在一致性的问题</p>
-<p style="margin: 0 0 1.1em;">同一个数据只要保存在多个地方，且至少有一个地方被写，就存在一致性问题  <br/>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">最终一致性</h2>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">为了HA/负载均衡需要冗余数据，数据冗余的地方就存在一致性的问题</p>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">同一个数据只要保存在多个地方，且至少有一个地方被写，就存在一致性问题  <br/>
 如果保存在多个地方被写，情况就更复杂了，涉及到数据的传播/并发/事务，尽量避免这个情况，保证数据在一个地方被增删改。</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 0;">shard还是一个数据在一个地方</p>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 0; line-height: 1.6;">shard还是一个数据在一个地方</p>
 </blockquote>
-<p style="margin: 0 0 1.1em;">如果session是各个容器自己管理的，因为要是强一致性的，必然需要session的复制 <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">如果session是各个容器自己管理的，因为要是强一致性的，必然需要session的复制 <br/>
 如果每个容器有自己的本地cache，且会update/remove，和cpu的L1/L2/L3缓存的情形类似，都要实现cache的传播</p>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">Replication</h2>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>Master-Slaves 读写分离，负载均衡</li>
-<li>Dual Master 双机热备HA</li>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">Replication</h2>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">Master-Slaves 读写分离，负载均衡</li>
+<li style="line-height: 1.6;">Dual Master 双机热备HA</li>
 </ol>
-</div><div>
-<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0; text-align: start;">数据切分(shard)</h2>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">垂直</h3>
-<p style="margin: 0 0 1.1em;">按业务模块切分 <br/>
+</div><div style="line-height: 1.6;">
+<h2 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 2.15em; margin: 1.2em 0 .6em 0; text-align: start;">数据切分(shard)</h2>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">垂直</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">按业务模块切分 <br/>
 需要程序进行不同库之间的join</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">水平</h3>
-<p style="margin: 0 0 1.1em;">每个库的表结构是一样的，按id划分数据 <br/>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">水平</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">每个库的表结构是一样的，按id划分数据 <br/>
 数据局部性好，很多表关联/事务能够在一个DB完成</p>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">结合：先垂直再水平</h3>
-</div><div>
-<h3 style="font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0; text-align: start;">切分后的整合</h3>
-<p style="margin: 0 0 1.1em;">统一数据访问层 – 路由规则/解析sql/合并结果/join/分布式事务/负载均衡都可以在这一层搞定 <br/>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">结合：先垂直再水平</h3>
+</div><div style="line-height: 1.6;">
+<h3 style="font-family: inherit; font-weight: bold; color: inherit; margin-top: 21px; margin-bottom: 10.5px; font-size: 1.7em; margin: 1.2em 0 .6em 0; text-align: start; line-height: 1.6;">切分后的整合</h3>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">统一数据访问层 – 路由规则/解析sql/合并结果/join/分布式事务/负载均衡都可以在这一层搞定 <br/>
 一些开源产品：</p>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<ol style="margin-top: 0; margin-bottom: 0;"><li>MySQL Proxy</li>
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;"><li style="line-height: 1.6;">MySQL Proxy</li>
 </ol>
 </blockquote>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>Amoeba (JDBC以下) <br/>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">Amoeba (JDBC以下) <br/>
 query路由/过滤，负载均衡，读写分离，HA <br/>
 主要解决： <br/>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>数据切分后复杂数据源整合;</li>
-<li>提供数据切分规则并降低数据切分规则给数据库带来的影响;</li>
-<li>降低数据库与客户端的连接数;</li>
-<li>读写分离路由</li></ol></li>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">数据切分后复杂数据源整合;</li>
+<li style="line-height: 1.6;">提供数据切分规则并降低数据切分规则给数据库带来的影响;</li>
+<li style="line-height: 1.6;">降低数据库与客户端的连接数;</li>
+<li style="line-height: 1.6;">读写分离路由</li></ol></li>
 </ol>
 <blockquote style="padding: 15px 20px; margin: 0 0 1.1em; border-left: 5px solid rgba(102,128,153,0.075); border-left-width: 10px; background-color: rgba(102,128,153,0.05); border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
-<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; line-height: 1.45; margin-bottom: 1.1em;">Amoeba for MySQL/Aladin</p>
-<ol style="margin-top: 0; margin-bottom: 0;"><li>hibernate shards / ibatis shards</li>
+<p style="margin: 0 0 1.1em; font-size: 1em; font-weight: 300; margin-bottom: 1.1em; line-height: 1.6;">Amoeba for MySQL/Aladin</p>
+<ol style="margin-top: 0; margin-bottom: 0; line-height: 1.6;"><li style="line-height: 1.6;">hibernate shards / ibatis shards</li>
 </ol>
 </blockquote>
-<p style="margin: 0 0 1.1em;">问题：</p>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>分布式事务</li>
-<li>跨节点join</li>
-<li>跨节点合并排序分页 <br/>
+<p style="margin: 0 0 1.1em; line-height: 1.6;">问题：</p>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">分布式事务</li>
+<li style="line-height: 1.6;">跨节点join</li>
+<li style="line-height: 1.6;">跨节点合并排序分页 <br/>
 都由应用解决吧</li>
 </ol>
-</div><div>
-<h1 style="font-size: 2.6em; margin: 1.2em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">参考书籍：</h1>
-<ol style="margin-top: 0; margin-bottom: 1.1em;"><li>《高性能MySQL》</li>
-<li>张宴的《MySQL调优与架构设计》</li>
-</ol></div><div></div></div>
+</div><div style="line-height: 1.6;">
+<h1 style="font-size: 2.6em; margin: 1.2em 0 .6em 0; font-family: inherit; font-weight: bold; line-height: 1.1; color: inherit; margin-top: 21px; margin-bottom: 10.5px; text-align: start;">参考书籍：</h1>
+<ol style="margin-top: 0; margin-bottom: 1.1em; line-height: 1.6;"><li style="line-height: 1.6;">《高性能MySQL》</li>
+<li style="line-height: 1.6;">张宴的《MySQL调优与架构设计》</li>
+</ol></div><div style="line-height: 1.6;"></div></div>
